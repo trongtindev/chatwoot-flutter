@@ -22,6 +22,10 @@ jobs:
           flutter-version-file: pubspec.yaml
           cache: true
 
+      - name: Create .env file
+        run: |
+          echo "BAR=FOO" >> .env
+
       - run: flutter --version
       - run: flutter pub get
       - run: flutter test
