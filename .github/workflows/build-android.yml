@@ -21,12 +21,14 @@ jobs:
           channel: stable
           flutter-version-file: pubspec.yaml
           cache: true
+      - run: flutter --version
 
       - name: Create .env file
         run: |
           echo "BAR=FOO" >> .env
 
-      - run: flutter --version
-      - run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
+
       - run: flutter test
       - run: flutter build apk
