@@ -1,16 +1,30 @@
+<img src="https://user-images.githubusercontent.com/2246121/282256557-1570674b-d142-4198-9740-69404cc6a339.png#gh-light-mode-only" width="100%" alt="Chat dashboard dark mode"/>
+<img src="https://user-images.githubusercontent.com/2246121/282256632-87f6a01b-6467-4e0e-8a93-7bbf66d03a17.png#gh-dark-mode-only" width="100%" alt="Chat dashboard"/>
+
+---
+
 # chatwoot
 
-A new Flutter project.
+## Support
 
-## Getting Started
+| Device  | Status      |
+| ------- | ----------- |
+| Web     | Planned     |
+| Mobile  | In-Progress |
+| Desktop | Planned     |
 
-This project is a starting point for a Flutter application.
+## Roadmap
 
-A few resources to get you started if this is your first Flutter project:
+| Feature       | Status  |
+| ------------- | ------- |
+| Campaigns     | Planned |
+| Conversations | Planned |
+| Contacts      | Planned |
+| Notifications | Planned |
+| Settings      | Planned |
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Cross-Platform app for chatwoot! Built with Flutter.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Feedback & Contributing
+
+Feel free to send us feedback on [file an issue](https://github.com/trongtindev/chatwoot-flutter/issues).

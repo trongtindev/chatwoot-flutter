@@ -1,0 +1,8 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    ".env.production": ".env.development, .env",
+    "pubspec.yaml": ".flutter-plugins, .flutter-plugins-dependencies, pubspec.lock, .metadata"
+  },
+  "editor.formatOnSave": true
+}
