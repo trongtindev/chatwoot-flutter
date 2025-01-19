@@ -1,3 +1,5 @@
+import '/screens/contacts/views/detail.dart';
+import '/screens/contacts/views/index_filter.dart';
 import '/imports.dart';
 
 class ContactsController extends GetxController {
@@ -8,29 +10,86 @@ class ContactsController extends GetxController {
   final items = RxList<ContactInfo>();
   final loading = true.obs;
   final error = ''.obs;
+  final sortBy = ContactSortBy.created_at.obs;
+  final orderBy = OrderBy.descending.obs;
+  final page = 1.obs;
+  final isLoadMore = false.obs;
+  final isNoMore = false.obs;
 
   @override
   void onReady() {
     super.onReady();
+
+    sortBy.listen((_) => getContacts());
+    orderBy.listen((_) => getContacts());
+
     getContacts();
   }
 
-  Future<void> getContacts() async {
+  Future<void> getContacts({
+    bool? append,
+    bool? reset,
+  }) async {
     try {
+      append ??= false;
+      reset ??= false;
+
       loading.value = true;
+      if (reset) {
+        page.value = 1;
+        isLoadMore.value = false;
+        isNoMore.value = false;
+      }
+
       var result = await _api.listContacts(
         account_id: _auth.profile.value!.account_id,
+        sortBy: sortBy.value,
+        orderBy: orderBy.value,
+        page: page.value,
+        onCacheHit: append || reset
+            ? null
+            : (data) {
+                items.value = data.payload;
+              },
       );
       var data = result.getOrThrow();
-      items.value = data.payload;
+
+      if (append) {
+        items.value.addAll(data.payload);
+        isNoMore.value = data.payload.isEmpty;
+      } else {
+        items.value = data.payload;
+      }
     } on ApiError catch (reason) {
       _logger.w(reason);
       error.value = reason.errors.join(';');
-    } catch (reason) {
+    } on Error catch (reason) {
       _logger.e(reason);
+      _logger.e(reason.stackTrace);
       error.value = reason.toString();
     } finally {
       loading.value = false;
     }
+  }
+
+  void showDetail(ContactInfo info) {
+    Get.to(
+      () => ContactDetailView(contact_id: info.id, initial: info),
+    );
+  }
+
+  Future<void> showFilter() async {
+    var result = await Get.bottomSheet<bool>(ContactFilterView());
+    if (result == null || !result) return;
+  }
+
+  Future<void> loadMore() async {
+    if (isNoMore.value) return;
+    if (isLoadMore.value) return;
+
+    page.value += 1;
+    isLoadMore.value = true;
+    await getContacts(append: true);
+    isLoadMore.value = false;
   }
 }

@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  firebase_core
   flutter_inappwebview_windows
   screen_retriever_windows
   sentry_flutter

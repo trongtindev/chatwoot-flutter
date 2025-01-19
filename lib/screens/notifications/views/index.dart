@@ -1,5 +1,3 @@
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-
 import '../controllers/index.dart';
 import '/imports.dart';
 
@@ -25,25 +23,40 @@ class NotificationsView extends GetView<NotificationsController> {
             icon: Icon(Icons.filter_alt_outlined),
             onPressed: controller.showFilter,
           ),
-          Padding(padding: EdgeInsets.only(right: 16)),
+          Padding(padding: EdgeInsets.only(right: 8)),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: controller.getNotifications,
+        notificationPredicate: (scrollNotification) {
+          var pixels = scrollNotification.metrics.pixels;
+          var maxScrollExtent = scrollNotification.metrics.maxScrollExtent;
+          var isScrollEnded = pixels >= maxScrollExtent * 0.8;
+          if (isScrollEnded) controller.loadMore();
+          return defaultScrollNotificationPredicate(scrollNotification);
+        },
+        onRefresh: () => controller.getNotifications(reset: true),
         child: Obx(() {
-          if (controller.loading.value) {
+          if (controller.loading.value && controller.items.isEmpty) {
             return buildPlaceholder();
           } else if (controller.error.isNotEmpty) {
             return buildError();
           } else if (controller.items.isEmpty) {
             return buildEmptyState();
           }
-          return ListView.builder(
-            prototypeItem: buildItem(controller.items.first),
-            itemCount: controller.items.length,
-            itemBuilder: (_, i) {
-              return buildItem(controller.items[i]);
-            },
+          return ListView(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                prototypeItem: buildItem(controller.items.first),
+                itemCount: controller.items.length,
+                itemBuilder: (_, i) {
+                  return buildItem(controller.items[i]);
+                },
+              ),
+              if (controller.isLoadMore.value) loadMore(),
+              if (controller.isNoMore.value) noMore(),
+            ],
           );
         }),
       ),
@@ -71,27 +84,17 @@ class NotificationsView extends GetView<NotificationsController> {
   Widget buildItem(NotificationInfo info) {
     var created_at = formatTimeago(info.created_at);
 
-    if (info.primary_actor != null) {
-      return ListTile(
-        leading: avatar(
-          url: info.primary_actor!.meta.sender.thumbnail,
-          isOnline: info.primary_actor!.meta.sender.availability_status ==
-              AvailabilityStatus.online,
-        ),
-        title: Text(
-          info.push_message_title,
-          style: TextStyle(),
-        ),
-        subtitle: Text('$created_at · ${info.primary_actor!.meta.sender.name}'),
-        trailing: Icon(Icons.chevron_right),
-      );
-    }
-
     return ListTile(
-      leading: avatar(),
-      title: Text(info.push_message_title),
-      subtitle: Text('$created_at · ${info.notification_type}'),
+      leading: avatar(url: info.primary_actor.meta.sender.thumbnail),
+      title: Text(
+        info.push_message_title,
+        style: TextStyle(),
+      ),
+      subtitle: Text('${info.primary_actor.meta.sender.name} · $created_at'),
       trailing: Icon(Icons.chevron_right),
+      tileColor:
+          info.read_at == null ? Get.theme.colorScheme.primaryContainer : null,
+      onTap: () => controller.onTap(info),
     );
   }
 }

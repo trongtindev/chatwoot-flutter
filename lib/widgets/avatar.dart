@@ -21,6 +21,8 @@ Widget avatar({
     ),
   );
 
+  var dotSize = width * 0.15;
+
   return SizedBox(
     width: width,
     height: height,
@@ -29,7 +31,6 @@ Widget avatar({
         Container(
           decoration: BoxDecoration(
             color: Get.theme.colorScheme.surfaceContainerHigh,
-            border: Border.all(),
             borderRadius: BorderRadius.circular(height / 2),
           ),
           child: Builder(builder: (_) {
@@ -40,10 +41,15 @@ Widget avatar({
             return ClipRRect(
               clipBehavior: Clip.hardEdge,
               borderRadius: BorderRadius.circular(height! / 2),
-              child: CachedNetworkImage(
-                imageUrl: url,
-                errorWidget: (_, a, b) {
-                  return fallbackWidget;
+              child: ExtendedImage.network(
+                url,
+                loadStateChanged: (state) {
+                  switch (state.extendedImageLoadState) {
+                    case LoadState.failed:
+                      return fallbackWidget;
+                    default:
+                      return null;
+                  }
                 },
               ),
             );
@@ -51,22 +57,21 @@ Widget avatar({
         ),
         if (isOnline)
           Positioned(
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Get.theme.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+            right: dotSize * 0.3,
+            bottom: dotSize * 0.3,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Get.theme.colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Container(
+                  width: dotSize,
+                  height: dotSize,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(dotSize / 2),
                   ),
                 ),
               ),

@@ -8,7 +8,11 @@ class Dotenv {
   // app
   String APP_NAME;
 
-  // other
+  // google
+  String GOOGLE_ANDROID_SERVICES_FILE;
+  String IOS_ANDROID_SERVICES_FILE;
+
+  // sentry
   String? SENTRY_DNS;
 
   Dotenv({
@@ -20,6 +24,10 @@ class Dotenv {
 
     // app
     required this.APP_NAME,
+
+    // google
+    required this.GOOGLE_ANDROID_SERVICES_FILE,
+    required this.IOS_ANDROID_SERVICES_FILE,
 
     // sentry
     this.SENTRY_DNS,
@@ -33,8 +41,12 @@ class Dotenv {
       API_TIMEOUT: int.parse(env['API_TIMEOUT']),
       API_RETRIES: int.parse(env['API_RETRIES']),
 
-// app
+      // app
       APP_NAME: env['APP_NAME'],
+
+      // google
+      GOOGLE_ANDROID_SERVICES_FILE: env['GOOGLE_ANDROID_SERVICES_FILE'],
+      IOS_ANDROID_SERVICES_FILE: env['IOS_ANDROID_SERVICES_FILE'],
 
       // sentry
       SENTRY_DNS: env['SENTRY_DNS'],

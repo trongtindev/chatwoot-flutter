@@ -5,25 +5,41 @@
 
 # chatwoot
 
+Cross-Platform app for chatwoot! Built with Flutter.
+
 ## Support
 
-| Device  | Status      |
-| ------- | ----------- |
-| Web     | Planned     |
-| Mobile  | In-Progress |
-| Desktop | Planned     |
+| Device  | Status         |
+| ------- | -------------- |
+| Web     | 🕛 Planned     |
+| Mobile  | 💪 In-Progress |
+| Desktop | 🕛 Planned     |
 
 ## Roadmap
 
-| Feature       | Status  |
-| ------------- | ------- |
-| Campaigns     | Planned |
-| Conversations | Planned |
-| Contacts      | Planned |
-| Notifications | Planned |
-| Settings      | Planned |
-
-Cross-Platform app for chatwoot! Built with Flutter.
+| Feature                      | Status         |
+| ---------------------------- | -------------- |
+| UI - Customize theme         | ✅ Completed   |
+| Settings                     | 💪 In-Progress |
+| Conversations                | 💪 In-Progress |
+| Contacts                     | 💪 In-Progress |
+| Notifications                | 💪 In-Progress |
+| Push Notifications           | 💪 In-Progress |
+| Reports                      | 🕛 Planned     |
+| Teams                        | 🕛 Planned     |
+| Accounts                     | 🕛 Planned     |
+| Inboxes                      | 🕛 Planned     |
+| Labels                       | 🕛 Planned     |
+| Automation                   | 🕛 Planned     |
+| Macros                       | 🕛 Planned     |
+| Agents                       | 🕛 Planned     |
+| Canned Response              | 🕛 Planned     |
+| Integrations                 | 🕛 Planned     |
+| Audit Logs                   | 🕛 Planned     |
+| Custom Attributes            | 🕛 Planned     |
+| Campaigns                    | 🕛 Planned     |
+| Realtime                     | 💪 In-Progress |
+| Improve performace by SQLite | 💪 In-Progress |
 
 ## Feedback & Contributing
 

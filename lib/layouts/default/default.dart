@@ -1,7 +1,8 @@
 import 'package:get/get_state_manager/src/rx_flutter/rx_ticket_provider_mixin.dart';
-import '../../screens/contacts/views/index.dart';
-import '../../screens/notifications/views/index.dart';
-import '../../screens/settings/views/index.dart';
+import '/screens/conversations/views/index.dart';
+import '/screens/contacts/views/index.dart';
+import '/screens/notifications/views/index.dart';
+import '/screens/settings/views/index.dart';
 import '/imports.dart';
 
 class DefaultLayoutController extends GetxController
@@ -42,7 +43,7 @@ class DefaultLayout extends GetView<DefaultLayoutController> {
         physics: NeverScrollableScrollPhysics(),
         controller: controller.tabController,
         children: [
-          Text('conversations'),
+          ConversationsView(),
           NotificationsView(),
           ContactsView(),
           SettingsView(),

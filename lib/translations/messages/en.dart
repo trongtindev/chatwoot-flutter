@@ -26,6 +26,8 @@ Map<String, String> get keys {
         'If you are using a self-hosted Chatwoot installation, input your server URL. Otherwise, use @baseUrl.',
     'change_url.url': 'URL',
     'change_url.url_hint': 'Enter your URL without http',
-    'change_url.submit': 'Verify'
+    'change_url.submit': 'Verify',
+    // conversation_input
+    'conversation_input.message_hint': 'Type message...',
   };
 }

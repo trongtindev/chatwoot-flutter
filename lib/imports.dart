@@ -19,7 +19,8 @@ export 'package:result_dart/result_dart.dart';
 export 'package:flutter/foundation.dart';
 export 'package:window_manager/window_manager.dart';
 export 'package:url_launcher/url_launcher_string.dart';
-export 'package:cached_network_image/cached_network_image.dart';
+export 'package:extended_image/extended_image.dart'
+    show ExtendedImage, LoadState, ExtendedImageMode;
 export 'package:dio/dio.dart';
 export 'package:logger/logger.dart' show Level;
 export 'package:path_provider/path_provider.dart';
@@ -27,6 +28,7 @@ export 'package:path_provider/path_provider.dart';
 export 'dart:io' show File, Platform;
 export 'dart:async';
 export 'dart:convert';
+export 'dart:math';
 
 export 'config/dotenv.dart';
 export 'config/constants.dart';
@@ -38,7 +40,9 @@ export 'layouts/default/default.dart';
 
 export 'models/account.dart';
 export 'models/api.dart';
+export 'models/assistant.dart';
 export 'models/attribute.dart';
+export 'models/cache.dart';
 export 'models/common.dart';
 export 'models/contact.dart';
 export 'models/conversation.dart';
@@ -46,19 +50,22 @@ export 'models/inbox.dart';
 export 'models/message.dart';
 export 'models/notification.dart';
 export 'models/profile.dart';
+export 'models/realtime.dart';
 export 'models/user.dart';
 
 export 'services/analytics.dart';
 export 'services/api.dart';
-export 'services/app.dart';
+export 'services/assistant.dart';
 export 'services/auth.dart';
 export 'services/db.dart';
 export 'services/deeplink.dart';
 export 'services/notification.dart';
+export 'services/realtime.dart';
 export 'services/settings.dart';
 export 'services/theme.dart';
 export 'services/updater.dart';
 
+export 'utils/bytes.dart';
 export 'utils/color.dart';
 export 'utils/common.dart';
 export 'utils/logger.dart';
@@ -69,4 +76,5 @@ export 'utils/time.dart';
 export 'widgets/avatar.dart';
 export 'widgets/button.dart';
 export 'widgets/common.dart';
+export 'widgets/image.dart';
 export 'widgets/profile.dart';

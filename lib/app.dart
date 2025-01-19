@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:toastification/toastification.dart';
 import 'config/bindings.dart';
 import 'imports.dart';
 import './translations/index.dart';
@@ -78,33 +77,30 @@ class AppState extends State<App> {
       ),
     );
 
-    return ToastificationWrapper(
-      child: GetMaterialApp(
-        theme: lightTheme.copyWith(
-          textTheme: GoogleFonts.robotoTextTheme(lightTheme.textTheme),
+    return GetMaterialApp(
+      theme: lightTheme.copyWith(
+        textTheme: GoogleFonts.robotoTextTheme(lightTheme.textTheme),
+      ),
+      darkTheme: darkTheme.copyWith(
+        textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
+      ),
+      themeMode: theme.activeMode.value,
+      locale: Locale('en'),
+      translations: Translations(),
+      fallbackLocale: Locale('en'),
+      defaultTransition:
+          GetPlatform.isDesktop ? Transition.downToUp : Transition.rightToLeft,
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
         ),
-        darkTheme: darkTheme.copyWith(
-          textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
-        ),
-        themeMode: theme.activeMode.value,
-        locale: Locale('en'),
-        translations: Translations(),
-        fallbackLocale: Locale('en'),
-        defaultTransition: GetPlatform.isDesktop
-            ? Transition.downToUp
-            : Transition.rightToLeft,
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.touch,
-          },
-        ),
+      ),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+        },
       ),
     );
   }

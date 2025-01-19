@@ -1,8 +1,8 @@
-import 'package:chatwoot/screens/notifications/controllers/index.dart';
+import '../controllers/index.dart';
 import '/imports.dart';
 
-class NotificationsFilterView extends GetView<NotificationsController> {
-  const NotificationsFilterView({super.key});
+class ConversationsFilterView extends GetView<ConversationsController> {
+  const ConversationsFilterView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,23 +48,23 @@ class NotificationsFilterView extends GetView<NotificationsController> {
           return ListTile(
             enabled: !loading,
             title: Text(item.name),
-            trailing: Checkbox(
-              value: controller.includes.contains(item),
-              onChanged: (next) {
-                if (next != null && next) {
-                  controller.includes.add(item);
-                  return;
-                }
-                controller.includes.remove(item);
-              },
-            ),
-            onTap: () {
-              if (controller.includes.contains(item)) {
-                controller.includes.remove(item);
-                return;
-              }
-              controller.includes.add(item);
-            },
+            // trailing: Checkbox(
+            //   value: controller.includes.contains(item),
+            //   onChanged: (next) {
+            //     if (next != null && next) {
+            //       controller.includes.add(item);
+            //       return;
+            //     }
+            //     controller.includes.remove(item);
+            //   },
+            // ),
+            // onTap: () {
+            //   if (controller.includes.contains(item)) {
+            //     controller.includes.remove(item);
+            //     return;
+            //   }
+            //   controller.includes.add(item);
+            // },
           );
         },
       );

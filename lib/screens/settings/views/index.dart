@@ -35,7 +35,59 @@ class SettingsView extends StatelessWidget {
       ],
       [
         SettingTab(
-          iconData: Icons.notifications_outlined,
+          iconData: Icons.work_outline,
+          title: 'settings.account'.tr,
+          container: Text('account'),
+        ),
+        SettingTab(
+          iconData: Icons.support_agent_outlined,
+          title: 'settings.agents'.tr,
+          container: Text('agents'),
+        ),
+        SettingTab(
+          iconData: Icons.all_inbox_outlined,
+          title: 'settings.inboxes'.tr,
+          container: Text('inboxes'),
+        ),
+        SettingTab(
+          iconData: Icons.label_outline,
+          title: 'settings.labels'.tr,
+          container: Text('labels'),
+        ),
+        SettingTab(
+          iconData: Icons.code_outlined,
+          title: 'settings.custom_attributes'.tr,
+          container: Text('custom_attributes'),
+        ),
+        SettingTab(
+          iconData: Icons.auto_mode,
+          title: 'settings.automation'.tr,
+          container: Text('automation'),
+        ),
+        SettingTab(
+          iconData: Icons.auto_mode,
+          title: 'settings.macros'.tr,
+          container: Text('macros'),
+        ),
+        SettingTab(
+          iconData: Icons.forum_outlined,
+          title: 'settings.canned_response'.tr,
+          container: Text('canned_response'),
+        ),
+        SettingTab(
+          iconData: Icons.integration_instructions_outlined,
+          title: 'settings.integrations'.tr,
+          container: Text('integrations'),
+        ),
+        SettingTab(
+          iconData: Icons.history_outlined,
+          title: 'settings.audit_logs'.tr,
+          container: Text('audit_logs'),
+        ),
+      ],
+      [
+        SettingTab(
+          iconData: Icons.visibility_outlined,
           title: 'settings.set_availability'.tr,
           container: Text('ok'),
         ),
@@ -84,7 +136,10 @@ class SettingsView extends StatelessWidget {
     final auth = Get.find<AuthService>();
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('settings'.tr),
+        centerTitle: true,
+      ),
       body: ListView(
         padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
         children: [

@@ -10,23 +10,48 @@ class ContactsView extends GetView<ContactsController> {
       appBar: AppBar(
         title: Text('contacts'.tr),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_alt_outlined),
+            onPressed: controller.showFilter,
+          ),
+          Padding(padding: EdgeInsets.only(right: 8)),
+        ],
       ),
-      body: Obx(() {
-        if (controller.loading.value) {
-          return buildPlaceholder();
-        } else if (controller.error.isNotEmpty) {
-          return buildError();
-        } else if (controller.items.isEmpty) {
-          return buildEmptyState();
-        }
-        return ListView.builder(
-          prototypeItem: buildItem(controller.items.first),
-          itemCount: controller.items.length,
-          itemBuilder: (_, i) {
-            return buildItem(controller.items[i]);
-          },
-        );
-      }),
+      body: RefreshIndicator(
+        notificationPredicate: (scrollNotification) {
+          var pixels = scrollNotification.metrics.pixels;
+          var maxScrollExtent = scrollNotification.metrics.maxScrollExtent;
+          var isScrollEnded = pixels >= maxScrollExtent * 0.8;
+          if (isScrollEnded) controller.loadMore();
+          return defaultScrollNotificationPredicate(scrollNotification);
+        },
+        onRefresh: () => controller.getContacts(reset: true),
+        child: Obx(() {
+          if (controller.loading.value && controller.items.isEmpty) {
+            return buildPlaceholder();
+          } else if (controller.error.isNotEmpty) {
+            return buildError();
+          } else if (controller.items.isEmpty) {
+            return buildEmptyState();
+          }
+          return ListView(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                prototypeItem: buildItem(controller.items.first),
+                itemCount: controller.items.length,
+                itemBuilder: (_, i) {
+                  return buildItem(controller.items[i]);
+                },
+              ),
+              if (controller.isLoadMore.value) loadMore(),
+              if (controller.isNoMore.value) noMore(),
+            ],
+          );
+        }),
+      ),
     );
   }
 
@@ -40,7 +65,7 @@ class ContactsView extends GetView<ContactsController> {
   Widget buildError() {
     return error(
       message: controller.error.value,
-      onRetry: controller.getContacts,
+      onRetry: () => controller.getContacts(reset: true),
     );
   }
 
@@ -52,8 +77,14 @@ class ContactsView extends GetView<ContactsController> {
     return ListTile(
       leading: avatar(url: info.thumbnail),
       title: Text(info.name, maxLines: 1),
-      subtitle: Text(info.phone_number ?? info.email, maxLines: 1),
+      subtitle: Text(
+          info.phone_number ??
+              info.email ??
+              info.identifier ??
+              info.id.toString(),
+          maxLines: 1),
       trailing: Icon(Icons.chevron_right),
+      onTap: () => controller.showDetail(info),
     );
   }
 }

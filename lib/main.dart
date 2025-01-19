@@ -5,6 +5,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:logger/logger.dart' as logger;
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 Future<void> loadEnvironments() async {
   var environments = kDebugMode
@@ -25,8 +27,16 @@ void main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    // firebase
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
     // environments
     await loadEnvironments();
+
+    // services
+    await Get.putAsync(() => ThemeService().init());
 
     // sentry
     if (env.SENTRY_DNS != null) {
@@ -82,9 +92,6 @@ void main() async {
     } else {
       await GetStorage.init();
     }
-
-    // services
-    await Get.putAsync(() => ThemeService().init());
 
     // app
     runApp(SentryWidget(child: App()));

@@ -28,9 +28,9 @@ enum MessageType { incoming, outgoing, activity, template }
 
 enum MessageStatus { failed, sent, progress, delivered, read }
 
-enum MessageContentType { text }
+enum MessageContentType { text, input_email }
 
-enum MessageSenderType { Contact, User, agent_bot }
+enum MessageSenderType { none, contact, user, agent_bot }
 
 enum MessageVariant {
   date,
@@ -64,22 +64,24 @@ enum Language implements Comparable<Language> {
 }
 
 enum InboxType implements Comparable<InboxType> {
-  web(value: 'Channel::WebWidget'),
-  fb(value: 'Channel::FacebookPage'),
-  twitter(value: 'Channel::TwitterProfile'),
-  twilio(value: 'Channel::TwilioSms'),
-  whatsapp(value: 'Channel::Whatsapp'),
-  api(value: 'Channel::Api'),
-  email(value: 'Channel::WebWidget'),
-  telegram(value: 'Channel::Telegram'),
-  line(value: 'Channel::Line'),
-  sms(value: 'Channel::Sms');
+  web(value: 'Channel::WebWidget', icon: 'web.png'),
+  fb(value: 'Channel::FacebookPage', icon: 'fb.png'),
+  twitter(value: 'Channel::TwitterProfile', icon: 'twitter.png'),
+  twilio(value: 'Channel::TwilioSms', icon: 'twilio.png'),
+  whatsapp(value: 'Channel::Whatsapp', icon: 'whatsapp.png'),
+  api(value: 'Channel::Api', icon: 'api.png'),
+  email(value: 'Channel::WebWidget', icon: 'email.png'),
+  telegram(value: 'Channel::Telegram', icon: 'telegram.png'),
+  line(value: 'Channel::Line', icon: 'line.png'),
+  sms(value: 'Channel::Sms', icon: 'sms.png');
 
   final String value;
+  final String icon;
 
   const InboxType({
     required this.value,
-  });
+    required String icon,
+  }) : icon = 'assets/images/icons/$icon';
 
   @override
   int compareTo(InboxType other) => index - other.index;
@@ -96,6 +98,8 @@ enum NotificationType {
   sla_missed_resolution
 }
 
+enum NotificationActorType { Conversation }
+
 enum NotificationStatus { snoozed, read }
 
 enum AttachmentType {
@@ -109,4 +113,42 @@ enum AttachmentType {
   story_mention,
   contact,
   ig_reel
+}
+
+enum AttributeModel { contact_attribute }
+
+enum ContactSortBy implements Comparable<ContactSortBy> {
+  name(labelLocalized: 'contact.name'),
+  email(labelLocalized: 'contact.email'),
+  phone_number(labelLocalized: 'contact.phone_number'),
+  company_name(labelLocalized: 'contact.company_name'),
+  country(labelLocalized: 'contact.country'),
+  city(labelLocalized: 'contact.city'),
+  last_activity_at(labelLocalized: 'contact.last_activity_at'),
+  created_at(labelLocalized: 'contact.created_at');
+
+  final String labelLocalized;
+
+  const ContactSortBy({
+    required this.labelLocalized,
+  });
+
+  @override
+  int compareTo(ContactSortBy other) => index - other.index;
+}
+
+enum OrderBy implements Comparable<OrderBy> {
+  ascending(value: '', labelLocalized: 'common.ascending'),
+  descending(value: '-', labelLocalized: 'contact.descending');
+
+  final String value;
+  final String labelLocalized;
+
+  const OrderBy({
+    required this.value,
+    required this.labelLocalized,
+  });
+
+  @override
+  int compareTo(OrderBy other) => index - other.index;
 }
