@@ -1,15 +1,15 @@
 import '/imports.dart';
 
 class UserInfo {
-  int id;
-  String name;
-  String available_name;
-  String avatar_url;
-  UserType type;
-  AvailabilityStatus availability_status;
-  String thumbnail;
+  final int id;
+  final String name;
+  final String available_name;
+  final String avatar_url;
+  final UserType type;
+  final AvailabilityStatus availability_status;
+  final String thumbnail;
 
-  UserInfo({
+  const UserInfo({
     required this.id,
     required this.name,
     required this.available_name,

@@ -1,12 +1,13 @@
 import '/imports.dart';
+import 'package:intl/intl.dart';
 
 class ListConversationMeta {
-  int mine_count;
-  int assigned_count;
-  int unassigned_count;
-  int all_count;
+  final int mine_count;
+  final int assigned_count;
+  final int unassigned_count;
+  final int all_count;
 
-  ListConversationMeta({
+  const ListConversationMeta({
     required this.mine_count,
     required this.assigned_count,
     required this.unassigned_count,
@@ -24,19 +25,19 @@ class ListConversationMeta {
 }
 
 class ConversationAssigneeInfo {
-  int id;
-  int account_id;
-  AvailabilityStatus availability_status;
-  bool auto_offline;
-  bool confirmed;
-  String email;
-  String available_name;
-  String name;
-  ProfileRole role;
-  String thumbnail;
-  dynamic custom_role_id; // TODO: unk type
+  final int id;
+  final int account_id;
+  final AvailabilityStatus availability_status;
+  final bool auto_offline;
+  final bool confirmed;
+  final String email;
+  final String available_name;
+  final String name;
+  final ProfileRole role;
+  final String thumbnail;
+  final dynamic custom_role_id; // TODO: unk type
 
-  ConversationAssigneeInfo({
+  const ConversationAssigneeInfo({
     required this.id,
     required this.account_id,
     required this.availability_status,
@@ -69,12 +70,12 @@ class ConversationAssigneeInfo {
 }
 
 class ConversationMeta {
-  SenderInfo sender;
-  InboxType channel;
-  ConversationAssigneeInfo? assignee;
-  bool hmac_verified;
+  final SenderInfo sender;
+  final InboxType channel;
+  final ConversationAssigneeInfo? assignee;
+  final bool hmac_verified;
 
-  ConversationMeta({
+  const ConversationMeta({
     required this.sender,
     required this.channel,
     required this.assignee,
@@ -82,74 +83,85 @@ class ConversationMeta {
   });
 
   factory ConversationMeta.fromJson(Map<String, dynamic> json) {
+    var assignee = json['assignee'] != null
+        ? ConversationAssigneeInfo.fromJson(json['assignee'])
+        : null;
+
     return ConversationMeta(
       sender: SenderInfo.fromJson(json['sender']),
       channel: InboxType.values.firstWhere((e) => e.value == json['channel']),
-      assignee: json['assignee']
-          ? ConversationAssigneeInfo.fromJson(json['assignee'])
-          : null,
+      assignee: assignee,
       hmac_verified: json['hmac_verified'],
     );
   }
 }
 
 class ConversationAttribute {
-  BrowserAttribute browser;
-  String? referer;
-  DateTime initiated_at;
-  String browser_language;
+  final BrowserAttribute? browser;
+  final String? referer;
+  final DateTime? initiated_at;
+  final String? browser_language;
 
-  ConversationAttribute({
-    required this.browser,
+  const ConversationAttribute({
+    this.browser,
     this.referer,
-    required this.initiated_at,
-    required this.browser_language,
+    this.initiated_at,
+    this.browser_language,
   });
 
   factory ConversationAttribute.fromJson(Map<String, dynamic> json) {
+    var browser = json['browser'] != null
+        ? BrowserAttribute.fromJson(json['browser'])
+        : null;
+    var timestamp = json['initiated_at'] != null
+        ? json['initiated_at']['timestamp'].toString().split(' (').first
+        : null;
+
     return ConversationAttribute(
-      browser: BrowserAttribute.fromJson(json['browser']),
+      browser: browser,
       referer: json['referer'],
-      initiated_at: DateTime.parse(json['initiated_at']['timestamp']),
+      initiated_at: timestamp != null
+          ? DateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z").parse(timestamp)
+          : null,
       browser_language: json['browser_language'],
     );
   }
 }
 
 class ConversationInfo {
-  ConversationMeta meta;
-  int id;
-  List<MessageInfo> messages;
-  int account_id;
-  String uuid;
-  ConversationAttribute additional_attributes;
-  DateTime agent_last_seen_at;
-  DateTime? assignee_last_seen_at;
-  bool can_reply;
-  DateTime? contact_last_seen_at;
-  dynamic custom_attributes; // TODO: unk type
-  int inbox_id;
-  List<String> labels; // TODO: unk type
-  bool muted;
-  dynamic snoozed_until; // TODO: unk type
-  ConversationStatus status;
-  DateTime created_at;
-  DateTime timestamp;
-  DateTime? first_reply_created_at;
-  int unread_count;
-  MessageInfo? last_non_activity_message;
-  DateTime? last_activity_at;
-  ConversationPriority priority;
-  int waiting_since;
-  dynamic sla_policy_id; // TODO: unk type
+  final ConversationMeta meta;
+  final int id;
+  final List<MessageInfo> messages;
+  final int account_id;
+  final String uuid;
+  final ConversationAttribute? additional_attributes;
+  final DateTime agent_last_seen_at;
+  final DateTime? assignee_last_seen_at;
+  final bool can_reply;
+  final DateTime? contact_last_seen_at;
+  final dynamic custom_attributes; // TODO: unk type
+  final int inbox_id;
+  final List<String> labels; // TODO: unk type
+  final bool muted;
+  final dynamic snoozed_until; // TODO: unk type
+  final ConversationStatus status;
+  final DateTime created_at;
+  final DateTime timestamp;
+  final DateTime? first_reply_created_at;
+  final int unread_count;
+  final MessageInfo? last_non_activity_message;
+  final DateTime last_activity_at;
+  final ConversationPriority priority;
+  final int waiting_since;
+  final dynamic sla_policy_id; // TODO: unk type
 
-  ConversationInfo({
+  const ConversationInfo({
     required this.meta,
     required this.id,
     required this.messages,
     required this.account_id,
     required this.uuid,
-    required this.additional_attributes,
+    this.additional_attributes,
     required this.agent_last_seen_at,
     this.assignee_last_seen_at,
     required this.can_reply,
@@ -165,7 +177,7 @@ class ConversationInfo {
     this.first_reply_created_at,
     required this.unread_count,
     this.last_non_activity_message,
-    this.last_activity_at,
+    required this.last_activity_at,
     required this.priority,
     required this.waiting_since,
     required this.sla_policy_id,
@@ -173,25 +185,33 @@ class ConversationInfo {
 
   factory ConversationInfo.fromJson(dynamic json) {
     List<dynamic> messages = json['messages'];
-    var assignee_last_seen_at = json['assignee_last_seen_at']
+    var additional_attributes = json['additional_attributes'] != null
+        ? ConversationAttribute.fromJson(json['additional_attributes'])
+        : null;
+    var assignee_last_seen_at = json['assignee_last_seen_at'] != null
         ? DateTime.fromMillisecondsSinceEpoch(
             json['assignee_last_seen_at'] * 1000)
         : null;
-    var contact_last_seen_at = json['contact_last_seen_at']
+    var contact_last_seen_at = json['contact_last_seen_at'] != null
         ? DateTime.fromMillisecondsSinceEpoch(
             json['contact_last_seen_at'] * 1000)
         : null;
     List<dynamic> labels = json['labels'];
-    var first_reply_created_at = json['first_reply_created_at']
+    var first_reply_created_at = json['first_reply_created_at'] != null
         ? DateTime.fromMillisecondsSinceEpoch(
             json['first_reply_created_at'] * 1000)
         : null;
-    var last_non_activity_message = json['last_non_activity_message']
+    var last_non_activity_message = json['last_non_activity_message'] != null
         ? MessageInfo.fromJson(json['last_non_activity_message'])
         : null;
-    var last_activity_at = json['last_activity_at']
+    var last_activity_at = json['last_activity_at'] != null
         ? DateTime.fromMillisecondsSinceEpoch(json['last_activity_at'] * 1000)
         : null;
+    var priority = json['priority'] != null
+        ? ConversationPriority.values.byName(json['priority'])
+        : ConversationPriority.none;
+    var created_at =
+        DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000);
 
     return ConversationInfo(
       meta: ConversationMeta.fromJson(json['meta']),
@@ -199,8 +219,7 @@ class ConversationInfo {
       messages: messages.map(MessageInfo.fromJson).toList(),
       account_id: json['account_id'],
       uuid: json['uuid'],
-      additional_attributes:
-          ConversationAttribute.fromJson(json['additional_attributes']),
+      additional_attributes: additional_attributes,
       agent_last_seen_at: DateTime.fromMillisecondsSinceEpoch(
           json['agent_last_seen_at'] * 1000), // 1737180144
       assignee_last_seen_at: assignee_last_seen_at, // 1737180144
@@ -219,8 +238,8 @@ class ConversationInfo {
       first_reply_created_at: first_reply_created_at,
       unread_count: json['unread_count'],
       last_non_activity_message: last_non_activity_message,
-      last_activity_at: last_activity_at,
-      priority: ConversationPriority.values.byName(json['priority']),
+      last_activity_at: last_activity_at ?? created_at,
+      priority: priority,
       waiting_since: json['waiting_since'],
       sla_policy_id: json['sla_policy_id'],
     );

@@ -1,7 +1,7 @@
 class InboxInfo {
-  String source_id;
+  final String source_id;
 
-  InboxInfo({
+  const InboxInfo({
     required this.source_id,
   });
 

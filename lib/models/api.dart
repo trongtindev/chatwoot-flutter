@@ -75,7 +75,7 @@ class ApiListMeta {
 
 class ListConversationResult
     extends ApiListResult<ListConversationMeta, ConversationInfo> {
-  ListConversationResult({
+  const ListConversationResult({
     required super.meta,
     required super.payload,
   });
@@ -91,7 +91,7 @@ class ListConversationResult
 
 class ListNotificationResult
     extends ApiListResult<ListNotificationMeta, NotificationInfo> {
-  ListNotificationResult({
+  const ListNotificationResult({
     required super.meta,
     required super.payload,
   });
@@ -106,7 +106,7 @@ class ListNotificationResult
 }
 
 class ListContactResult extends ApiListResult<ListContactMeta, ContactInfo> {
-  ListContactResult({
+  const ListContactResult({
     required super.meta,
     required super.payload,
   });

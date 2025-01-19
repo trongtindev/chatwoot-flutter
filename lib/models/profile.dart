@@ -22,26 +22,26 @@ import '/imports.dart';
 // }
 
 class ProfileInfo {
-  String access_token;
-  int account_id;
-  String available_name;
-  String avatar_url;
-  bool confirmed;
-  String display_name;
-  String? message_signature;
-  String email;
-  int id;
-  dynamic inviter_id; // TODO: unk type
-  String name;
-  String provider;
-  String pubsub_token;
-  ProfileRole role; // administrator
-  // UISettings ui_settings;
-  String uid;
-  ProfileType type;
-  List<AccountInfo> accounts;
+  final String access_token;
+  final int account_id;
+  final String available_name;
+  final String avatar_url;
+  final bool confirmed;
+  final String display_name;
+  final String? message_signature;
+  final String email;
+  final int id;
+  final dynamic inviter_id; // TODO: unk type
+  final String name;
+  final String provider;
+  final String pubsub_token;
+  final ProfileRole role; // administrator
+  // final UISettings ui_settings;
+  final String uid;
+  final ProfileType type;
+  final List<AccountInfo> accounts;
 
-  ProfileInfo({
+  const ProfileInfo({
     required this.access_token,
     required this.account_id,
     required this.available_name,

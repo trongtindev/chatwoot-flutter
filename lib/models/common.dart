@@ -1,19 +1,19 @@
 import '/imports.dart';
 
 class SenderInfo {
-  dynamic additional_attributes;
-  Map<String, dynamic> custom_attributes;
-  AvailabilityStatus? availability_status;
-  String? email;
-  int id;
-  String name;
-  String phone_number;
-  String? identifier;
-  String thumbnail;
-  DateTime? last_activity_at;
-  DateTime? created_at;
+  final dynamic additional_attributes;
+  final Map<String, dynamic> custom_attributes;
+  final AvailabilityStatus? availability_status;
+  final String? email;
+  final int id;
+  final String name;
+  final String? phone_number;
+  final String? identifier;
+  final String thumbnail;
+  final DateTime? last_activity_at;
+  final DateTime? created_at;
 
-  SenderInfo({
+  const SenderInfo({
     required this.additional_attributes,
     required this.custom_attributes,
     this.availability_status,

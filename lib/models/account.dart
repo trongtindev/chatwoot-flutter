@@ -9,18 +9,18 @@ enum AccountPermission { administrator }
 // enum AccountAvailability { online }
 
 class AccountInfo {
-  int id;
-  String name;
-  AccountStatus status;
-  AccountRole role;
-  List<AccountPermission> permissions;
-  String availability; // TODO: unk
-  AvailabilityStatus availability_status; // TODO: unk
-  bool auto_offline;
-  dynamic custom_role_id; // TODO: unk
-  dynamic custom_role; // TODO: unk
+  final int id;
+  final String name;
+  final AccountStatus status;
+  final AccountRole role;
+  final List<AccountPermission> permissions;
+  final String availability; // TODO: unk
+  final AvailabilityStatus availability_status; // TODO: unk
+  final bool auto_offline;
+  final dynamic custom_role_id; // TODO: unk
+  final dynamic custom_role; // TODO: unk
 
-  AccountInfo({
+  const AccountInfo({
     required this.id,
     required this.name,
     required this.status,

@@ -50,9 +50,9 @@ class NotificationInfo {
   int id;
   NotificationType notification_type;
   String push_message_title;
-  String primary_actor_type; // TODO: unk type
+  NotificationActorType primary_actor_type;
   int primary_actor_id;
-  NotificationPrimaryActor? primary_actor;
+  NotificationPrimaryActor primary_actor;
   DateTime? read_at;
   dynamic secondary_actor; // TODO: unk type
   UserInfo user;
@@ -80,16 +80,16 @@ class NotificationInfo {
   factory NotificationInfo.fromJson(dynamic json) {
     var read_at =
         json['read_at'] != null ? DateTime.parse(json['read_at']) : null;
-    var primary_actor = json['primary_actor'] != null
-        ? NotificationPrimaryActor.fromJson(json['primary_actor'])
-        : null;
+    var primary_actor =
+        NotificationPrimaryActor.fromJson(json['primary_actor']);
 
     return NotificationInfo(
       id: json['id'],
       notification_type:
           NotificationType.values.byName(json['notification_type']),
       push_message_title: json['push_message_title'],
-      primary_actor_type: json['primary_actor_type'],
+      primary_actor_type:
+          NotificationActorType.values.byName(json['primary_actor_type']),
       primary_actor_id: json['primary_actor_id'],
       primary_actor: primary_actor,
       read_at: read_at, // 1737081406
