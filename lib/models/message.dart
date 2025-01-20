@@ -1,34 +1,5 @@
 import '/imports.dart';
 
-class ListMessageMeta {
-  const ListMessageMeta();
-
-  factory ListMessageMeta.fromJson(dynamic json) {
-    return ListMessageMeta();
-  }
-}
-
-class ListMessageResult extends ApiListResult<ListMessageMeta, MessageInfo> {
-  const ListMessageResult({
-    required super.meta,
-    required super.payload,
-  });
-
-  factory ListMessageResult.fromJson(dynamic json) {
-    // if (kDebugMode) {
-    //   print('---ListMessageResult.fromJson:START---');
-    //   print(json);
-    //   print('---ListMessageResult.fromJson:END---');
-    // }
-
-    List<dynamic> payload = json['payload'];
-    return ListMessageResult(
-      meta: ListMessageMeta.fromJson(json['meta']),
-      payload: payload.map(MessageInfo.fromJson).toList(),
-    );
-  }
-}
-
 class MessageSenderInfo {
   final int id;
   final String name;
@@ -112,16 +83,19 @@ class MessageAttachmentInfo {
 class MessageContentAttributes {
   final int? in_reply_to;
   final dynamic in_reply_to_external_id; // TODO: unk type
+  final bool deleted;
 
   const MessageContentAttributes({
     this.in_reply_to,
     this.in_reply_to_external_id,
+    required this.deleted,
   });
 
   factory MessageContentAttributes.fromJson(dynamic json) {
     return MessageContentAttributes(
       in_reply_to: json['in_reply_to'],
       in_reply_to_external_id: json['in_reply_to_external_id'],
+      deleted: json['deleted'] ?? false,
     );
   }
 }
@@ -131,6 +105,7 @@ class MessageInfo {
   final String? content;
   final int? account_id;
   final int inbox_id;
+  final String? echo_id;
   final int conversation_id;
   final MessageType message_type;
   final DateTime created_at;
@@ -143,7 +118,7 @@ class MessageInfo {
   final MessageSenderType sender_type;
   final int? sender_id;
   final dynamic external_source_ids; // TODO: unk type
-  final dynamic additional_attributes; // TODO: unk type
+  final ConversationAttribute additional_attributes;
   final String? processed_message_content;
   final dynamic sentiment; // TODO: unk type
   final dynamic conversation; // TODO: unk type
@@ -155,6 +130,7 @@ class MessageInfo {
     this.content,
     this.account_id,
     required this.inbox_id,
+    this.echo_id,
     required this.conversation_id,
     required this.message_type,
     required this.created_at,
@@ -183,21 +159,20 @@ class MessageInfo {
     var sender = json['sender'] != null
         ? MessageSenderInfo.fromJson(json['sender'])
         : null;
-    var updated_at = json['updated_at'] != null
-        ? DateTime.parse(json['updated_at'])
-        : null; // 2025-01-18T02:25:23.830Z
     List<dynamic> attachments = json['attachments'] ?? [];
+    var additional_attributes =
+        ConversationAttribute.fromJson(json['additional_attributes'] ?? {});
 
     return MessageInfo(
       id: json['id'],
       content: json['content'],
       account_id: json['account_id'],
       inbox_id: json['inbox_id'],
+      echo_id: json['echo_id'],
       conversation_id: json['conversation_id'],
       message_type: MessageType.values[json['message_type']],
-      created_at: DateTime.fromMillisecondsSinceEpoch(
-          json['created_at'] * 1000), // 1737167120
-      updated_at: updated_at,
+      created_at: toDateTime(json['created_at'])!,
+      updated_at: toDateTime(json['updated_at']),
       private: json['private'],
       status: MessageStatus.values.byName(json['status']),
       source_id: json['source_id'],
@@ -207,12 +182,90 @@ class MessageInfo {
       sender_type: sender_type,
       sender_id: json['sender_id'],
       external_source_ids: json['external_source_ids'],
-      additional_attributes: json['additional_attributes'],
+      additional_attributes: additional_attributes,
       processed_message_content: json['processed_message_content'],
       sentiment: json['sentiment'],
       conversation: json['conversation'],
       sender: sender,
       attachments: attachments.map(MessageAttachmentInfo.fromJson).toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'content': content,
+      'account_id': account_id,
+      'inbox_id': inbox_id,
+      'conversation_id': conversation_id,
+      'message_type': message_type.name,
+      'created_at': created_at,
+      'updated_at': updated_at,
+      'private': private,
+      'status': status.name,
+      'source_id': source_id,
+      'content_type': content_type.name,
+      // 'content_attributes': content_attributes,
+      'sender_type': sender_type.name,
+      'sender_id': sender_id,
+      'external_source_ids': external_source_ids,
+      // 'additional_attributes': additional_attributes,
+      'processed_message_content': processed_message_content,
+      'sentiment': sentiment,
+      // 'conversation': conversation,
+      // 'sender': sender,
+      // 'attachments': attachments,
+    };
+  }
+}
+
+class ListMessageMeta {
+  final List<String> labels;
+  final ContactInfo contact;
+  final UserInfo? assignee;
+  final DateTime? agent_last_seen_at;
+  final DateTime? assignee_last_seen_at;
+
+  const ListMessageMeta({
+    required this.labels,
+    required this.contact,
+    this.assignee,
+    this.agent_last_seen_at,
+    this.assignee_last_seen_at,
+  });
+
+  factory ListMessageMeta.fromJson(dynamic json) {
+    List<dynamic> labels = json['labels'] ?? [];
+    var assignee =
+        json['assignee'] != null ? UserInfo.fromJson(json['assignee']) : null;
+    var agent_last_seen_at = json['agent_last_seen_at'] != null
+        ? DateTime.parse(json['agent_last_seen_at'])
+        : null;
+    var assignee_last_seen_at = json['assignee_last_seen_at'] != null
+        ? DateTime.parse(json['assignee_last_seen_at'])
+        : null;
+
+    return ListMessageMeta(
+      labels: labels.map((e) => e.toString()).toList(),
+      contact: ContactInfo.fromJson(json['contact']),
+      assignee: assignee,
+      agent_last_seen_at: agent_last_seen_at,
+      assignee_last_seen_at: assignee_last_seen_at,
+    );
+  }
+}
+
+class ListMessageResult extends ApiListResult<ListMessageMeta, MessageInfo> {
+  const ListMessageResult({
+    required super.meta,
+    required super.payload,
+  });
+
+  factory ListMessageResult.fromJson(dynamic json) {
+    List<dynamic> payload = json['payload'];
+    return ListMessageResult(
+      meta: ListMessageMeta.fromJson(json['meta']),
+      payload: payload.map(MessageInfo.fromJson).toList(),
     );
   }
 }

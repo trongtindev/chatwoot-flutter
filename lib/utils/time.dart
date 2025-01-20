@@ -9,3 +9,14 @@ int timestamp() {
   return int.parse(
       DateTime.now().millisecondsSinceEpoch.toString().substring(0, 10));
 }
+
+DateTime? toDateTime(dynamic value) {
+  if (value == null) {
+    return null;
+  } else if (value is String) {
+    return DateTime.parse(value);
+  } else if (value is int) {
+    return DateTime.fromMillisecondsSinceEpoch(value * 1000);
+  }
+  throw Exception('$value is not supported');
+}

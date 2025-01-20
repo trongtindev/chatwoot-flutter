@@ -6,7 +6,8 @@ class ContactFilterView extends GetView<ContactsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return bottomSheet(
+      context,
       child: DefaultTabController(
         length: 2,
         child: Column(
@@ -22,14 +23,11 @@ class ContactFilterView extends GetView<ContactsController> {
               ],
             ),
             Expanded(
-              child: Container(
-                color: context.theme.colorScheme.surfaceContainer,
-                child: TabBarView(
-                  children: [
-                    buildFilter(),
-                    buildSort(),
-                  ],
-                ),
+              child: TabBarView(
+                children: [
+                  buildFilter(),
+                  buildSort(),
+                ],
               ),
             ),
           ],
@@ -46,19 +44,20 @@ class ContactFilterView extends GetView<ContactsController> {
     return ListView(
       padding: EdgeInsets.all(4),
       children: [
-        buildLabel('contact.filter.sort_by'.tr),
+        buildLabel(t.sort_by),
         Card(
           child: Obx(() {
             var orderBy = controller.orderBy.value;
 
             return ListView.builder(
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               itemCount: OrderBy.values.length,
               itemBuilder: (_, i) {
                 var item = OrderBy.values[i];
                 return RadioListTile(
-                  title: Text(item.labelLocalized.tr),
+                  title: Text(item.label),
                   value: item,
                   selected: orderBy == item,
                   groupValue: orderBy,
@@ -68,19 +67,20 @@ class ContactFilterView extends GetView<ContactsController> {
             );
           }),
         ),
-        buildLabel('contact.filter.order_by'.tr),
+        buildLabel(t.order_by),
         Card(
           child: Obx(() {
             var sortBy = controller.sortBy.value;
 
             return ListView.builder(
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               itemCount: ContactSortBy.values.length,
               itemBuilder: (_, i) {
                 var item = ContactSortBy.values[i];
                 return RadioListTile(
-                  title: Text(item.labelLocalized.tr),
+                  title: Text(item.label),
                   value: item,
                   selected: sortBy == item,
                   groupValue: sortBy,
@@ -91,13 +91,6 @@ class ContactFilterView extends GetView<ContactsController> {
           }),
         ),
       ],
-    );
-  }
-
-  Widget buildLabel(String label) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(label),
     );
   }
 }

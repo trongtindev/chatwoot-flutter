@@ -1,122 +1,122 @@
 import '/imports.dart';
+import '../../canned_response/views/index.dart';
+import '../../labels/views/index.dart';
 import '../controllers/index.dart';
 import 'appearance.dart';
 import 'profile.dart';
 
 class SettingTab {
-  IconData iconData;
   String title;
-  Widget container;
+  Widget Function()? page;
+  IconData iconData;
+  String? internalUrl;
+  String? externalUrl;
 
   SettingTab({
-    required this.iconData,
     required this.title,
-    required this.container,
+    required this.iconData,
+    this.page,
+    this.internalUrl,
+    this.externalUrl,
   });
 }
 
 class SettingsView extends StatelessWidget {
-  const SettingsView({super.key});
+  final auth = Get.find<AuthService>();
+
+  SettingsView({super.key});
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     final items = [
       [
         SettingTab(
           iconData: Icons.account_circle_outlined,
-          title: 'settings.profile'.tr,
-          container: SettingsProfileView(),
+          title: t.profile,
+          page: () => SettingsProfileView(),
         ),
         SettingTab(
           iconData: Icons.lock_outline,
-          title: 'settings.change_password'.tr,
-          container: SettingsProfileView(),
+          title: t.change_password,
+          page: () => SettingsProfileView(),
         ),
       ],
       [
         SettingTab(
           iconData: Icons.work_outline,
-          title: 'settings.account'.tr,
-          container: Text('account'),
+          title: t.account,
         ),
         SettingTab(
           iconData: Icons.support_agent_outlined,
-          title: 'settings.agents'.tr,
-          container: Text('agents'),
+          title: t.agents,
+        ),
+        SettingTab(
+          iconData: Icons.groups_2_outlined,
+          title: t.teams,
         ),
         SettingTab(
           iconData: Icons.all_inbox_outlined,
-          title: 'settings.inboxes'.tr,
-          container: Text('inboxes'),
+          title: t.inboxes,
         ),
         SettingTab(
           iconData: Icons.label_outline,
-          title: 'settings.labels'.tr,
-          container: Text('labels'),
+          title: t.labels,
+          page: () => LabelsView(),
         ),
         SettingTab(
           iconData: Icons.code_outlined,
-          title: 'settings.custom_attributes'.tr,
-          container: Text('custom_attributes'),
+          title: t.custom_attributes,
         ),
         SettingTab(
-          iconData: Icons.auto_mode,
-          title: 'settings.automation'.tr,
-          container: Text('automation'),
+          iconData: Icons.auto_mode_outlined,
+          title: t.automation,
+          internalUrl: 'settings/automation/list',
         ),
         SettingTab(
-          iconData: Icons.auto_mode,
-          title: 'settings.macros'.tr,
-          container: Text('macros'),
+          iconData: Icons.code_outlined,
+          title: t.macros,
+          internalUrl: 'settings/macros',
         ),
         SettingTab(
           iconData: Icons.forum_outlined,
-          title: 'settings.canned_response'.tr,
-          container: Text('canned_response'),
+          title: t.canned_response,
+          page: () => CannedResponseView(),
         ),
         SettingTab(
           iconData: Icons.integration_instructions_outlined,
-          title: 'settings.integrations'.tr,
-          container: Text('integrations'),
+          title: t.integrations,
+          internalUrl: 'settings/integrations',
         ),
         SettingTab(
           iconData: Icons.history_outlined,
-          title: 'settings.audit_logs'.tr,
-          container: Text('audit_logs'),
+          title: t.audit_logs,
         ),
       ],
       [
         SettingTab(
           iconData: Icons.visibility_outlined,
-          title: 'settings.set_availability'.tr,
-          container: Text('ok'),
+          title: t.set_availability,
         ),
         SettingTab(
           iconData: Icons.notifications_outlined,
-          title: 'settings.notifications'.tr,
-          container: SettingsProfileView(),
+          title: t.notifications,
+          page: () => SettingsProfileView(),
         ),
         SettingTab(
           iconData: Icons.format_paint_outlined,
-          title: 'settings.appearance'.tr,
-          container: SettingsAppearanceView(),
+          title: t.appearance,
+          page: () => SettingsAppearanceView(),
         ),
         SettingTab(
           iconData: Icons.translate_outlined,
-          title: 'settings.languages'.tr,
-          container: Text('ok'),
+          title: t.change_language,
         ),
       ],
       [
         SettingTab(
           iconData: Icons.swap_horiz_outlined,
-          title: 'settings.read_docs'.tr,
-          container: Text('ok'),
-        ),
-        SettingTab(
-          iconData: Icons.live_help_outlined,
-          title: 'settings.chat_with_us'.tr,
-          container: Text('ok'),
+          title: t.read_docs,
+          externalUrl: env.HELP_URL,
         ),
       ]
     ];
@@ -127,51 +127,67 @@ class SettingsView extends StatelessWidget {
         if (GetPlatform.isDesktop) {
           return buildDesktop(items.expand((e) => e).toList());
         }
-        return buildMobile(items);
+        return buildMobile(context, items);
       },
     );
   }
 
-  Widget buildMobile(List<List<SettingTab>> items) {
-    final auth = Get.find<AuthService>();
-
+  Widget buildMobile(BuildContext context, List<List<SettingTab>> items) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('settings'.tr),
+        title: Text(t.settings),
         centerTitle: true,
       ),
       body: ListView(
-        padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+        padding: EdgeInsets.zero,
         children: [
           Column(
             children: [
               Obx(() {
-                return profileInfo(auth.profile.value!);
+                var profile = auth.profile.value!;
+                return profileInfo(context, profile: profile);
               }),
               warningButton(
-                label: 'edit'.tr,
+                label: t.edit,
                 onPressed: () {},
               ),
               Padding(padding: EdgeInsets.all(8)),
               ListView.builder(
+                padding: EdgeInsets.all(4),
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: items.length,
                 itemBuilder: (_, i) {
                   return Card(
                     child: ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
                       itemCount: items[i].length,
                       itemBuilder: (_, j) {
                         var item = items[i][j];
+                        var trailingIcon = Icons.chevron_right;
+
+                        if (item.internalUrl != null) {
+                          trailingIcon = Icons.open_in_browser;
+                        } else if (item.externalUrl != null) {
+                          trailingIcon = Icons.open_in_new;
+                        }
+
                         return ListTile(
                           leading: Icon(item.iconData),
                           title: Text(item.title),
-                          trailing: Icon(Icons.chevron_right),
-                          onTap: () => Get.to(() => item.container),
+                          trailing: Icon(trailingIcon),
+                          onTap: () {
+                            if (item.page != null) {
+                              Get.to(item.page);
+                            } else if (item.internalUrl != null) {
+                              openInternalBrowser(item.internalUrl!);
+                            } else if (item.externalUrl != null) {
+                              openBrowser(item.externalUrl!);
+                            }
+                          },
                         );
                       },
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
                     ),
                   );
                 },
@@ -196,11 +212,11 @@ class SettingsView extends StatelessWidget {
               );
             }).toList(),
           ),
-          Expanded(
-            child: TabBarView(
-              children: items.map((e) => e.container).toList(),
-            ),
-          ),
+          // Expanded(
+          //   child: TabBarView(
+          //     children: items.map((e) => e.container).toList(),
+          //   ),
+          // ),
         ],
       ),
     );

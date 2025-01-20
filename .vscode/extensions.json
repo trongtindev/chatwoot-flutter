@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "google.arb-editor",
+    "aaron-bond.better-comments",
+    "dart-code.dart-code",
+    "editorconfig.editorconfig",
+    "dart-code.flutter"
+  ]
+}

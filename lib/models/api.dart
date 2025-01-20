@@ -10,7 +10,8 @@ class ApiError implements Exception {
   });
 
   factory ApiError.fromException(DioException dioException) {
-    List<dynamic> errors = dioException.response?.data['errors'] ?? [];
+    dynamic data = dioException.response?.data;
+    List<dynamic> errors = data['errors'] ?? [data['error']];
     return ApiError(
       success: dioException.response?.data['success'] ?? true,
       errors: errors.map((e) => e.toString()).toList(),
@@ -18,7 +19,7 @@ class ApiError implements Exception {
   }
 }
 
-class ApiInfo implements Exception {
+class ApiInfo {
   final String version;
   final String timestamp;
   final String queue_services;
@@ -31,7 +32,7 @@ class ApiInfo implements Exception {
     required this.data_services,
   });
 
-  factory ApiInfo.fromJson(Map<String, dynamic> json) {
+  factory ApiInfo.fromJson(dynamic json) {
     return ApiInfo(
       version: json['version'],
       timestamp: json['timestamp'],
@@ -49,73 +50,22 @@ class ApiListResult<T, T2> {
     required this.meta,
     required this.payload,
   });
-
-  factory ApiListResult.fromJson(Map<String, dynamic> json) {
-    throw Exception('Method not implemented!');
-  }
 }
 
 class ApiListMeta {
   final int count;
-  // final int current_page;
+  final int current_page;
 
   const ApiListMeta({
     required this.count,
-    // required this.current_page,
+    required this.current_page,
   });
 
-  factory ApiListMeta.fromJson(Map<String, dynamic> json) {
-    // var current_page = int.parse('${json['current_page']}');
+  factory ApiListMeta.fromJson(dynamic json) {
+    var current_page = int.parse('${json['current_page']}');
     return ApiListMeta(
       count: json['count'],
-      // current_page: current_page,
-    );
-  }
-}
-
-class ListConversationResult
-    extends ApiListResult<ListConversationMeta, ConversationInfo> {
-  const ListConversationResult({
-    required super.meta,
-    required super.payload,
-  });
-
-  factory ListConversationResult.fromJson(dynamic json) {
-    List<dynamic> payload = json['payload'];
-    return ListConversationResult(
-      meta: ListConversationMeta.fromJson(json['meta']),
-      payload: payload.map(ConversationInfo.fromJson).toList(),
-    );
-  }
-}
-
-class ListNotificationResult
-    extends ApiListResult<ListNotificationMeta, NotificationInfo> {
-  const ListNotificationResult({
-    required super.meta,
-    required super.payload,
-  });
-
-  factory ListNotificationResult.fromJson(dynamic json) {
-    List<dynamic> payload = json['payload'];
-    return ListNotificationResult(
-      meta: ListNotificationMeta.fromJson(json['meta']),
-      payload: payload.map(NotificationInfo.fromJson).toList(),
-    );
-  }
-}
-
-class ListContactResult extends ApiListResult<ListContactMeta, ContactInfo> {
-  const ListContactResult({
-    required super.meta,
-    required super.payload,
-  });
-
-  factory ListContactResult.fromJson(dynamic json) {
-    List<dynamic> payload = json['payload'];
-    return ListContactResult(
-      meta: ListContactMeta.fromJson(json['meta']),
-      payload: payload.map(ContactInfo.fromJson).toList(),
+      current_page: current_page,
     );
   }
 }

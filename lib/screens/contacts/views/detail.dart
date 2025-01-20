@@ -2,6 +2,8 @@ import '/screens/contacts/controllers/detail.dart';
 import '/imports.dart';
 
 class ContactDetailView extends StatelessWidget {
+  final attributeService = Get.find<AttributeService>();
+
   final ContactDetailController controller;
   final int contact_id;
 
@@ -45,7 +47,7 @@ class ContactDetailView extends StatelessWidget {
             if (info == null) return Center(child: CircularProgressIndicator());
 
             return ListView(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
               children: [
                 buildCommonAttributes(info),
                 Padding(padding: EdgeInsets.only(top: 8)),
@@ -69,13 +71,13 @@ class ContactDetailView extends StatelessWidget {
             value: info.id.toString(),
             iconData: Icons.numbers_outlined,
           ),
-          if (info.phone_number != null)
+          if (info.phone_number != null && info.phone_number!.isNotEmpty)
             buildAttribute(
               label: 'contact.phone',
               value: info.phone_number!,
               iconData: Icons.phone_outlined,
             ),
-          if (info.email != null)
+          if (info.email != null && info.email!.isNotEmpty)
             buildAttribute(
               label: 'contact.email',
               value: info.email!,
@@ -87,16 +89,18 @@ class ContactDetailView extends StatelessWidget {
               value: info.identifier!,
               iconData: Icons.key_outlined,
             ),
-          buildAttribute(
-            label: 'contact.last_activity_at',
-            value: formatTimeago(info.last_activity_at),
-            iconData: Icons.visibility_outlined,
-          ),
-          buildAttribute(
-            label: 'contact.created_at',
-            value: formatTimeago(info.created_at),
-            iconData: Icons.more_time_outlined,
-          ),
+          if (info.last_activity_at != null)
+            buildAttribute(
+              label: 'contact.last_activity_at',
+              value: formatTimeago(info.last_activity_at!),
+              iconData: Icons.visibility_outlined,
+            ),
+          if (info.created_at != null)
+            buildAttribute(
+              label: 'contact.created_at',
+              value: formatTimeago(info.created_at!),
+              iconData: Icons.more_time_outlined,
+            ),
         ],
       ),
     );
@@ -104,28 +108,31 @@ class ContactDetailView extends StatelessWidget {
 
   Widget buildAdditionalAttributes(
       ContactAdditionalAttributes additional_attributes) {
-    var unavailableText = 'common.unavailable'.tr;
+    var unavailableText = t.unavailable;
     return Card(
       child: Column(
         children: [
           buildAttribute(
             label: 'contact.attributes.city',
-            value: additional_attributes.city ?? unavailableText,
+            value: valueOrDefault(additional_attributes.city, unavailableText),
             iconData: Icons.my_location_outlined,
           ),
           buildAttribute(
             label: 'contact.attributes.country',
-            value: additional_attributes.country ?? unavailableText,
+            value:
+                valueOrDefault(additional_attributes.country, unavailableText),
             iconData: Icons.phone_outlined,
           ),
           buildAttribute(
             label: 'contact.attributes.company_name',
-            value: additional_attributes.company_name ?? unavailableText,
+            value: valueOrDefault(
+                additional_attributes.company_name, unavailableText),
             iconData: Icons.work_outline,
           ),
           buildAttribute(
             label: 'contact.attributes.country_code',
-            value: additional_attributes.country_code ?? unavailableText,
+            value: valueOrDefault(
+                additional_attributes.country_code, unavailableText),
             iconData: Icons.my_location_outlined,
           ),
         ],
@@ -137,16 +144,17 @@ class ContactDetailView extends StatelessWidget {
     var items = custom_attributes.entries.toList();
     return Card(
       child: Obx(() {
-        var customAttributes = controller.customAttributes.value;
+        var attributes = attributeService.items.value;
 
         return ListView.builder(
+          padding: EdgeInsets.zero,
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: items.length,
           itemBuilder: (_, i) {
             var item = items[i];
-            var label = customAttributes
-                .firstWhereOrNull((e) => e.attribute_key == item.key);
+            var label =
+                attributes.firstWhereOrNull((e) => e.attribute_key == item.key);
             return buildAttribute(
               label: label != null ? label.attribute_display_name : item.key,
               value: item.value,

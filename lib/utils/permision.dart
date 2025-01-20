@@ -1,5 +1,5 @@
 import 'package:permission_handler/permission_handler.dart';
-import 'package:open_settings/open_settings.dart';
+import 'package:app_settings/app_settings.dart';
 import '/imports.dart';
 
 Future<bool> ensurePermissionsGranted({
@@ -24,10 +24,10 @@ Future<bool> ensurePermissionsGranted({
               onPressed: () {
                 Get.back();
 
+                // TODO: handle
                 switch (permission) {
-                  // TODO: handle
                   default:
-                    OpenSettings.openAppSetting();
+                    AppSettings.openAppSettings();
                     break;
                 }
               },

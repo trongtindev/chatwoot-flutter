@@ -21,9 +21,34 @@ class NotificationService extends GetxService {
   StreamSubscription<RemoteMessage>? _onMessageSubscription;
   StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
 
+  ApiService? _api;
+  ApiService get _getApi {
+    _api ??= Get.find<ApiService>();
+    if (_api == null) throw Exception('ApiService not found!');
+    return _api!;
+  }
+
+  AuthService? _auth;
+  AuthService get _getAuth {
+    _auth ??= Get.find<AuthService>();
+    if (_auth == null) throw Exception('AuthService not found!');
+    return _auth!;
+  }
+
+  RemoteMessage? get getRemoteMessage => _initialMessage;
+
   @override
   void onReady() {
     super.onReady();
+    _logger.d('onReady()');
+
+    _getAuth.profile.listen((next) {
+      if (next == null) {
+        token.value = null;
+        return;
+      }
+      requestPermission();
+    });
 
     _enabledChangeSubscription = enabled.listen((next) {
       _logger.i('enabled changed => $next');
@@ -48,6 +73,8 @@ class NotificationService extends GetxService {
 
   @override
   void onClose() {
+    _logger.d('onClose()');
+
     _enabledChangeSubscription?.cancel();
     _tokenChangeSubscription?.cancel();
     _tokenRefreshSubscription?.cancel();
@@ -57,55 +84,38 @@ class NotificationService extends GetxService {
     super.onClose();
   }
 
-  ApiService? _api;
-  ApiService get _getApi {
-    _api ??= Get.find<ApiService>();
-    if (_api == null) throw Exception('ApiService not found!');
-    return _api!;
-  }
-
-  RemoteMessage? get getRemoteMessage => _initialMessage;
-
   Future<NotificationService> init() async {
-    _logger.i('init()');
-
     await requestPermission();
-
+    _logger.i('getInitialMessage()');
     _initialMessage = await _firebaseMessaging.getInitialMessage();
-
-    _logger.i('init() => successful');
     return this;
   }
 
   void _onMessage(RemoteMessage message) {
-    _logger.i('_onMessageOpenedApp()');
     _logger.i(jsonEncode(message.toMap()));
     events.emit(NotificationEventId.onMessage.name, message);
   }
 
   void _onMessageOpenedApp(RemoteMessage message) {
-    _logger.i('_onMessageOpenedApp()');
     _logger.i(jsonEncode(message.toMap()));
     events.emit(NotificationEventId.onMessageOpenedApp.name, message);
   }
 
   Future<void> requestPermission() async {
-    _logger.i('requestPermission()');
+    _logger.d('requestPermission');
 
     var notificationSettings =
         await _firebaseMessaging.requestPermission(provisional: true);
     authorizationStatus.value = notificationSettings.authorizationStatus;
     if (authorizationStatus.value == AuthorizationStatus.denied) {
-      _logger.w('requestPermission() => denied');
+      _logger.w('permission:denied');
       return;
     }
-    _logger.w('requestPermission() => permission:${authorizationStatus.value}');
+    _logger.d('permission:${authorizationStatus.value}');
 
     var getToken = await _firebaseMessaging.getToken();
     if (getToken != token.value) token.value = getToken;
-    _logger.d('requestPermission() => token:${token.value}');
-
-    _logger.i('requestPermission() => successful');
+    _logger.d('token:${token.value}');
   }
 
   Future<void> saveDeviceDetails() async {

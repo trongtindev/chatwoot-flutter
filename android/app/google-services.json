@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:848661314767:android:eb43d75b1734d8a72a0bba",
+        "mobilesdk_app_id": "1:848661314767:android:e8ba992deec581242a0bba",
         "android_client_info": {
-          "package_name": "com.example.chatwoot"
+          "package_name": "com.chatwoot.app"
         }
       },
       "oauth_client": [],

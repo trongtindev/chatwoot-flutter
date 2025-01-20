@@ -56,22 +56,22 @@ class DefaultLayout extends GetView<DefaultLayoutController> {
           NavigationDestination(
             icon: Icon(Icons.chat_outlined),
             selectedIcon: Icon(Icons.chat),
-            label: 'conversation'.tr,
+            label: t.conversations,
           ),
           NavigationDestination(
             icon: Icon(Icons.notifications_outlined),
             selectedIcon: Icon(Icons.notifications),
-            label: 'notifications'.tr,
+            label: t.notifications,
           ),
           NavigationDestination(
             icon: Icon(Icons.group_outlined),
             selectedIcon: Icon(Icons.group),
-            label: 'contacts'.tr,
+            label: t.contacts,
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings),
-            label: 'settings'.tr,
+            label: t.settings,
           )
         ],
       ),

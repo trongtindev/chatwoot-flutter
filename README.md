@@ -26,15 +26,15 @@ Cross-Platform app for chatwoot! Built with Flutter.
 | Notifications                | 💪 In-Progress |
 | Push Notifications           | 💪 In-Progress |
 | Reports                      | 🕛 Planned     |
-| Teams                        | 🕛 Planned     |
-| Accounts                     | 🕛 Planned     |
-| Inboxes                      | 🕛 Planned     |
-| Labels                       | 🕛 Planned     |
+| Teams (Partially)            | 🕛 Planned     |
+| Accounts (Partially)         | 🕛 Planned     |
+| Inboxes (Partially)          | 🕛 Planned     |
+| Labels                       | 💪 In-Progress |
 | Automation                   | 🕛 Planned     |
-| Macros                       | 🕛 Planned     |
+| Macros (Partially)           | 💪 In-Progress |
 | Agents                       | 🕛 Planned     |
 | Canned Response              | 🕛 Planned     |
-| Integrations                 | 🕛 Planned     |
+| Integrations (Partially)     | 🕛 Planned     |
 | Audit Logs                   | 🕛 Planned     |
 | Custom Attributes            | 🕛 Planned     |
 | Campaigns                    | 🕛 Planned     |

@@ -40,7 +40,9 @@ dependencies:
   action_cable: ^1.3.0 # ActionCable is the default realtime websocket framework and protocol in Rails.
   flutter_local_notifications: ^18.0.1 # A cross platform plugin for displaying local notifications.
   permission_handler: ^11.3.1 # Request permissions and check their status
-  open_settings: ^2.0.2 # open various settings screen in Android and Ios
+  app_settings: ^5.1.1 # for opening iOS and Android phone settings from an app.
+  chewie: ^1.9.2 # video player for Flutter with a heart of gold.
+  just_audio: ^0.9.43 # feature-rich audio player
 
   # desktop
   window_manager: ^0.4.3 # This plugin allows Flutter desktop apps to resizing and repositioning the window.
@@ -66,6 +68,8 @@ flutter:
     - .env
     - assets/sqlite/data.sql
     - assets/images/
+    - assets/images/icons/
+    - assets/images/empty/
 
 flutter_native_splash:
   color: '#F8F9FF'

@@ -31,6 +31,7 @@ class NotificationsController extends GetxController {
       append ??= false;
       reset ??= false;
 
+      error.value = '';
       loading.value = true;
       if (reset) {
         page.value = 1;
@@ -52,19 +53,19 @@ class NotificationsController extends GetxController {
       var data = result.getOrThrow();
 
       if (append) {
-        items.value.addAll(data.payload);
-        isNoMore.value = data.payload.isEmpty;
+        items.addAll(data.payload);
       } else {
         items.value = data.payload;
       }
+      isNoMore.value =
+          data.payload.isEmpty || data.payload.length < env.PAGE_SIZE;
 
       unread_count.value = data.meta.unread_count;
     } on ApiError catch (reason) {
       _logger.w(reason);
       error.value = reason.errors.join(';');
     } on Error catch (reason) {
-      print(reason.stackTrace);
-      _logger.e(reason);
+      _logger.e(reason, stackTrace: reason.stackTrace);
       error.value = reason.toString();
     } finally {
       loading.value = false;

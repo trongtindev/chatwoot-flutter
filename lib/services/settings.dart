@@ -2,12 +2,9 @@ import '/imports.dart';
 
 class SettingsService extends GetxService {
   final _logger = Logger();
-  final language = Language.en.obs;
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
+  final language = Language.en.obs;
+  final ignoreConfirm = PersistentRxBool(false, key: 'settings:ignoreConfirm');
 
   Future<SettingsService> init() async {
     _logger.i('init()');

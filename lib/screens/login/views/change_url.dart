@@ -12,15 +12,14 @@ class ChangeUrlView extends GetView<ChangeUrlController> {
     return GetBuilder(
       init: ChangeUrlController(),
       builder: (_) {
+        var url = Uri.parse(env.API_URL).host;
         return Scaffold(
           appBar: AppBar(),
           body: buildBody(
             width: width,
             header: buildHeader(
-              title: 'change_url.title'.tr,
-              description: 'change_url.description'.trParams({
-                'baseUrl': Uri.parse(env.API_URL).host,
-              }),
+              title: t.change_url_title,
+              description: t.change_url_description(url),
             ),
             child: buildForm(width),
           ),
@@ -44,13 +43,13 @@ class ChangeUrlView extends GetView<ChangeUrlController> {
                 controller: controller.baseUrl,
                 keyboardType: TextInputType.url,
                 decoration: InputDecoration(
-                  label: Text('change_url.url'.tr),
-                  hintText: 'change_url.url_hint'.tr,
+                  label: Text(t.change_url_url),
+                  hintText: t.change_url_url_hint,
                   prefixIcon: Icon(Icons.link),
                 ),
                 validator: (value) {
                   if (value == null || !isUrlWithoutHttp(value)) {
-                    return 'change_url.url_invalid'.tr;
+                    return t.change_url_url_invalid;
                   }
                   return null;
                 },
@@ -61,7 +60,7 @@ class ChangeUrlView extends GetView<ChangeUrlController> {
                 child: primaryButton(
                   loading: isValidating,
                   onPressed: controller.submit,
-                  label: 'change_url.submit'.tr,
+                  label: t.change_url_submit,
                 ),
               ),
             ],

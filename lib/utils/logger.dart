@@ -1,22 +1,29 @@
-import 'package:logger/logger.dart' as logger;
+import 'package:logger/logger.dart' as _logger;
 
-class Logger extends logger.Logger {
+class Logger extends _logger.Logger {
   Logger() : super();
 }
 
-class PrettyPrinter extends logger.PrettyPrinter {
+class PrettyPrinter extends _logger.PrettyPrinter {
   @override
-  List<String> log(logger.LogEvent event) {
-    if (event.level == logger.Level.warning ||
-        event.level == logger.Level.error) {
+  List<String> log(_logger.LogEvent event) {
+    if (event.level == _logger.Level.warning ||
+        event.level == _logger.Level.error) {
       return super.log(event);
     }
-    return ['[${event.level.name}] [${event.time}] ${event.message}'];
-    // return super.log(event);
+
+    final stackTrace = StackTrace.current.toString().split('\n');
+    List<String> items = ['[${event.level.name}] ${event.message}'];
+    if (stackTrace.length >= 4) {
+      final stackLine = stackTrace[3].replaceFirst(RegExp(r'#\d+\s+'), '');
+      items[0] = '$stackLine ${items[0]}';
+    }
+
+    return items;
   }
 }
 
-class AdvancedFileOutput extends logger.AdvancedFileOutput {
+class AdvancedFileOutput extends _logger.AdvancedFileOutput {
   AdvancedFileOutput({
     required super.path,
     required super.maxFileSizeKB,
@@ -24,9 +31,11 @@ class AdvancedFileOutput extends logger.AdvancedFileOutput {
   });
 
   @override
-  void output(logger.OutputEvent event) {
+  void output(_logger.OutputEvent event) {
     super.output(event);
     // ignore: avoid_print
     event.lines.forEach(print);
   }
 }
+
+final logger = Logger();

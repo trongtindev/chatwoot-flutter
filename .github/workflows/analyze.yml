@@ -1,12 +1,16 @@
-name: Build Android
+name: Analyze
 
 on:
   push:
     branches:
       - main
+      - beta
+      - prod
   pull_request:
     branches:
       - main
+      - beta
+      - prod
 
 jobs:
   build:
@@ -30,5 +34,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - run: flutter test
-      - run: flutter build apk
+      - name: Test
+        run: flutter test
+
+      - name: analyze
+        run: dart analyze

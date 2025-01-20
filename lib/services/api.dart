@@ -119,20 +119,10 @@ class ApiService extends GetxService {
       InterceptorsWrapper(
         onRequest: (options, handler) => _onRequest(options, handler),
         onResponse: (response, handler) {
-          // if (kDebugMode) {
-          //   var options = response.requestOptions;
-          //   print('---${options.method} ${options.uri}:START---');
-          //   print(response.data);
-          //   print('---${options.method} ${options.uri}:END---');
-          // }
           return handler.next(response);
         },
         onError: (error, handler) {
-          _logger.w(error);
-          if (kDebugMode && error.response != null) {
-            print('${error.requestOptions.method} ${error.requestOptions.uri}');
-            print(error.response?.data);
-          }
+          _logger.w(error, stackTrace: error.stackTrace);
           return handler.next(error);
         },
       ),
@@ -231,9 +221,13 @@ class ApiService extends GetxService {
 
   Future<Result<ListConversationResult>> listConversations({
     required int account_id,
+    String? q,
     ConversationStatus? status,
+    int? inbox_id,
+    int? team_id,
+    List<String>? labels,
     int? assignee_type_id,
-    SortType? sort_order,
+    required ConversationSortType sort_order,
     AssigneeType? assignee_type,
     int? page,
     Function(ListConversationResult data)? onCacheHit,
@@ -255,9 +249,12 @@ class ApiService extends GetxService {
         path,
         queryParameters: {
           'status': status?.name,
+          'inbox_id': inbox_id,
+          'team_id': team_id,
+          'labels': labels,
           'assignee_type_id': assignee_type_id ?? 0,
-          'sort_order': sort_order?.name,
           'assignee_type': assignee_type?.name,
+          'sort_order': sort_order.name, // TODO: maybe not working
           'page': page,
         },
       );
@@ -354,6 +351,7 @@ class ApiService extends GetxService {
     required int account_id,
     required int conversation_id,
     int? after,
+    int? before,
     Function(ListMessageResult data)? onCacheHit,
   }) async {
     try {
@@ -374,6 +372,7 @@ class ApiService extends GetxService {
         path,
         queryParameters: {
           'after': after,
+          'before': before,
         },
       );
 
@@ -471,11 +470,12 @@ class ApiService extends GetxService {
   }
 
   Future<Result<List<CustomAttribute>>> listCustomAttributes({
-    required int account_id,
+    int? account_id,
     AttributeModel? attribute_model,
     Function(List<CustomAttribute> data)? onCacheHit,
   }) async {
     try {
+      account_id ??= _getAuth.profile.value!.account_id;
       var path = '/accounts/$account_id/custom_attribute_definitions';
 
       // if onCacheHit defined
@@ -500,6 +500,211 @@ class ApiService extends GetxService {
 
       List<dynamic> items = result.data;
       return items.map(CustomAttribute.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<MessageInfo>> sendMessage({
+    int? account_id,
+    required int conversation_id,
+    required String content,
+    MessageType? message_type,
+    bool? private,
+    List<PlatformFile>? attachments,
+    Function(double progress)? onProgress,
+    String? echo_id,
+    int? in_reply_to,
+  }) async {
+    try {
+      attachments ??= [];
+      account_id ??= _getAuth.profile.value!.account_id;
+      message_type ??= MessageType.outgoing;
+      private ??= false;
+
+      var data = FormData.fromMap({
+        'content': content,
+        'message_type': message_type.name,
+        'private': private,
+        'echo_id': echo_id,
+      });
+
+      if (attachments.isNotEmpty) {
+        for (var file in attachments) {
+          _logger.t(
+              'sendMessage() => file:${file.xFile.name} mimeType: ${file.xFile.mimeType}');
+
+          if (file.size > env.ATTACHMENT_SIZE_LIMIT) {
+            // TODO: maybe make SafeException
+            throw Exception(t.attachment_exceeds_limit);
+          }
+
+          var multipartFile = await MultipartFile.fromFile(
+            file.xFile.path,
+            filename: file.xFile.name,
+            contentType: file.xFile.mimeType != null
+                ? DioMediaType.parse(file.xFile.mimeType!)
+                : null,
+          );
+          data.files.add(MapEntry('attachments[]', multipartFile));
+        }
+      }
+
+      var result = await _http.post(
+        '/accounts/$account_id/conversations/$conversation_id/messages',
+        data: data,
+        onSendProgress: (count, total) {
+          if (attachments!.isEmpty) return;
+          _logger.t('sendMessage() => count:$count total:$total');
+          if (onProgress != null) onProgress(count / total);
+        },
+      );
+
+      return MessageInfo.fromJson(result.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> markMessageRead({
+    int? account_id,
+    required int conversation_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      await _http.post(
+        '/accounts/$account_id/conversations/$conversation_id/update_last_seen',
+      );
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<MacroInfo>>> listMacros({
+    int? account_id,
+    Function(List<MacroInfo> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      var path = '/accounts/$account_id/macros';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        var cached = await getCache(url: path);
+        if (cached != null) {
+          var json = jsonDecode(cached.data);
+          List<dynamic> items = json['payload'];
+          var transformedData = items.map(MacroInfo.fromJson).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      var result = await _http.get(path);
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      List<dynamic> items = result.data['payload'];
+      return items.map(MacroInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> executeMacro({
+    int? account_id,
+    required List<int> conversation_ids,
+    required int macro_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      await _http.post(
+        '/accounts/$account_id/macros/$macro_id/execute',
+        data: {
+          'conversation_ids': conversation_ids,
+        },
+      );
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<InboxInfo>>> listInboxes({
+    int? account_id,
+    Function(List<InboxInfo> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      var path = '/accounts/$account_id/inboxes';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        var cached = await getCache(url: path);
+        if (cached != null) {
+          var json = jsonDecode(cached.data);
+          List<dynamic> items = json['payload'];
+          var transformedData = items.map(InboxInfo.fromJson).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      var result = await _http.get(path);
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      List<dynamic> items = result.data['payload'];
+      return items.map(InboxInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<LabelInfo>>> listLabels({
+    int? account_id,
+    Function(List<LabelInfo> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      var path = '/accounts/$account_id/labels';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        var cached = await getCache(url: path);
+        if (cached != null) {
+          var json = jsonDecode(cached.data);
+          List<dynamic> items = json['payload'];
+          var transformedData = items.map(LabelInfo.fromJson).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      var result = await _http.get(path);
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      List<dynamic> items = result.data['payload'];
+      return items.map(LabelInfo.fromJson).toList().toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {

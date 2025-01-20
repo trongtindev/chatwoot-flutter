@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'config/bindings.dart';
 import 'imports.dart';
-import './translations/index.dart';
 import 'screens/login/views/index.dart';
 
 class App extends StatefulWidget {
@@ -30,6 +30,7 @@ class AppState extends State<App> {
   Future<void> init() async {
     try {
       await BindingsConfig().dependencies();
+      FlutterNativeSplash.remove();
       if (Get.find<AuthService>().isSignedIn.value) {
         Get.offAll(() => DefaultLayout(), transition: Transition.fadeIn);
         return;
@@ -38,18 +39,12 @@ class AppState extends State<App> {
     } catch (error) {
       Get.dialog(
         AlertDialog(
-          title: Text('error'.tr),
-          content: Text(
-            'error_message'.trParams({
-              'reason': error.toString(),
-            }),
-          ),
+          title: Text(t.error),
+          content: Text(t.error_message(error.toString())),
           actions: [
             TextButton(
               onPressed: () => Get.back(),
-              child: Text(
-                'quit'.tr,
-              ),
+              child: Text(t.quit),
             )
           ],
         ),
@@ -84,24 +79,21 @@ class AppState extends State<App> {
       darkTheme: darkTheme.copyWith(
         textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
       ),
-      themeMode: theme.activeMode.value,
+      themeMode: theme.activeMode.value.buitin,
       locale: Locale('en'),
-      translations: Translations(),
       fallbackLocale: Locale('en'),
       defaultTransition:
           GetPlatform.isDesktop ? Transition.downToUp : Transition.rightToLeft,
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+      home: Scaffold(),
       scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.mouse,
           PointerDeviceKind.touch,
         },
       ),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

@@ -1,6 +1,7 @@
 import '/imports.dart';
 
-Widget avatar({
+Widget avatar(
+  BuildContext context, {
   String? url,
   bool? isOnline,
   double? width,
@@ -30,7 +31,7 @@ Widget avatar({
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Get.theme.colorScheme.surfaceContainerHigh,
+            color: context.theme.colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(height / 2),
           ),
           child: Builder(builder: (_) {
@@ -41,17 +42,19 @@ Widget avatar({
             return ClipRRect(
               clipBehavior: Clip.hardEdge,
               borderRadius: BorderRadius.circular(height! / 2),
-              child: ExtendedImage.network(
-                url,
-                loadStateChanged: (state) {
-                  switch (state.extendedImageLoadState) {
-                    case LoadState.failed:
-                      return fallbackWidget;
-                    default:
-                      return null;
-                  }
-                },
-              ),
+              child: url.startsWith('http')
+                  ? ExtendedImage.network(
+                      url,
+                      loadStateChanged: (state) {
+                        switch (state.extendedImageLoadState) {
+                          case LoadState.failed:
+                            return fallbackWidget;
+                          default:
+                            return null;
+                        }
+                      },
+                    )
+                  : Image.asset(url),
             );
           }),
         ),
@@ -61,7 +64,7 @@ Widget avatar({
             bottom: dotSize * 0.3,
             child: Container(
               decoration: BoxDecoration(
-                color: Get.theme.colorScheme.surfaceContainer,
+                color: context.theme.colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Padding(

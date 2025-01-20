@@ -17,8 +17,8 @@ class ForgotPasswordView extends GetView<LoginController> {
           body: buildBody(
             width: width,
             header: buildHeader(
-              title: 'forgot_password.title'.tr,
-              description: 'forgot_password.description'.tr,
+              title: t.forgot_password_title,
+              description: t.forgot_password_description,
             ),
             child: Text('ok'),
           ),

@@ -15,6 +15,14 @@ class Dotenv {
   // sentry
   String? SENTRY_DNS;
 
+  // attachment
+  int ATTACHMENT_SIZE_LIMIT;
+  List<String> ATTACHMENT_ALLOWED_EXTENSIONS;
+
+  // other
+  String HELP_URL;
+  int PAGE_SIZE;
+
   Dotenv({
     // api
     required this.API_URL,
@@ -31,6 +39,14 @@ class Dotenv {
 
     // sentry
     this.SENTRY_DNS,
+
+    // attachment
+    required this.ATTACHMENT_SIZE_LIMIT,
+    required this.ATTACHMENT_ALLOWED_EXTENSIONS,
+
+    // other
+    required this.HELP_URL,
+    required this.PAGE_SIZE,
   });
 
   factory Dotenv.fromJson(Map<String, dynamic> env) {
@@ -50,6 +66,15 @@ class Dotenv {
 
       // sentry
       SENTRY_DNS: env['SENTRY_DNS'],
+
+      // attachment
+      ATTACHMENT_SIZE_LIMIT: int.parse(env['ATTACHMENT_SIZE_LIMIT']),
+      ATTACHMENT_ALLOWED_EXTENSIONS:
+          env['ATTACHMENT_ALLOWED_EXTENSIONS'].toString().split(';').toList(),
+
+      // other
+      HELP_URL: env['HELP_URL'],
+      PAGE_SIZE: int.parse(env['PAGE_SIZE']),
     );
   }
 }

@@ -1,12 +1,14 @@
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:get/state_manager.dart';
 import '/imports.dart';
 
-class Message extends GetWidget {
+class Message extends StatelessWidget {
+  final auth = Get.find<AuthService>();
+  final realtime = Get.find<RealtimeService>();
+
   final MessageInfo info;
   final BorderRadius borderRadius;
 
-  const Message({
+  Message({
     super.key,
     required this.info,
     required this.borderRadius,
@@ -14,8 +16,6 @@ class Message extends GetWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Get.find<AuthService>();
-
     switch (info.message_type) {
       case MessageType.incoming:
       case MessageType.outgoing:
@@ -32,14 +32,14 @@ class Message extends GetWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Get.theme.colorScheme.tertiaryContainer,
+          color: context.theme.colorScheme.tertiaryContainer,
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 4, right: 4, top: 2, bottom: 2),
           child: Text(
             info.content!,
             style: TextStyle(
-              color: Get.theme.colorScheme.onTertiaryContainer,
+              color: context.theme.colorScheme.onTertiaryContainer,
               fontSize: Get.textTheme.labelMedium!.fontSize,
             ),
             textAlign: TextAlign.center,
@@ -50,39 +50,45 @@ class Message extends GetWidget {
   }
 
   Widget buildTemplate(BuildContext context, AuthService auth) {
-    var sender = MessageSenderInfo(
-      id: 0,
-      name: 'Bot',
-      type: MessageSenderType.agent_bot,
-      thumbnail: 'assets/images/bot-avatar.png',
-    );
-    return buildMessage(context, auth, sender: sender);
+    return buildMessage(context, auth);
   }
 
-  Widget buildMessage(BuildContext context, AuthService auth,
-      {MessageSenderInfo? sender}) {
-    sender ??= info.sender;
+  Widget buildMessage(BuildContext context, AuthService auth) {
+    var sender = info.sender ??
+        MessageSenderInfo(
+          id: 0,
+          name: 'Bot',
+          type: MessageSenderType.agent_bot,
+          thumbnail: 'assets/images/bot-avatar.png',
+        );
 
-    var isOwner = sender?.id == auth.profile.value!.id;
-    var isOtherAgent = info.sender == null;
+    var isOwner = sender.id == auth.profile.value!.id;
+    var isAgent = !isOwner && sender.type == MessageSenderType.user;
     var backgroundColor = (() {
-      if (isOtherAgent) return Get.theme.colorScheme.secondaryContainer;
+      if (isAgent) return context.theme.colorScheme.secondaryContainer;
       return isOwner
-          ? Get.theme.colorScheme.primaryContainer
-          : Get.theme.colorScheme.surfaceContainer;
+          ? context.theme.colorScheme.primaryContainer
+          : context.theme.colorScheme.surfaceContainer;
     })();
     var alignment = isOwner ? Alignment.centerRight : Alignment.centerLeft;
 
     var created_at = formatTimeago(info.created_at);
     var statusIcon = (() {
       if (info.message_type == MessageType.incoming) return null;
+      if (info.content_attributes.deleted) {
+        return Icon(
+          Icons.remove_circle_outline,
+          size: 16,
+          color: context.theme.colorScheme.tertiary,
+        );
+      }
 
       switch (info.status) {
         case MessageStatus.failed:
           return Icon(
             Icons.error_outline,
             size: 16,
-            color: Get.theme.colorScheme.error,
+            color: context.theme.colorScheme.error,
           );
         case MessageStatus.sent:
           return Icon(
@@ -92,7 +98,7 @@ class Message extends GetWidget {
         case MessageStatus.delivered:
           return Icon(
             Icons.task_alt,
-            color: Get.theme.colorScheme.primary,
+            color: context.theme.colorScheme.primary,
             size: 16,
           );
         case MessageStatus.progress:
@@ -105,7 +111,7 @@ class Message extends GetWidget {
           return Icon(
             Icons.done_all_outlined,
             size: 16,
-            color: Get.theme.colorScheme.primary,
+            color: context.theme.colorScheme.primary,
           );
       }
     })();
@@ -121,14 +127,17 @@ class Message extends GetWidget {
             if (isOwner == false)
               Padding(
                 padding: const EdgeInsets.only(right: 8),
-                child: avatar(
-                  url: sender?.thumbnail,
-                  isOnline:
-                      sender?.availability_status == AvailabilityStatus.online,
-                  fallback: sender?.name.substring(0, 1),
-                  width: 28,
-                  height: 28,
-                ),
+                child: Obx(() {
+                  var online = realtime.online;
+                  return avatar(
+                    context,
+                    url: sender.thumbnail,
+                    isOnline: online.contains(sender.id),
+                    fallback: sender.name.substring(0, 1),
+                    width: 28,
+                    height: 28,
+                  );
+                }),
               ),
             Flexible(
               child: Container(
@@ -142,17 +151,8 @@ class Message extends GetWidget {
                   children: [
                     if (info.attachments.isNotEmpty) buildAttachments(context),
                     if (info.content != null && info.content!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 8,
-                          right: 8,
-                          top: 8,
-                        ),
-                        child: MarkdownBody(
-                          data: info.content!.trim(),
-                          selectable: true,
-                        ),
-                      ),
+                      buildContent(context),
+                    // TODO: align right
                     Padding(
                       padding: const EdgeInsets.all(8),
                       child: Row(
@@ -161,7 +161,7 @@ class Message extends GetWidget {
                         children: [
                           if (isOwner == false)
                             Text(
-                              sender!.available_name ?? sender.name,
+                              sender.available_name ?? sender.name,
                               style: TextStyle(
                                 fontSize: Get.textTheme.labelSmall!.fontSize,
                               ),
@@ -190,20 +190,46 @@ class Message extends GetWidget {
     );
   }
 
+  Widget buildContent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 8,
+        right: 8,
+        top: 8,
+      ),
+      child: MarkdownBody(
+        data: info.content!.trim(),
+        selectable: true,
+        onTapLink: (text, href, title) {
+          if (href == null || href.isEmpty) return;
+          openBrowser(href);
+        },
+      ),
+    );
+  }
+
   Widget buildAttachments(BuildContext context) {
-    return buildAttachment(info.attachments.first);
-  }
+    final length = info.attachments.length;
 
-  Widget buildAttachment(MessageAttachmentInfo info) {
-    switch (info.file_type) {
-      case AttachmentType.image:
-        return buildImageAttachment(info);
-      default:
-        return Text('failed to parse attachment type: ${info.file_type.name}');
+    if (length == 1) {
+      final first = info.attachments.first;
+      switch (first.file_type) {
+        case AttachmentType.audio:
+          return AudioPlayer(url: first.data_url!);
+        case AttachmentType.image:
+          return buildImageAttachment(context, info: info.attachments.first);
+        default:
+          return Text('failed to parse attachment type: $first.file_type');
+      }
     }
+
+    return Text('failed to parse $length attachments');
   }
 
-  Widget buildImageAttachment(MessageAttachmentInfo info) {
+  Widget buildImageAttachment(
+    BuildContext context, {
+    required MessageAttachmentInfo info,
+  }) {
     var width = info.width != null ? info.width!.toDouble() : 16;
     var height = info.height != null ? info.height!.toDouble() : 9;
 
@@ -218,7 +244,7 @@ class Message extends GetWidget {
         aspectRatio: width / height,
         child: Container(
           decoration: BoxDecoration(
-            color: Get.theme.colorScheme.surfaceContainerHigh,
+            color: context.theme.colorScheme.surfaceContainerHigh,
           ),
           child: ClipRRect(
             clipBehavior: Clip.hardEdge,

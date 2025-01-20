@@ -15,13 +15,11 @@ class ContactDetailController extends GetxController {
   late Rxn<ContactInfo> info;
   final after = 0.obs;
   final error = ''.obs;
-  final customAttributes = RxList<CustomAttribute>();
 
   @override
   void onReady() {
     super.onReady();
     getContact();
-    getCustomAttributes();
   }
 
   Future<void> getContact() async {
@@ -40,22 +38,6 @@ class ContactDetailController extends GetxController {
       _logger.e(reason.stackTrace);
       _logger.e(reason);
       error.value = reason.toString();
-    }
-  }
-
-  Future<void> getCustomAttributes() async {
-    try {
-      var result = await _api.listCustomAttributes(
-        account_id: _auth.profile.value!.account_id,
-        onCacheHit: (data) => customAttributes.value = data,
-      );
-      var data = result.getOrThrow();
-      customAttributes.value = data;
-    } on ApiError catch (reason) {
-      _logger.w(reason);
-    } on Error catch (reason) {
-      _logger.e(reason.stackTrace);
-      _logger.e(reason);
     }
   }
 }

@@ -1,10 +1,14 @@
 import '/imports.dart';
 
-Widget profileInfo(ProfileInfo profile) {
+Widget profileInfo(
+  BuildContext context, {
+  required ProfileInfo profile,
+}) {
   return Column(
     children: [
       Padding(padding: EdgeInsets.all(8)),
       avatar(
+        context,
         url: profile.avatar_url,
         isOnline: true,
         width: 128,

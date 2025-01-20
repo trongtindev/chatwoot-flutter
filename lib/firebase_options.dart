@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCQ88572NiwkqbvzBwnVwHS8LIg9Iq53T0',
-    appId: '1:848661314767:android:eb43d75b1734d8a72a0bba',
+    appId: '1:848661314767:android:e8ba992deec581242a0bba',
     messagingSenderId: '848661314767',
     projectId: 'chatwoot-bf44e',
     storageBucket: 'chatwoot-bf44e.firebasestorage.app',
@@ -60,20 +60,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBxzOUj44inQ6jwsAF7HXmy_kLdcl4cTGk',
-    appId: '1:848661314767:ios:f4aba5479357dd542a0bba',
+    appId: '1:848661314767:ios:7606fa8f2f32ab5e2a0bba',
     messagingSenderId: '848661314767',
     projectId: 'chatwoot-bf44e',
     storageBucket: 'chatwoot-bf44e.firebasestorage.app',
-    iosBundleId: 'com.example.chatwoot',
+    iosBundleId: 'com.chatwoot.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBxzOUj44inQ6jwsAF7HXmy_kLdcl4cTGk',
-    appId: '1:848661314767:ios:f4aba5479357dd542a0bba',
+    appId: '1:848661314767:ios:7606fa8f2f32ab5e2a0bba',
     messagingSenderId: '848661314767',
     projectId: 'chatwoot-bf44e',
     storageBucket: 'chatwoot-bf44e.firebasestorage.app',
-    iosBundleId: 'com.example.chatwoot',
+    iosBundleId: 'com.chatwoot.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

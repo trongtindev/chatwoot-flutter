@@ -3,14 +3,14 @@ import '/imports.dart';
 class ListContactMeta extends ApiListMeta {
   const ListContactMeta({
     required super.count,
-    // required super.current_page,
+    required super.current_page,
   });
 
-  factory ListContactMeta.fromJson(Map<String, dynamic> json) {
-    // var current_page = int.parse('${json['current_page']}');
+  factory ListContactMeta.fromJson(dynamic json) {
+    var base = ApiListMeta.fromJson(json);
     return ListContactMeta(
-      count: json['count'],
-      // current_page: current_page,
+      count: base.count,
+      current_page: base.current_page,
     );
   }
 }
@@ -53,9 +53,8 @@ class ContactInfo {
   String thumbnail;
   ContactAdditionalAttributes additional_attributes;
   Map<String, dynamic> custom_attributes;
-  DateTime created_at;
-  DateTime last_activity_at;
-  List<InboxInfo> contact_inboxes;
+  DateTime? created_at;
+  DateTime? last_activity_at;
 
   ContactInfo({
     required this.id,
@@ -66,15 +65,17 @@ class ContactInfo {
     required this.thumbnail,
     required this.additional_attributes,
     required this.custom_attributes,
-    required this.created_at,
-    required this.last_activity_at,
-    required this.contact_inboxes,
+    this.created_at,
+    this.last_activity_at,
   });
 
   factory ContactInfo.fromJson(dynamic json) {
-    List<dynamic> contact_inboxes = json['contact_inboxes'] ?? [];
-    var created_at =
-        DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000);
+    var created_at = json['created_at'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
+        : null;
+    var last_activity_at = json['last_activity_at'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(json['last_activity_at'] * 1000)
+        : null;
 
     return ContactInfo(
       id: json['id'],
@@ -87,9 +88,22 @@ class ContactInfo {
           ContactAdditionalAttributes.fromJson(json['additional_attributes']),
       custom_attributes: json['custom_attributes'] ?? {},
       created_at: created_at,
-      last_activity_at: DateTime.fromMillisecondsSinceEpoch(
-          (json['last_activity_at'] ?? json['created_at']) * 1000),
-      contact_inboxes: contact_inboxes.map(InboxInfo.fromJson).toList(),
+      last_activity_at: last_activity_at,
+    );
+  }
+}
+
+class ListContactResult extends ApiListResult<ListContactMeta, ContactInfo> {
+  const ListContactResult({
+    required super.meta,
+    required super.payload,
+  });
+
+  factory ListContactResult.fromJson(dynamic json) {
+    List<dynamic> payload = json['payload'];
+    return ListContactResult(
+      meta: ListContactMeta.fromJson(json['meta']),
+      payload: payload.map(ContactInfo.fromJson).toList(),
     );
   }
 }

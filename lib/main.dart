@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:logger/logger.dart' as logger;
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -25,7 +26,8 @@ Future<void> loadEnvironments() async {
 
 void main() async {
   runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+    final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
     // firebase
     await Firebase.initializeApp(
@@ -52,7 +54,7 @@ void main() async {
     // logger
     var appDocumentsDir = await getApplicationCacheDirectory();
     var logPath = p.join(appDocumentsDir.path, 'logs');
-    logger.Logger.level = kDebugMode ? logger.Level.all : logger.Level.info;
+    logger.Logger.level = kDebugMode ? logger.Level.debug : logger.Level.info;
     logger.Logger.defaultPrinter = () {
       return PrettyPrinter();
     };
@@ -80,8 +82,8 @@ void main() async {
     }
 
     // webview
-    if (!kIsWeb) {
-      await InAppWebViewController.setWebContentsDebuggingEnabled(true);
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
     }
 
     // storage

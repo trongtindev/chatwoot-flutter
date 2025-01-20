@@ -34,6 +34,7 @@ class ContactsController extends GetxController {
       append ??= false;
       reset ??= false;
 
+      error.value = '';
       loading.value = true;
       if (reset) {
         page.value = 1;
@@ -55,11 +56,12 @@ class ContactsController extends GetxController {
       var data = result.getOrThrow();
 
       if (append) {
-        items.value.addAll(data.payload);
-        isNoMore.value = data.payload.isEmpty;
+        items.addAll(data.payload);
       } else {
         items.value = data.payload;
       }
+      isNoMore.value =
+          data.payload.isEmpty || data.payload.length < env.PAGE_SIZE;
     } on ApiError catch (reason) {
       _logger.w(reason);
       error.value = reason.errors.join(';');

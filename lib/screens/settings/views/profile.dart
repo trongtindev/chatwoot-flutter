@@ -11,16 +11,16 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
       builder: (controller) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('settings.profile'.tr),
+            title: Text(t.profile),
             centerTitle: true,
           ),
-          body: buildBody(),
+          body: buildBody(context),
         );
       },
     );
   }
 
-  Widget buildBody() {
+  Widget buildBody(BuildContext context) {
     final auth = Get.find<AuthService>();
     return Obx(() {
       var profile = auth.profile.value!;
@@ -31,6 +31,7 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
         children: [
           Center(
             child: avatar(
+              context,
               url: profile.avatar_url,
               width: 128,
               height: 128,
@@ -41,7 +42,7 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               defaultButton(
-                label: 'upload'.tr,
+                label: t.upload,
                 onPressed: () {},
               ),
             ],
@@ -56,13 +57,13 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
                   controller: controller.full_name,
                   keyboardType: TextInputType.name,
                   decoration: InputDecoration(
-                    label: Text('profile.full_name'.tr),
-                    hintText: 'profile.full_name_hint'.tr,
+                    label: Text(t.full_name),
+                    hintText: t.full_name_hint,
                     prefixIcon: Icon(Icons.edit_outlined),
                   ),
                   validator: (value) {
                     if (value == null || !isFullName(value)) {
-                      return 'profile.full_name_invalid'.tr;
+                      return t.full_name_invalid;
                     }
                     return null;
                   },
@@ -73,13 +74,13 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
                   controller: controller.display_name,
                   keyboardType: TextInputType.name,
                   decoration: InputDecoration(
-                    label: Text('profile.display_name'.tr),
-                    hintText: 'profile.display_name_hint'.tr,
+                    label: Text(t.display_name),
+                    hintText: t.display_name_hint,
                     prefixIcon: Icon(Icons.edit_outlined),
                   ),
                   validator: (value) {
                     if (value == null) {
-                      return 'profile.display_name_invalid'.tr;
+                      return t.display_name_invalid;
                     }
                     return null;
                   },
@@ -90,13 +91,13 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
                   controller: controller.email,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    label: Text('profile.email'.tr),
-                    hintText: 'profile.email_hint'.tr,
+                    label: Text(t.email),
+                    hintText: t.email_hint,
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || !isEmail(value)) {
-                      return 'profile.email_invalid'.tr;
+                      return t.email_invalid;
                     }
                     return null;
                   },
@@ -122,7 +123,7 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
                 Padding(padding: EdgeInsets.only(top: 8)),
                 primaryButton(
                   block: true,
-                  label: 'common.save_changes'.tr,
+                  label: t.save_changes,
                   loading: isLoading,
                   onPressed: controller.submit,
                 ),

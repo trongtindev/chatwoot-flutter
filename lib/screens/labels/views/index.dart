@@ -2,7 +2,9 @@ import '../controllers/index.dart';
 import '/imports.dart';
 
 class LabelsView extends GetView<LabelsController> {
-  const LabelsView({super.key});
+  final labelService = Get.find<LabelService>();
+
+  LabelsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,24 +31,48 @@ class LabelsView extends GetView<LabelsController> {
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (_, int index) {
-                    return ListTile(
-                      leading: Container(
-                          padding: EdgeInsets.all(8),
-                          width: 100,
-                          child: Placeholder()),
-                      title: Text('Place ${index + 1}'),
-                    );
-                  },
-                  childCount: 20,
-                ),
-              ),
+              Obx(() {
+                var items = labelService.items.value;
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, i) {
+                      return buildItem(items[i]);
+                    },
+                    childCount: items.length,
+                  ),
+                );
+              }),
             ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: controller.addLabel,
+            label: Text(t.labels_add),
+            icon: Icon(Icons.add_outlined),
           ),
         );
       },
+    );
+  }
+
+  Widget buildItem(LabelInfo info) {
+    return ListTile(
+      title: Text(info.title),
+      subtitle: Text(info.description),
+      trailing: Wrap(
+        spacing: 4,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: info.color,
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          Icon(Icons.chevron_right_outlined),
+        ],
+      ),
     );
   }
 }

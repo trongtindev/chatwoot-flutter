@@ -2,13 +2,15 @@ import '../controllers/index.dart';
 import '/imports.dart';
 
 class ContactsView extends GetView<ContactsController> {
-  const ContactsView({super.key});
+  final realtime = Get.find<RealtimeService>();
+
+  ContactsView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('contacts'.tr),
+        title: Text(t.contacts),
         centerTitle: true,
         actions: [
           IconButton(
@@ -18,39 +20,54 @@ class ContactsView extends GetView<ContactsController> {
           Padding(padding: EdgeInsets.only(right: 8)),
         ],
       ),
-      body: RefreshIndicator(
-        notificationPredicate: (scrollNotification) {
-          var pixels = scrollNotification.metrics.pixels;
-          var maxScrollExtent = scrollNotification.metrics.maxScrollExtent;
-          var isScrollEnded = pixels >= maxScrollExtent * 0.8;
-          if (isScrollEnded) controller.loadMore();
-          return defaultScrollNotificationPredicate(scrollNotification);
-        },
-        onRefresh: () => controller.getContacts(reset: true),
-        child: Obx(() {
-          if (controller.loading.value && controller.items.isEmpty) {
-            return buildPlaceholder();
-          } else if (controller.error.isNotEmpty) {
-            return buildError();
-          } else if (controller.items.isEmpty) {
-            return buildEmptyState();
-          }
-          return ListView(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                prototypeItem: buildItem(controller.items.first),
-                itemCount: controller.items.length,
-                itemBuilder: (_, i) {
-                  return buildItem(controller.items[i]);
-                },
-              ),
-              if (controller.isLoadMore.value) loadMore(),
-              if (controller.isNoMore.value) noMore(),
-            ],
-          );
-        }),
+      body: Stack(
+        children: [
+          RefreshIndicator(
+            notificationPredicate: (scrollNotification) {
+              var pixels = scrollNotification.metrics.pixels;
+              var maxScrollExtent = scrollNotification.metrics.maxScrollExtent;
+              var isScrollEnded = pixels >= maxScrollExtent * 0.8;
+              if (isScrollEnded) controller.loadMore();
+              return defaultScrollNotificationPredicate(scrollNotification);
+            },
+            onRefresh: () => controller.getContacts(reset: true),
+            child: Obx(() {
+              if (controller.loading.value && controller.items.isEmpty) {
+                return buildPlaceholder();
+              } else if (controller.error.isNotEmpty) {
+                return buildError(context);
+              } else if (controller.items.isEmpty) {
+                return buildEmptyState();
+              }
+              return ListView(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    prototypeItem: buildItem(context, controller.items.first),
+                    itemCount: controller.items.length,
+                    itemBuilder: (_, i) {
+                      return buildItem(context, controller.items[i]);
+                    },
+                  ),
+                  if (controller.isLoadMore.value) loadMore(),
+                  if (controller.isNoMore.value) noMore(),
+                ],
+              );
+            }),
+          ),
+          Obx(() {
+            if (controller.loading.value && !controller.isLoadMore.value) {
+              return Positioned.fill(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: LinearProgressIndicator(),
+                ),
+              );
+            }
+            return Container();
+          }),
+        ],
       ),
     );
   }
@@ -62,8 +79,9 @@ class ContactsView extends GetView<ContactsController> {
     );
   }
 
-  Widget buildError() {
+  Widget buildError(BuildContext context) {
     return error(
+      context,
       message: controller.error.value,
       onRetry: () => controller.getContacts(reset: true),
     );
@@ -73,16 +91,28 @@ class ContactsView extends GetView<ContactsController> {
     return Text('empty_state');
   }
 
-  Widget buildItem(ContactInfo info) {
+  Widget buildItem(BuildContext context, ContactInfo info) {
     return ListTile(
-      leading: avatar(url: info.thumbnail),
-      title: Text(info.name, maxLines: 1),
+      leading: avatar(
+        context,
+        url: info.thumbnail,
+        fallback: info.name.substring(0, 1),
+        isOnline: realtime.online.contains(info.id),
+      ),
+      title: Text(
+        info.name,
+        maxLines: 1,
+        style: TextStyle(
+          fontSize: Get.textTheme.bodyLarge!.fontSize,
+        ),
+      ),
       subtitle: Text(
-          info.phone_number ??
-              info.email ??
-              info.identifier ??
-              info.id.toString(),
-          maxLines: 1),
+        info.phone_number ??
+            info.email ??
+            info.identifier ??
+            info.id.toString(),
+        maxLines: 1,
+      ),
       trailing: Icon(Icons.chevron_right),
       onTap: () => controller.showDetail(info),
     );

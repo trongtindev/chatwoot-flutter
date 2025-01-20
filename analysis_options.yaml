@@ -2,7 +2,6 @@ analyzer:
   errors:
     non_constant_identifier_names: ignore
     constant_identifier_names: ignore
-    invalid_use_of_protected_member: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

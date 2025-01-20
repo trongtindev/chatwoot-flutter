@@ -8,7 +8,7 @@ class NotificationsView extends GetView<NotificationsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('notifications'.tr),
+        title: Text(t.notifications),
         centerTitle: true,
         actions: [
           Obx(() {
@@ -26,39 +26,55 @@ class NotificationsView extends GetView<NotificationsController> {
           Padding(padding: EdgeInsets.only(right: 8)),
         ],
       ),
-      body: RefreshIndicator(
-        notificationPredicate: (scrollNotification) {
-          var pixels = scrollNotification.metrics.pixels;
-          var maxScrollExtent = scrollNotification.metrics.maxScrollExtent;
-          var isScrollEnded = pixels >= maxScrollExtent * 0.8;
-          if (isScrollEnded) controller.loadMore();
-          return defaultScrollNotificationPredicate(scrollNotification);
-        },
-        onRefresh: () => controller.getNotifications(reset: true),
-        child: Obx(() {
-          if (controller.loading.value && controller.items.isEmpty) {
-            return buildPlaceholder();
-          } else if (controller.error.isNotEmpty) {
-            return buildError();
-          } else if (controller.items.isEmpty) {
-            return buildEmptyState();
-          }
-          return ListView(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                prototypeItem: buildItem(controller.items.first),
-                itemCount: controller.items.length,
-                itemBuilder: (_, i) {
-                  return buildItem(controller.items[i]);
-                },
-              ),
-              if (controller.isLoadMore.value) loadMore(),
-              if (controller.isNoMore.value) noMore(),
-            ],
-          );
-        }),
+      body: Stack(
+        children: [
+          RefreshIndicator(
+            notificationPredicate: (scrollNotification) {
+              var pixels = scrollNotification.metrics.pixels;
+              var maxScrollExtent = scrollNotification.metrics.maxScrollExtent;
+              var isScrollEnded = pixels >= maxScrollExtent * 0.8;
+              if (isScrollEnded) controller.loadMore();
+              return defaultScrollNotificationPredicate(scrollNotification);
+            },
+            onRefresh: () => controller.getNotifications(reset: true),
+            child: Obx(() {
+              if (controller.loading.value && controller.items.isEmpty) {
+                return buildPlaceholder();
+              } else if (controller.error.isNotEmpty) {
+                return buildError(context);
+              } else if (controller.items.isEmpty) {
+                return buildEmptyState();
+              }
+              return ListView(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    prototypeItem:
+                        buildItem(context, info: controller.items.first),
+                    itemCount: controller.items.length,
+                    itemBuilder: (_, i) {
+                      return buildItem(context, info: controller.items[i]);
+                    },
+                  ),
+                  if (controller.isLoadMore.value) loadMore(),
+                  if (controller.isNoMore.value) noMore(),
+                ],
+              );
+            }),
+          ),
+          Obx(() {
+            if (controller.loading.value && !controller.isLoadMore.value) {
+              return Positioned.fill(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: LinearProgressIndicator(),
+                ),
+              );
+            }
+            return Container();
+          }),
+        ],
       ),
     );
   }
@@ -70,8 +86,9 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  Widget buildError() {
+  Widget buildError(BuildContext context) {
     return error(
+      context,
       message: controller.error.value,
       onRetry: controller.getNotifications,
     );
@@ -81,19 +98,34 @@ class NotificationsView extends GetView<NotificationsController> {
     return Text('empty_state');
   }
 
-  Widget buildItem(NotificationInfo info) {
+  Widget buildItem(
+    BuildContext context, {
+    required NotificationInfo info,
+  }) {
     var created_at = formatTimeago(info.created_at);
 
     return ListTile(
-      leading: avatar(url: info.primary_actor.meta.sender.thumbnail),
+      leading: avatar(
+        context,
+        url: info.primary_actor.meta.sender.thumbnail,
+        fallback: info.primary_actor.meta.sender.name.substring(0, 1),
+      ),
       title: Text(
         info.push_message_title,
-        style: TextStyle(),
+        style: TextStyle(
+          fontSize: Get.textTheme.bodyLarge!.fontSize,
+        ),
       ),
-      subtitle: Text('${info.primary_actor.meta.sender.name} · $created_at'),
+      subtitle: Text(
+        '${info.primary_actor.meta.sender.name} · $created_at',
+        style: TextStyle(
+          fontSize: Get.textTheme.labelSmall!.fontSize,
+        ),
+      ),
       trailing: Icon(Icons.chevron_right),
-      tileColor:
-          info.read_at == null ? Get.theme.colorScheme.primaryContainer : null,
+      tileColor: info.read_at == null
+          ? context.theme.colorScheme.primaryContainer
+          : null,
       onTap: () => controller.onTap(info),
     );
   }

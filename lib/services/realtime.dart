@@ -4,7 +4,13 @@ import '/imports.dart';
 const CHANNEL_NAME = 'RoomChannel';
 const PRESENCE_INTERVAL = 20000;
 
-enum RealtimeEventId { messageCreated }
+enum RealtimeEventId {
+  contactCreated,
+  messageCreated,
+  messageUpdated,
+  conversationUpdated,
+  conversationStatusChanged
+}
 
 class RealtimeService extends GetxService {
   final _logger = Logger();
@@ -17,20 +23,6 @@ class RealtimeService extends GetxService {
   Timer? _updatePresenceTimer;
   ActionCable? _actionCable;
   StreamSubscription? _subscription;
-
-  @override
-  void onReady() {
-    super.onReady();
-    _logger.i('onReady()');
-    if (_getAuth.isSignedIn.value) connect();
-  }
-
-  @override
-  void onClose() {
-    _subscription?.cancel();
-    _actionCable?.disconnect();
-    super.onClose();
-  }
 
   ApiService? _api;
   ApiService get _getApi {
@@ -46,6 +38,21 @@ class RealtimeService extends GetxService {
     return _auth!;
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    _logger.i('onReady()');
+    if (_getAuth.isSignedIn.value) connect();
+  }
+
+  @override
+  void onClose() {
+    _logger.d('onClose()');
+    _subscription?.cancel();
+    _actionCable?.disconnect();
+    super.onClose();
+  }
+
   Future<RealtimeService> init() async {
     _logger.i('init()');
 
@@ -53,21 +60,20 @@ class RealtimeService extends GetxService {
     return this;
   }
 
-  Future<void> connect({int? retries}) async {
+  Future<void> connect() async {
     try {
-      retries ??= 0;
-      _logger.i('connect()');
-
       var host = Uri.parse(_getApi.baseUrl.value).host;
+      var url = 'wss://$host/cable';
+      _logger.i(url);
 
       if (_actionCable != null && connected.value) {
-        _logger.w('connect() => already connected!');
+        _logger.w('already connected!');
         return;
       }
 
       _actionCable?.disconnect();
       _actionCable = ActionCable.connect(
-        'wss://$host/cable',
+        url,
         onConnected: () {
           _logger.i('onConnected');
           connected.value = true;
@@ -92,19 +98,18 @@ class RealtimeService extends GetxService {
           _logger.w('onConnectionLost');
           connected.value = false;
           _updatePresenceTimer?.cancel();
-          Future.delayed(Duration(seconds: retries! * 1), () => connect());
+          Future.delayed(Duration(seconds: 5), () => connect());
         },
         onCannotConnect: () {
           _logger.w('onCannotConnect');
           connected.value = false;
           _updatePresenceTimer?.cancel();
-          Future.delayed(Duration(seconds: retries! * 1), () => connect());
+          Future.delayed(Duration(seconds: 5), () => connect());
         },
       );
 
-      _logger.i('connect() => successful');
+      _logger.i('successful');
     } catch (error) {
-      _logger.i('connect() => $error');
       _logger.i(error);
 
       Timer.periodic(Duration(seconds: 1), (_) => connect());
@@ -112,43 +117,69 @@ class RealtimeService extends GetxService {
   }
 
   void _perform() {
-    _logger.t('_perform()');
+    _logger.d('update_presence()');
     _actionCable!.performAction(CHANNEL_NAME, action: 'update_presence');
   }
 
   void _onMessage(Map<dynamic, dynamic> payload) async {
-    switch (payload['event']) {
-      case 'presence.update':
-        _onPresenceUpdate(payload['data']);
-        break;
+    try {
+      switch (payload['event']) {
+        case 'presence.update':
+          _onPresenceUpdate(payload['data']);
+          break;
 
-      case 'message.created':
-        _onMessageCreated(payload['data']);
-        break;
+        case 'contact.created':
+          var parse = ContactInfo.fromJson(payload['data']);
+          _onContactCreated(parse);
+          break;
 
-      case 'conversation.typing_on':
-        var parse = TypingData.fromJson(payload['data']);
-        _onTypingOn(parse);
-        break;
+        case 'message.created':
+          var parse = MessageInfo.fromJson(payload['data']);
+          _onMessageCreated(parse);
+          break;
 
-      case 'conversation.typing_off':
-        var parse = TypingData.fromJson(payload['data']);
-        _onTypingOff(parse);
-        break;
+        case 'message.updated':
+          var parse = MessageInfo.fromJson(payload['data']);
+          _onMessageUpdated(parse);
+          break;
 
-      // TODO: Handle all these events later
-      // case 'contact.updated':
-      //   break;
+        case 'conversation.typing_on':
+          var parse = TypingData.fromJson(payload['data']);
+          _onTypingOn(parse);
+          break;
 
-      default:
-        _logger.w('_onMessage() => unkown event ${payload['event']}');
-        _logger.w(payload);
-        break;
+        case 'conversation.typing_off':
+          var parse = TypingData.fromJson(payload['data']);
+          _onTypingOff(parse);
+          break;
+
+        case 'conversation.updated':
+          var parse = ConversationInfo.fromJson(payload['data']);
+          _onConversationUpdated(parse);
+          break;
+
+        case 'conversation.status_changed':
+          var parse = ConversationInfo.fromJson(payload['data']);
+          _onConversationStatusChanged(parse);
+          break;
+
+        // TODO: Handle all these events later
+        // case 'contact.updated':
+        //   break;
+
+        default:
+          _logger.w('failed to parse event ${payload['event']}');
+          _logger.w(payload);
+          break;
+      }
+    } on Error catch (error) {
+      _logger.w(error, stackTrace: error.stackTrace);
+      _logger.d(payload);
     }
   }
 
   Future<void> _onPresenceUpdate(Map<dynamic, dynamic> data) async {
-    _logger.d('_onPresenceUpdate()');
+    _logger.d(data);
 
     Map<String, dynamic> users = data['users'];
     Map<String, dynamic> contacts = data['contacts'];
@@ -156,18 +187,25 @@ class RealtimeService extends GetxService {
       ...users.keys.map((e) => int.parse(e)),
       ...contacts.keys.map((e) => int.parse(e)),
     ];
-
-    _logger.d('_onPresenceUpdate() => length:${online.length}');
   }
 
-  Future<void> _onMessageCreated(Map<dynamic, dynamic> data) async {
-    _logger.d('_onMessageCreated()');
-    var message = MessageInfo.fromJson(data);
-    events.emit(RealtimeEventId.messageCreated.name, message);
+  Future<void> _onContactCreated(ContactInfo info) async {
+    _logger.d('${info.name}#${info.id}');
+    events.emit(RealtimeEventId.contactCreated.name, info);
+  }
+
+  Future<void> _onMessageCreated(MessageInfo info) async {
+    _logger.d('${info.id}#${info.conversation_id}');
+    events.emit(RealtimeEventId.messageCreated.name, info);
+  }
+
+  Future<void> _onMessageUpdated(MessageInfo info) async {
+    _logger.d('${info.id}#${info.conversation_id}');
+    events.emit(RealtimeEventId.messageUpdated.name, info);
   }
 
   Future<void> _onTypingOn(TypingData data) async {
-    _logger.d('_onTypingOn(${data.conversation.id})#${data.user.id}');
+    _logger.d('${data.conversation.id})#${data.user.id}');
 
     typingUsers[data.conversation.id] ??= [];
     if (typingUsers[data.conversation.id]!.contains(data.user.id)) {
@@ -177,7 +215,7 @@ class RealtimeService extends GetxService {
   }
 
   Future<void> _onTypingOff(TypingData data) async {
-    _logger.d('_onTypingOff(${data.conversation.id})#${data.user.id}');
+    _logger.d('${data.conversation.id})#${data.user.id}');
 
     typingUsers[data.conversation.id] ??= [];
     if (!typingUsers[data.conversation.id]!.contains(data.user.id)) {
@@ -186,11 +224,13 @@ class RealtimeService extends GetxService {
     typingUsers[data.conversation.id]!.remove(data.user.id);
   }
 
-  Future<void> onError(Object data, StackTrace stackTrace) async {
-    _logger.e('onError()');
-    _logger.e(data);
-    _logger.e(stackTrace);
+  Future<void> _onConversationUpdated(ConversationInfo info) async {
+    _logger.d('${info.id}${info.status.name}');
+    events.emit(RealtimeEventId.conversationUpdated.name, info);
+  }
 
-    Timer.periodic(Duration(seconds: 1), (_) => connect());
+  Future<void> _onConversationStatusChanged(ConversationInfo info) async {
+    _logger.d('${info.id}${info.status.name}');
+    events.emit(RealtimeEventId.conversationStatusChanged.name, info);
   }
 }

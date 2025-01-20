@@ -1,6 +1,5 @@
 import '/imports.dart';
-
-enum UserType { user }
+import 'package:flutter/material.dart' as material;
 
 enum ProfileRole { administrator }
 
@@ -8,7 +7,31 @@ enum ProfileType { SuperAdmin }
 
 enum AvailabilityStatus { online, busy, offline }
 
-enum ConversationStatus { open, resolved, pending, snoozed, all }
+enum ConversationStatus implements Comparable<ConversationStatus> {
+  open(),
+  resolved(),
+  pending(),
+  snoozed(),
+  all();
+
+  String get label {
+    switch (this) {
+      case ConversationStatus.open:
+        return t.open;
+      case ConversationStatus.resolved:
+        return t.resolved;
+      case ConversationStatus.pending:
+        return t.pending;
+      case ConversationStatus.snoozed:
+        return t.snoozed;
+      case ConversationStatus.all:
+        return t.all;
+    }
+  }
+
+  @override
+  int compareTo(ConversationStatus other) => index - other.index;
+}
 
 enum ConversationPriority { undefined, urgent, high, medium, low, none }
 
@@ -20,9 +43,64 @@ enum ConversationPermission {
   conversation_participating_manage,
 }
 
-enum SortType { latest, sort_on_created_at, sort_on_priority }
+enum ConversationSortType implements Comparable<ConversationSortType> {
+  last_activity_at_desc(),
+  last_activity_at_asc(),
+  created_at_desc(),
+  created_at_asc(),
+  priority_desc(),
+  priority_asc(),
+  waiting_since_desc(),
+  waiting_since_asc();
 
-enum AssigneeType { mine, unassigned, all }
+  String get label {
+    switch (this) {
+      case ConversationSortType.last_activity_at_asc:
+        return t.last_activity_at_asc;
+      case ConversationSortType.last_activity_at_desc:
+        return t.last_activity_at_desc;
+      case ConversationSortType.created_at_desc:
+        return t.created_at_desc;
+      case ConversationSortType.created_at_asc:
+        return t.created_at_asc;
+      case ConversationSortType.waiting_since_desc:
+        return t.waiting_since_desc;
+      case ConversationSortType.waiting_since_asc:
+        return t.waiting_since_asc;
+      case ConversationSortType.priority_desc:
+        return t.priority_desc;
+      case ConversationSortType.priority_asc:
+        return t.priority_asc;
+    }
+  }
+
+  @override
+  int compareTo(ConversationSortType other) => index - other.index;
+}
+
+enum AssigneeType implements Comparable<AssigneeType> {
+  mine(name: 'me'),
+  unassigned(name: 'unassigned'),
+  all(name: 'all');
+
+  final String name;
+
+  String get label {
+    switch (this) {
+      case AssigneeType.mine:
+        return t.mine;
+      case AssigneeType.unassigned:
+        return t.unassigned;
+      case AssigneeType.all:
+        return t.all;
+    }
+  }
+
+  const AssigneeType({required this.name});
+
+  @override
+  int compareTo(AssigneeType other) => index - other.index;
+}
 
 enum MessageType { incoming, outgoing, activity, template }
 
@@ -63,28 +141,39 @@ enum Language implements Comparable<Language> {
   int compareTo(Language other) => index - other.index;
 }
 
-enum InboxType implements Comparable<InboxType> {
-  web(value: 'Channel::WebWidget', icon: 'web.png'),
-  fb(value: 'Channel::FacebookPage', icon: 'fb.png'),
-  twitter(value: 'Channel::TwitterProfile', icon: 'twitter.png'),
-  twilio(value: 'Channel::TwilioSms', icon: 'twilio.png'),
-  whatsapp(value: 'Channel::Whatsapp', icon: 'whatsapp.png'),
-  api(value: 'Channel::Api', icon: 'api.png'),
-  email(value: 'Channel::WebWidget', icon: 'email.png'),
-  telegram(value: 'Channel::Telegram', icon: 'telegram.png'),
-  line(value: 'Channel::Line', icon: 'line.png'),
-  sms(value: 'Channel::Sms', icon: 'sms.png');
+enum InboxChannelType implements Comparable<InboxChannelType> {
+  web(value: 'Channel::WebWidget'),
+  fb(value: 'Channel::FacebookPage', iconName: 'fb.png'),
+  twitter(value: 'Channel::TwitterProfile', iconName: 'twitter.png'),
+  twilio(value: 'Channel::TwilioSms'),
+  whatsapp(value: 'Channel::Whatsapp', iconName: 'whatsapp.png'),
+  api(value: 'Channel::Api'),
+  email(value: 'Channel::WebWidget', iconName: 'email.png'),
+  telegram(value: 'Channel::Telegram', iconName: 'telegram.png'),
+  line(value: 'Channel::Line', iconName: 'line.png'),
+  sms(value: 'Channel::Sms', iconName: 'sms.png');
 
   final String value;
-  final String icon;
+  final String? iconPath;
+  final IconData? iconData;
 
-  const InboxType({
+  const InboxChannelType({
     required this.value,
-    required String icon,
-  }) : icon = 'assets/images/icons/$icon';
+    String? iconName,
+    this.iconData,
+  }) : iconPath = iconName != null ? 'assets/images/icons/$iconName' : null;
+
+  Widget get icon {
+    if (isNotNullOrEmpty(iconPath)) {
+      return Image.asset(iconPath!);
+    } else if (iconData != null) {
+      return Icon(iconData);
+    }
+    return Icon(Icons.inbox_outlined);
+  }
 
   @override
-  int compareTo(InboxType other) => index - other.index;
+  int compareTo(InboxChannelType other) => index - other.index;
 }
 
 enum NotificationType {
@@ -102,7 +191,7 @@ enum NotificationActorType { Conversation }
 
 enum NotificationStatus { snoozed, read }
 
-enum AttachmentType {
+enum AttachmentType implements Comparable<AttachmentType> {
   image,
   audio,
   video,
@@ -112,43 +201,109 @@ enum AttachmentType {
   share,
   story_mention,
   contact,
-  ig_reel
+  ig_reel;
+
+  String get label {
+    switch (this) {
+      case AttachmentType.image:
+        return t.attachment_image_content;
+      case AttachmentType.audio:
+        return t.attachment_audio_content;
+      case AttachmentType.video:
+        return t.attachment_video_content;
+      case AttachmentType.file:
+        return t.attachment_file_content;
+      case AttachmentType.location:
+        return t.attachment_location_content;
+      default:
+        return t.attachment_fallback_content;
+    }
+  }
+
+  @override
+  int compareTo(AttachmentType other) => index - other.index;
 }
 
 enum AttributeModel { contact_attribute }
 
 enum ContactSortBy implements Comparable<ContactSortBy> {
-  name(labelLocalized: 'contact.name'),
-  email(labelLocalized: 'contact.email'),
-  phone_number(labelLocalized: 'contact.phone_number'),
-  company_name(labelLocalized: 'contact.company_name'),
-  country(labelLocalized: 'contact.country'),
-  city(labelLocalized: 'contact.city'),
-  last_activity_at(labelLocalized: 'contact.last_activity_at'),
-  created_at(labelLocalized: 'contact.created_at');
+  name(),
+  email(),
+  phone_number(),
+  company_name(),
+  country(),
+  city(),
+  last_activity_at(),
+  created_at();
 
-  final String labelLocalized;
-
-  const ContactSortBy({
-    required this.labelLocalized,
-  });
+  String get label {
+    switch (this) {
+      case ContactSortBy.name:
+        return t.name;
+      case ContactSortBy.email:
+        return t.email;
+      case ContactSortBy.phone_number:
+        return t.phone_number;
+      case ContactSortBy.company_name:
+        return t.company_name;
+      case ContactSortBy.country:
+        return t.country;
+      case ContactSortBy.city:
+        return t.city;
+      case ContactSortBy.last_activity_at:
+        return t.last_activity_at;
+      case ContactSortBy.created_at:
+        return t.created_at;
+    }
+  }
 
   @override
   int compareTo(ContactSortBy other) => index - other.index;
 }
 
 enum OrderBy implements Comparable<OrderBy> {
-  ascending(value: '', labelLocalized: 'common.ascending'),
-  descending(value: '-', labelLocalized: 'contact.descending');
+  ascending(value: ''),
+  descending(value: '-');
 
   final String value;
-  final String labelLocalized;
 
-  const OrderBy({
-    required this.value,
-    required this.labelLocalized,
-  });
+  const OrderBy({required this.value});
+
+  String get label {
+    switch (this) {
+      case OrderBy.ascending:
+        return t.ascending;
+      case OrderBy.descending:
+        return t.descending;
+    }
+  }
 
   @override
   int compareTo(OrderBy other) => index - other.index;
 }
+
+enum ThemeMode implements Comparable<ThemeMode> {
+  auto(),
+  light(),
+  dark();
+
+  String get label {
+    switch (this) {
+      case ThemeMode.auto:
+        return t.appearance_mode_auto;
+      case ThemeMode.light:
+        return t.appearance_mode_light;
+      case ThemeMode.dark:
+        return t.appearance_mode_dark;
+    }
+  }
+
+  material.ThemeMode get buitin {
+    return material.ThemeMode.values[index];
+  }
+
+  @override
+  int compareTo(ThemeMode other) => index - other.index;
+}
+
+enum MacroVisibility { global }

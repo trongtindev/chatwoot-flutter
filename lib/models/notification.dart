@@ -6,14 +6,15 @@ class ListNotificationMeta extends ApiListMeta {
   ListNotificationMeta({
     required this.unread_count,
     required super.count,
-    // required super.current_page,
+    required super.current_page,
   });
 
-  factory ListNotificationMeta.fromJson(Map<String, dynamic> json) {
+  factory ListNotificationMeta.fromJson(dynamic json) {
+    var base = ApiListMeta.fromJson(json);
     return ListNotificationMeta(
       unread_count: json['unread_count'],
-      count: json['count'],
-      // current_page: json['current_page'],
+      count: base.count,
+      current_page: base.current_page,
     );
   }
 }
@@ -101,6 +102,22 @@ class NotificationInfo {
           json['last_activity_at'] * 1000), // 1737081406
       snoozed_until: json['snoozed_until'],
       meta: json['meta'],
+    );
+  }
+}
+
+class ListNotificationResult
+    extends ApiListResult<ListNotificationMeta, NotificationInfo> {
+  const ListNotificationResult({
+    required super.meta,
+    required super.payload,
+  });
+
+  factory ListNotificationResult.fromJson(dynamic json) {
+    List<dynamic> payload = json['payload'];
+    return ListNotificationResult(
+      meta: ListNotificationMeta.fromJson(json['meta']),
+      payload: payload.map(NotificationInfo.fromJson).toList(),
     );
   }
 }

@@ -2,11 +2,13 @@ import '../controllers/index.dart';
 import '/imports.dart';
 
 class ConversationsFilterView extends GetView<ConversationsController> {
-  const ConversationsFilterView({super.key});
+  final shared = Get.find<InboxService>();
+  ConversationsFilterView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return bottomSheet(
+      context,
       child: DefaultTabController(
         length: 2,
         child: Column(
@@ -14,17 +16,17 @@ class ConversationsFilterView extends GetView<ConversationsController> {
             TabBar(
               tabs: [
                 Tab(
-                  child: Text('common.filter'),
+                  child: Text(t.filter),
                 ),
                 Tab(
-                  child: Text('common.sort'),
+                  child: Text(t.sort_by),
                 ),
               ],
             ),
             Expanded(
               child: TabBarView(
                 children: [
-                  buildFilter(),
+                  buildFilter(context),
                   buildSort(),
                 ],
               ),
@@ -35,43 +37,160 @@ class ConversationsFilterView extends GetView<ConversationsController> {
     );
   }
 
-  Widget buildFilter() {
-    var items = NotificationStatus.values;
+  Widget buildFilter(BuildContext context) {
+    return ListView(
+      padding: EdgeInsets.all(4),
+      children: [
+        buildFilterAssigneeType(),
+        buildFilterStatus(),
+        buildFilterInbox(context),
+      ],
+    );
+  }
 
-    return Obx(() {
-      var loading = controller.loading.value;
-      return ListView.builder(
-        padding: EdgeInsets.only(top: 8, bottom: 8),
-        itemCount: items.length,
-        itemBuilder: (_, i) {
-          var item = items[i];
-          return ListTile(
-            enabled: !loading,
-            title: Text(item.name),
-            // trailing: Checkbox(
-            //   value: controller.includes.contains(item),
-            //   onChanged: (next) {
-            //     if (next != null && next) {
-            //       controller.includes.add(item);
-            //       return;
-            //     }
-            //     controller.includes.remove(item);
-            //   },
-            // ),
-            // onTap: () {
-            //   if (controller.includes.contains(item)) {
-            //     controller.includes.remove(item);
-            //     return;
-            //   }
-            //   controller.includes.add(item);
-            // },
+  Widget buildFilterAssigneeType() {
+    final items = AssigneeType.values;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildLabel(t.filter_by_assignee_type),
+        Obx(() {
+          final assigneeType = controller.assigneeType.value;
+
+          return Card(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemCount: items.length,
+              itemBuilder: (_, i) {
+                var item = items[i];
+                return RadioListTile(
+                  title: Text(item.label),
+                  value: item,
+                  selected: assigneeType == item,
+                  groupValue: assigneeType,
+                  onChanged: (next) => controller.assigneeType.value = item,
+                );
+              },
+            ),
           );
-        },
-      );
-    });
+        }),
+      ],
+    );
+  }
+
+  Widget buildFilterStatus() {
+    final items = ConversationStatus.values;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildLabel(t.filter_by_status),
+        Obx(() {
+          final status = controller.status.value;
+
+          return Card(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemCount: items.length,
+              itemBuilder: (_, i) {
+                var item = items[i];
+                return RadioListTile(
+                  title: Text(item.label),
+                  value: item,
+                  selected: status == item,
+                  groupValue: status,
+                  onChanged: (next) => controller.status.value = item,
+                );
+              },
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget buildFilterInbox(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildLabel(t.filter_by_inbox),
+        Obx(() {
+          final items = shared.inboxes;
+          final filterbyInbox = controller.filterbyInbox.value;
+
+          return Card(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemCount: items.length,
+              itemBuilder: (_, i) {
+                var item = items[i];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor:
+                        context.theme.colorScheme.surfaceContainerHigh,
+                    child: isNullOrEmpty(item.avatar_url)
+                        ? item.channel_type.icon
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: ExtendedImage.network(
+                              item.avatar_url,
+                            ),
+                          ),
+                  ),
+                  title: Text(item.name),
+                  trailing: Radio(
+                    value: item.id,
+                    groupValue: filterbyInbox,
+                    onChanged: (next) =>
+                        controller.filterbyInbox.value = item.id,
+                  ),
+                  onTap: () => controller.filterbyInbox.value = item.id,
+                );
+              },
+            ),
+          );
+        }),
+      ],
+    );
   }
 
   Widget buildSort() {
-    return Text('sprt');
+    final items = ConversationSortType.values;
+
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Obx(() {
+        final sort = controller.sort_order.value;
+        return ListView(
+          children: [
+            Card(
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: items.length,
+                itemBuilder: (_, i) {
+                  var item = items[i];
+                  return RadioListTile(
+                    title: Text(item.label),
+                    value: item,
+                    selected: sort == item,
+                    groupValue: sort,
+                    onChanged: (next) => controller.sort_order.value = item,
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      }),
+    );
   }
 }

@@ -2,7 +2,9 @@ import '/imports.dart';
 import '../controllers/appearance.dart';
 
 class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
-  const SettingsAppearanceView({super.key});
+  final theme = Get.find<ThemeService>();
+
+  SettingsAppearanceView({super.key});
 
   @override
   Widget build(context) {
@@ -14,7 +16,7 @@ class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
         }
         return Scaffold(
           appBar: AppBar(
-            title: Text('settings.appearance'.tr),
+            title: Text(t.appearance),
             centerTitle: true,
           ),
           body: buildBody(context),
@@ -26,22 +28,20 @@ class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
   Widget buildBody(
     BuildContext context,
   ) {
-    final theme = Get.find<ThemeService>();
     return ListView(
       children: [
         Obx(() {
           return ListTile(
-            title: Text('settings.appearance.mode'.tr),
-            subtitle:
-                Text('settings.appearance.mode_${theme.mode.value.name}'.tr),
+            title: Text(t.appearance_mode),
+            subtitle: Text(theme.mode.value.label),
             onTap: controller.changeMode,
           );
         }),
         Obx(() {
           return SwitchListTile(
             value: theme.colours.value,
-            title: Text('settings.appearance.colours'.tr),
-            subtitle: Text('settings.appearance.colours_subtitle'.tr),
+            title: Text(t.appearance_colours),
+            subtitle: Text(t.appearance_colours_subtitle),
             onChanged: (next) => theme.colours.value = next,
           );
         }),
@@ -50,7 +50,7 @@ class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
           return Column(
             children: [
               ListTile(
-                title: Text('settings.appearance.color'.tr),
+                title: Text(t.appearance_color),
                 subtitle: Text(activeColor.toHexTriplet()),
               ),
               SizedBox(
@@ -61,10 +61,14 @@ class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
                   itemCount: colors.length,
                   itemBuilder: (ctx, i) {
                     var color = colors[i];
-                    var selected = activeColor.compareTo(color);
+                    var active = activeColor.compareTo(color);
                     return Padding(
                       padding: EdgeInsets.only(left: 16),
-                      child: buildColorItem(context, theme, color, selected),
+                      child: buildColorItem(
+                        context,
+                        color: color,
+                        active: active,
+                      ),
                     );
                   },
                 ),
@@ -77,13 +81,10 @@ class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
   }
 
   Widget buildColorItem(
-    BuildContext context,
-    ThemeService theme,
-    Color color,
-    bool active,
-  ) {
-    var borderColor =
-        Get.theme.brightness == Brightness.light ? Colors.grey : Colors.grey;
+    BuildContext context, {
+    required Color color,
+    required bool active,
+  }) {
     var colorScheme = ColorScheme.fromSeed(
       seedColor: color,
       brightness: context.theme.brightness,
@@ -99,7 +100,7 @@ class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
             color: colorScheme.surfaceContainer,
             border: Border.all(
               width: 2,
-              color: active ? color : borderColor,
+              color: active ? color : context.theme.colorScheme.outlineVariant,
             ),
             borderRadius: BorderRadius.circular(16),
           ),

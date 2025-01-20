@@ -13,7 +13,7 @@ class SettingsAppearanceController extends GetxController {
             var selected = theme.mode.value == ThemeMode.values[i];
             var mode = ThemeMode.values[i];
             return ListTile(
-              title: Text('settings.appearance.mode_${mode.name}'.tr),
+              title: Text(mode.label),
               onTap: () => Get.back(result: mode),
               selected: selected,
               trailing: selected ? Icon(Icons.check_outlined) : null,
