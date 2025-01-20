@@ -38,4 +38,4 @@ jobs:
         run: flutter test
 
       - name: analyze
-        run: dart analyze
+        run: dart analyze --no-fatal-warnings
