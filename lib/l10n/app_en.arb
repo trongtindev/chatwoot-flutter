@@ -1,0 +1,111 @@
+{
+  "save_changes": "Save changes",
+  "profile": "Profile",
+  "upload": "Upload",
+  "phone_number": "phone_number",
+  "company_name": "company_name",
+  "country": "country",
+  "city": "city",
+  "last_activity_at": "last_activity_at",
+  "created_at": "created_at",
+  "name": "Name",
+  "ascending": "Ascending",
+  "descending": "Descending",
+  "sort_by": "Sort by",
+  "order_by": "Order by",
+  "unavailable": "Unavailable",
+  "typing": "Typing",
+  "view_details": "View details",
+  "close": "Close",
+  "no_more": "no_more",
+  "retry": "Retry",
+  "email": "Email",
+  "email_hint": "email_hint",
+  "email_invalid": "Enter a valid email",
+  "password": "Password",
+  "password_hint": "Enter your password",
+  "password_invalid": "Enter a valid password",
+  "quit": "Quit",
+  "error": "Error",
+  "error_message": "Oops, something went wrong. Please try again later. {reason}",
+  "@error_message": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "exception": "Exception",
+  "exception_message": "Oops, something went wrong. Please try again later. {reason}",
+  "@exception_message": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "conversation": "Conversation",
+  "conversations": "Conversations",
+  "notifications": "Notifications",
+  "contacts": "Contacts",
+  "settings": "Settings",
+  "login_title": "Log in to your account",
+  "login_description": "You are connected to {base_url}.",
+  "@login_description": {
+    "placeholders": {
+      "base_url": {
+        "type": "String"
+      }
+    }
+  },
+  "login_submit": "Sign In",
+  "forgot_password": "Forgot your password?",
+  "forgot_password_title": "Forgot Password?",
+  "forgot_password_description": "Don't worry! We got your back",
+  "change_url": "Change URL",
+  "change_url_title": "Installation URL",
+  "change_url_description": "If you are using a self-hosted Chatwoot installation, input your server URL. Otherwise, use {url}.",
+  "@change_url_description": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "change_url_url": "URL",
+  "change_url_url_hint": "Enter your URL without http",
+  "change_url_url_invalid": "Enter a valid URL",
+  "change_url_submit": "Verify",
+  "change_language": "Change language",
+  "message_hint": "Type message...",
+  "appearance": "Appearance",
+  "appearance_mode": "Mode",
+  "appearance_mode_auto": "Auto",
+  "appearance_mode_dark": "Dark",
+  "appearance_mode_light": "Light",
+  "appearance_colours": "Colours",
+  "appearance_colours_subtitle": "appearance_colours_subtitle",
+  "appearance_color": "Color",
+  "full_name": "Full name",
+  "full_name_hint": "full_name_hint",
+  "full_name_invalid": "full_name_invalid",
+  "display_name": "Display name",
+  "display_name_hint": "display_name_hint",
+  "display_name_invalid": "display_name_invalid",
+  "integrations": "Integrations",
+  "canned_response": "Canned response",
+  "canned_response_description": "Canned Responses are pre-written reply templates that help you quickly respond to a conversation. Agents can type the '/' character followed by the shortcode to insert a canned response during a conversation.",
+  "macros": "Macros",
+  "automation": "Automation",
+  "inboxes": "Inboxes",
+  "agents": "Agents",
+  "account": "Account",
+  "change_password": "Change password",
+  "labels": "Labels",
+  "custom_attributes": "Custom attributes",
+  "audit_logs": "Audit logs",
+  "set_availability": "Set availability",
+  "read_docs": "Read docs",
+  "edit": "Edit",
+  "teams": "Teams"
+}
