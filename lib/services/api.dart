@@ -271,13 +271,14 @@ class ApiService extends GetxService {
   }
 
   Future<Result<ListNotificationResult>> listNotifications({
-    required int account_id,
+    int? account_id,
     List<NotificationStatus>? includes,
     int? page,
     Function(ListNotificationResult data)? onCacheHit,
   }) async {
     try {
-      var path = '/accounts/$account_id/notifications';
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/notifications';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
@@ -308,15 +309,41 @@ class ApiService extends GetxService {
     }
   }
 
+  Future<Result<bool>> markNotificationsRead({
+    int? account_id,
+    required int primary_actor_id,
+    required NotificationActorType primary_actor_type,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/notifications/read_all';
+
+      await _http.post(
+        path,
+        queryParameters: {
+          'primary_actor_id': primary_actor_id,
+          'primary_actor_type': primary_actor_type.name,
+        },
+      );
+
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
   Future<Result<ListContactResult>> listContacts({
-    required int account_id,
+    int? account_id,
     int? page,
     required ContactSortBy sortBy,
     required OrderBy orderBy,
     Function(ListContactResult data)? onCacheHit,
   }) async {
     try {
-      var path = '/accounts/$account_id/contacts';
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/contacts';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
@@ -328,7 +355,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(
+      final result = await _http.get(
         path,
         queryParameters: {
           'page': page ?? 1,
@@ -510,10 +537,10 @@ class ApiService extends GetxService {
   Future<Result<MessageInfo>> sendMessage({
     int? account_id,
     required int conversation_id,
-    required String content,
+    String? content,
     MessageType? message_type,
     bool? private,
-    List<PlatformFile>? attachments,
+    List<FileInfo>? attachments,
     Function(double progress)? onProgress,
     String? echo_id,
     int? in_reply_to,
@@ -533,8 +560,7 @@ class ApiService extends GetxService {
 
       if (attachments.isNotEmpty) {
         for (var file in attachments) {
-          _logger.t(
-              'sendMessage() => file:${file.xFile.name} mimeType: ${file.xFile.mimeType}');
+          _logger.d('file name:${file.name} size:${file.size}');
 
           if (file.size > env.ATTACHMENT_SIZE_LIMIT) {
             // TODO: maybe make SafeException
@@ -542,22 +568,20 @@ class ApiService extends GetxService {
           }
 
           var multipartFile = await MultipartFile.fromFile(
-            file.xFile.path,
-            filename: file.xFile.name,
-            contentType: file.xFile.mimeType != null
-                ? DioMediaType.parse(file.xFile.mimeType!)
-                : null,
+            file.path,
+            filename: file.name,
+            contentType: DioMediaType.parse(file.contentType!),
           );
           data.files.add(MapEntry('attachments[]', multipartFile));
         }
       }
 
-      var result = await _http.post(
+      final result = await _http.post(
         '/accounts/$account_id/conversations/$conversation_id/messages',
         data: data,
         onSendProgress: (count, total) {
           if (attachments!.isEmpty) return;
-          _logger.t('sendMessage() => count:$count total:$total');
+          _logger.t('count:$count total:$total');
           if (onProgress != null) onProgress(count / total);
         },
       );
@@ -580,6 +604,7 @@ class ApiService extends GetxService {
       await _http.post(
         '/accounts/$account_id/conversations/$conversation_id/update_last_seen',
       );
+
       return true.toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
@@ -635,6 +660,23 @@ class ApiService extends GetxService {
         data: {
           'conversation_ids': conversation_ids,
         },
+      );
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> deleteMacro({
+    int? account_id,
+    required int macro_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      await _http.delete(
+        '/accounts/$account_id/macros/$macro_id',
       );
       return true.toSuccess();
     } on DioException catch (error) {
