@@ -6,10 +6,15 @@ const PRESENCE_INTERVAL = 20000;
 
 enum RealtimeEventId {
   contactCreated,
+  contactUpdated,
   messageCreated,
   messageUpdated,
+  conversationCreated,
   conversationUpdated,
-  conversationStatusChanged
+  conversationRead,
+  conversationStatusChanged,
+  notificationCreated,
+  notificationDeleted
 }
 
 class RealtimeService extends GetxService {
@@ -17,10 +22,10 @@ class RealtimeService extends GetxService {
 
   final events = EventEmitter();
   final online = RxList<int>();
-  final typingUsers = RxMap<int, List<int>>();
+  final typingUsers = RxList<int>();
   final connected = false.obs;
 
-  Timer? _updatePresenceTimer;
+  // Timer? _updatePresenceTimer;
   ActionCable? _actionCable;
   StreamSubscription? _subscription;
 
@@ -87,23 +92,25 @@ class RealtimeService extends GetxService {
               'user_id': _getAuth.profile.value!.id,
             },
             onMessage: _onMessage,
-            onSubscribed: () => _perform(),
+            // onSubscribed: () => _perform(),
           );
 
-          _updatePresenceTimer?.cancel();
-          _updatePresenceTimer = Timer.periodic(
-              Duration(milliseconds: PRESENCE_INTERVAL), (_) => _perform());
+          // _updatePresenceTimer?.cancel();
+          // _updatePresenceTimer = Timer.periodic(
+          //   Duration(milliseconds: PRESENCE_INTERVAL),
+          //   (_) => _perform(),
+          // );
         },
         onConnectionLost: () {
           _logger.w('onConnectionLost');
           connected.value = false;
-          _updatePresenceTimer?.cancel();
+          // _updatePresenceTimer?.cancel();
           Future.delayed(Duration(seconds: 5), () => connect());
         },
         onCannotConnect: () {
           _logger.w('onCannotConnect');
           connected.value = false;
-          _updatePresenceTimer?.cancel();
+          // _updatePresenceTimer?.cancel();
           Future.delayed(Duration(seconds: 5), () => connect());
         },
       );
@@ -116,10 +123,10 @@ class RealtimeService extends GetxService {
     }
   }
 
-  void _perform() {
-    _logger.d('update_presence()');
-    _actionCable!.performAction(CHANNEL_NAME, action: 'update_presence');
-  }
+  // void _perform() {
+  //   _logger.d('update_presence()');
+  //   _actionCable!.performAction(CHANNEL_NAME, action: 'update_presence');
+  // }
 
   void _onMessage(Map<dynamic, dynamic> payload) async {
     try {
@@ -131,6 +138,11 @@ class RealtimeService extends GetxService {
         case 'contact.created':
           var parse = ContactInfo.fromJson(payload['data']);
           _onContactCreated(parse);
+          break;
+
+        case 'contact.updated':
+          var parse = ContactInfo.fromJson(payload['data']);
+          _onContactUpdated(parse);
           break;
 
         case 'message.created':
@@ -153,6 +165,11 @@ class RealtimeService extends GetxService {
           _onTypingOff(parse);
           break;
 
+        case 'conversation.read':
+          var parse = ConversationInfo.fromJson(payload['data']);
+          _onConversationRead(parse);
+          break;
+
         case 'conversation.updated':
           var parse = ConversationInfo.fromJson(payload['data']);
           _onConversationUpdated(parse);
@@ -163,8 +180,26 @@ class RealtimeService extends GetxService {
           _onConversationStatusChanged(parse);
           break;
 
+        case 'notification.created':
+          var parse =
+              NotificationInfo.fromJson(payload['data']['notification']);
+          _onnotificationCreated(parse);
+          break;
+
+        case 'notification.deleted':
+          _onnotificationDeleted(payload['data']['notification']['id']);
+          break;
+
         // TODO: Handle all these events later
-        // case 'contact.updated':
+        // case 'assignee.changed':
+        //   break;
+        // case 'conversation.contact_changed':
+        //   break;
+        // case 'conversation.mentioned':
+        //   break;
+        // case 'contact.deleted':
+        //   break;
+        // case 'first.reply.created':
         //   break;
 
         default:
@@ -194,6 +229,11 @@ class RealtimeService extends GetxService {
     events.emit(RealtimeEventId.contactCreated.name, info);
   }
 
+  Future<void> _onContactUpdated(ContactInfo info) async {
+    _logger.d('${info.name}#${info.id}');
+    events.emit(RealtimeEventId.contactUpdated.name, info);
+  }
+
   Future<void> _onMessageCreated(MessageInfo info) async {
     _logger.d('${info.id}#${info.conversation_id}');
     events.emit(RealtimeEventId.messageCreated.name, info);
@@ -205,32 +245,39 @@ class RealtimeService extends GetxService {
   }
 
   Future<void> _onTypingOn(TypingData data) async {
-    _logger.d('${data.conversation.id})#${data.user.id}');
-
-    typingUsers[data.conversation.id] ??= [];
-    if (typingUsers[data.conversation.id]!.contains(data.user.id)) {
-      return;
-    }
-    typingUsers[data.conversation.id]!.add(data.user.id);
+    _logger.d('${data.user.name}#${data.conversation.id}');
+    if (typingUsers.contains(data.user.id)) return;
+    typingUsers.add(data.user.id);
   }
 
   Future<void> _onTypingOff(TypingData data) async {
-    _logger.d('${data.conversation.id})#${data.user.id}');
+    _logger.d('${data.user.name}#${data.conversation.id}');
+    if (!typingUsers.contains(data.user.id)) return;
+    typingUsers.remove(data.user.id);
+  }
 
-    typingUsers[data.conversation.id] ??= [];
-    if (!typingUsers[data.conversation.id]!.contains(data.user.id)) {
-      return;
-    }
-    typingUsers[data.conversation.id]!.remove(data.user.id);
+  Future<void> _onConversationRead(ConversationInfo info) async {
+    _logger.d('${info.meta.sender.name}#${info.id}');
+    events.emit(RealtimeEventId.conversationRead.name, info);
   }
 
   Future<void> _onConversationUpdated(ConversationInfo info) async {
-    _logger.d('${info.id}${info.status.name}');
+    _logger.d('${info.meta.sender.name}#${info.id}');
     events.emit(RealtimeEventId.conversationUpdated.name, info);
   }
 
   Future<void> _onConversationStatusChanged(ConversationInfo info) async {
-    _logger.d('${info.id}${info.status.name}');
+    _logger.d('${info.meta.sender.name}#${info.id} status:${info.status.name}');
     events.emit(RealtimeEventId.conversationStatusChanged.name, info);
+  }
+
+  void _onnotificationCreated(NotificationInfo info) {
+    _logger.d('#${info.id}');
+    events.emit(RealtimeEventId.notificationCreated.name, info);
+  }
+
+  void _onnotificationDeleted(int id) {
+    _logger.d('#$id');
+    events.emit(RealtimeEventId.notificationDeleted.name, id);
   }
 }
