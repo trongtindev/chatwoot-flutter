@@ -23,12 +23,10 @@ class ApiError implements Exception {
     List<dynamic> contentTypes =
         dioException.response?.headers['content-type'] ?? [];
 
-    if (!contentTypes.contains('application/json') ||
-        data is String ||
-        data == null) {
+    if (!contentTypes.contains('json') || data is String || data == null) {
       return ApiError(
         success: false,
-        errors: [t.error_response],
+        errors: [t.error_response(contentTypes.join(';'))],
       );
     }
 

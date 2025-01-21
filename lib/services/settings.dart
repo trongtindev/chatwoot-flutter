@@ -7,11 +7,6 @@ class SettingsService extends GetxService {
   final ignoreConfirm = PersistentRxBool(false, key: 'settings:ignoreConfirm');
 
   Future<SettingsService> init() async {
-    _logger.i('init()');
-
-    // timeago.setDefaultLocale(Get.locale!.languageCode);
-
-    _logger.i('init() => successful');
     return this;
   }
 }

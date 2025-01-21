@@ -7,8 +7,8 @@ class ContactDetailController extends GetxController {
 
   final int contact_id;
 
-  ContactDetailController({
-    required this.contact_id,
+  ContactDetailController(
+    this.contact_id, {
     ContactInfo? initial,
   }) : info = Rxn<ContactInfo>(initial);
 

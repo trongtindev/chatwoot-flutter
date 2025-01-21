@@ -13,17 +13,15 @@ class App extends StatefulWidget {
 }
 
 class AppState extends State<App> {
-  late ThemeService theme = Get.find<ThemeService>();
+  final theme = Get.put(ThemeService());
 
   @override
   void initState() {
     super.initState();
-
     theme.color.listen((next) {
       if (kDebugMode) print('color:$next');
       setState(() {});
     });
-
     init();
   }
 
@@ -36,7 +34,8 @@ class AppState extends State<App> {
         return;
       }
       Get.offAll(() => LoginView(), transition: Transition.fadeIn);
-    } catch (error) {
+    } on Error catch (error) {
+      logger.e(error, stackTrace: error.stackTrace);
       Get.dialog(
         AlertDialog(
           title: Text(t.error),
@@ -55,7 +54,7 @@ class AppState extends State<App> {
 
   @override
   Widget build(context) {
-    var darkTheme = ThemeData(
+    final darkTheme = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: theme.color.value,
@@ -63,7 +62,7 @@ class AppState extends State<App> {
         contrastLevel: theme.contrast.value,
       ),
     );
-    var lightTheme = ThemeData(
+    final lightTheme = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: theme.color.value,

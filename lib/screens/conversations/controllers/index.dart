@@ -6,11 +6,12 @@ class ConversationsController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
   final _auth = Get.find<AuthService>();
-  final _shared = Get.find<InboxService>();
+  final _inboxes = Get.find<InboxesController>();
   final _realtime = Get.find<RealtimeService>();
 
   final all_count = 0.obs;
   final mine_count = 0.obs;
+  final unread_count = 0.obs;
   final items = RxList<ConversationInfo>();
   final loading = true.obs;
   final error = ''.obs;
@@ -94,6 +95,10 @@ class ConversationsController extends GetxController {
     super.onClose();
   }
 
+  Future<ConversationsController> init() async {
+    return this;
+  }
+
   Future<void> getConversations({
     bool? append,
     bool? reset,
@@ -149,7 +154,7 @@ class ConversationsController extends GetxController {
   }
 
   Future<void> showFilter() async {
-    _shared.getInboxes();
+    _inboxes.getInboxes();
     var result = await Get.bottomSheet<bool>(ConversationsFilterView());
     if (result == null || !result) return;
   }
@@ -164,7 +169,7 @@ class ConversationsController extends GetxController {
 
     Get.to(
       () => ConversationChatView(
-        conversation_id: info.id,
+        id: info.id,
         initial_message: info.last_non_activity_message,
       ),
     );
@@ -193,6 +198,7 @@ class ConversationsController extends GetxController {
       } else {
         items.insert(0, info);
       }
+      updateSortItems();
       return;
     }
 
@@ -215,8 +221,7 @@ class ConversationsController extends GetxController {
     items[index].last_activity_at = info.updated_at ?? info.created_at;
     items[index].unread_count += 1;
 
-    items.sort((a, b) => b.last_activity_at.compareTo(a.last_activity_at));
-    // conversations.refresh();
+    updateSortItems();
   }
 
   void _onMessageUpdated(MessageInfo info) {
@@ -226,8 +231,7 @@ class ConversationsController extends GetxController {
     items[index].last_non_activity_message = info;
     items[index].last_activity_at = info.updated_at ?? info.created_at;
 
-    items.sort((a, b) => b.last_activity_at.compareTo(a.last_activity_at));
-    // conversations.refresh();
+    updateSortItems();
   }
 
   void toggleLabel(LabelInfo info) {
@@ -236,5 +240,9 @@ class ConversationsController extends GetxController {
       return;
     }
     filter_by_labels.add(info);
+  }
+
+  void updateSortItems() {
+    items.sort((a, b) => b.last_activity_at.compareTo(a.last_activity_at));
   }
 }

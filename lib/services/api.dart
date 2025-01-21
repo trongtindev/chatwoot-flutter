@@ -98,8 +98,6 @@ class ApiService extends GetxService {
   }
 
   Future<ApiService> init() async {
-    _logger.i('init() baseUrl:$getBaseUrl');
-
     _packageInfo = await PackageInfo.fromPlatform();
     _deviceInfoPlugin = DeviceInfoPlugin();
     if (GetPlatform.isAndroid) {
@@ -128,7 +126,6 @@ class ApiService extends GetxService {
       ),
     );
 
-    _logger.i('init() => successful');
     return this;
   }
 
@@ -141,7 +138,7 @@ class ApiService extends GetxService {
         '${_packageInfo.appName}/${_packageInfo.version}';
 
     // inject authorization
-    var profile = _getAuth.profile.value;
+    final profile = _getAuth.profile.value;
     if (options.uri.toString().contains('/api/') && profile != null) {
       options.headers['api_access_token'] = profile.access_token;
     }
@@ -151,7 +148,7 @@ class ApiService extends GetxService {
 
   Future<Result<ApiInfo>> getInfo({String? baseUrl}) async {
     try {
-      var result = await _http.get('${baseUrl ?? env.API_URL}/api');
+      final result = await _http.get('${baseUrl ?? env.API_URL}/api');
       return ApiInfo.fromJson(result.data).toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
@@ -189,12 +186,14 @@ class ApiService extends GetxService {
   }
 
   Future<Result<ConversationInfo>> getConversation({
-    required int account_id,
+    int? account_id,
     required int conversation_id,
     Function(ConversationInfo data)? onCacheHit,
   }) async {
     try {
-      var path = '/accounts/$account_id/conversations/$conversation_id';
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      final path = '/accounts/$account_id/conversations/$conversation_id';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
@@ -206,7 +205,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(path);
+      final result = await _http.get(path);
 
       // if onCacheHit defined
       if (onCacheHit != null) saveCache(url: path, data: result.data);
@@ -220,7 +219,7 @@ class ApiService extends GetxService {
   }
 
   Future<Result<ListConversationResult>> listConversations({
-    required int account_id,
+    int? account_id,
     String? q,
     ConversationStatus? status,
     int? inbox_id,
@@ -233,19 +232,21 @@ class ApiService extends GetxService {
     Function(ListConversationResult data)? onCacheHit,
   }) async {
     try {
-      var path = '/accounts/$account_id/conversations';
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      final path = '/accounts/$account_id/conversations';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
-        var cached = await getCache(url: path);
+        final cached = await getCache(url: path);
         if (cached != null) {
-          var json = jsonDecode(cached.data);
-          var transformedData = ListConversationResult.fromJson(json['data']);
+          final json = jsonDecode(cached.data);
+          final transformedData = ListConversationResult.fromJson(json['data']);
           onCacheHit(transformedData);
         }
       }
 
-      var result = await _http.get(
+      final result = await _http.get(
         path,
         queryParameters: {
           'status': status?.name,
@@ -278,6 +279,7 @@ class ApiService extends GetxService {
   }) async {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
+
       final path = '/accounts/$account_id/notifications';
 
       // if onCacheHit defined
@@ -290,7 +292,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(
+      final result = await _http.get(
         path,
         queryParameters: {
           'includes': includes?.map((e) => e.name),
@@ -347,7 +349,7 @@ class ApiService extends GetxService {
 
       // if onCacheHit defined
       if (onCacheHit != null) {
-        var cached = await getCache(url: path);
+        final cached = await getCache(url: path);
         if (cached != null) {
           var json = jsonDecode(cached.data);
           var transformedData = ListContactResult.fromJson(json);
@@ -382,12 +384,12 @@ class ApiService extends GetxService {
     Function(ListMessageResult data)? onCacheHit,
   }) async {
     try {
-      var path =
+      final path =
           '/accounts/$account_id/conversations/$conversation_id/messages';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
-        var cached = await getCache(url: path);
+        final cached = await getCache(url: path);
         if (cached != null) {
           var json = jsonDecode(cached.data);
           var transformedData = ListMessageResult.fromJson(json);
@@ -395,7 +397,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(
+      final result = await _http.get(
         path,
         queryParameters: {
           'after': after,
@@ -418,7 +420,7 @@ class ApiService extends GetxService {
     required String push_token,
   }) async {
     try {
-      var result = await _http.post(
+      final result = await _http.post(
         '/notification_subscriptions',
         data: {
           'subscription_type': 'fcm',
@@ -471,11 +473,11 @@ class ApiService extends GetxService {
     Function(ContactInfo data)? onCacheHit,
   }) async {
     try {
-      var path = '/accounts/$account_id/contacts/$contact_id';
+      final path = '/accounts/$account_id/contacts/$contact_id';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
-        var cached = await getCache(url: path);
+        final cached = await getCache(url: path);
         if (cached != null) {
           var json = jsonDecode(cached.data);
           var transformedData = ContactInfo.fromJson(json['payload']);
@@ -483,7 +485,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(path);
+      final result = await _http.get(path);
 
       // if onCacheHit defined
       if (onCacheHit != null) saveCache(url: path, data: result.data);
@@ -503,7 +505,8 @@ class ApiService extends GetxService {
   }) async {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
-      var path = '/accounts/$account_id/custom_attribute_definitions';
+
+      final path = '/accounts/$account_id/custom_attribute_definitions';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
@@ -515,7 +518,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(
+      final result = await _http.get(
         path,
         queryParameters: {
           'attribute_model': attribute_model?.name,
@@ -551,7 +554,7 @@ class ApiService extends GetxService {
       message_type ??= MessageType.outgoing;
       private ??= false;
 
-      var data = FormData.fromMap({
+      final data = FormData.fromMap({
         'content': content,
         'message_type': message_type.name,
         'private': private,
@@ -620,7 +623,7 @@ class ApiService extends GetxService {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
 
-      var path = '/accounts/$account_id/macros';
+      final path = '/accounts/$account_id/macros';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
@@ -633,7 +636,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(path);
+      final result = await _http.get(path);
 
       // if onCacheHit defined
       if (onCacheHit != null) saveCache(url: path, data: result.data);
@@ -693,11 +696,11 @@ class ApiService extends GetxService {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
 
-      var path = '/accounts/$account_id/inboxes';
+      final path = '/accounts/$account_id/inboxes';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
-        var cached = await getCache(url: path);
+        final cached = await getCache(url: path);
         if (cached != null) {
           var json = jsonDecode(cached.data);
           List<dynamic> items = json['payload'];
@@ -706,7 +709,7 @@ class ApiService extends GetxService {
         }
       }
 
-      var result = await _http.get(path);
+      final result = await _http.get(path);
 
       // if onCacheHit defined
       if (onCacheHit != null) saveCache(url: path, data: result.data);
@@ -747,6 +750,39 @@ class ApiService extends GetxService {
 
       List<dynamic> items = result.data['payload'];
       return items.map(LabelInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<CannedResponseInfo>>> listCannedResponses({
+    int? account_id,
+    AttributeModel? attribute_model,
+    Function(List<CannedResponseInfo> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/canned_responses';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        var cached = await getCache(url: path);
+        if (cached != null) {
+          List<dynamic> items = jsonDecode(cached.data);
+          var transformedData = items.map(CannedResponseInfo.fromJson).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      final result = await _http.get(path);
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      List<dynamic> items = result.data;
+      return items.map(CannedResponseInfo.fromJson).toList().toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {

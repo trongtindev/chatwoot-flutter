@@ -8,7 +8,7 @@ class ConversationInputController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
 
-  final int conversation_id;
+  final int id;
   final isEmpty = true.obs;
   final showMore = false.obs;
   final showRecorder = false.obs;
@@ -27,7 +27,7 @@ class ConversationInputController extends GetxController {
   AudioRecorder? _recorder;
   Timer? _fetchAmplitudeTimer;
 
-  ConversationInputController({required this.conversation_id});
+  ConversationInputController(this.id);
 
   @override
   void onInit() {
@@ -137,7 +137,7 @@ class ConversationInputController extends GetxController {
       // TODO: make pending message
       // final echo_id = getUuid();
       final result = await _api.sendMessage(
-        conversation_id: conversation_id,
+        conversation_id: id,
         content: message.text,
         attachments: attachments ?? files,
         // echo_id: echo_id,

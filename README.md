@@ -1,6 +1,11 @@
-<img src="https://user-images.githubusercontent.com/2246121/282256557-1570674b-d142-4198-9740-69404cc6a339.png#gh-light-mode-only" width="100%" alt="Chat dashboard dark mode"/>
-<img src="https://user-images.githubusercontent.com/2246121/282256632-87f6a01b-6467-4e0e-8a93-7bbf66d03a17.png#gh-dark-mode-only" width="100%" alt="Chat dashboard"/>
-
+<p align="center">
+    <img src=".github/screenshots/conversations.png" width="150"/>
+    <img src=".github/screenshots/conversation_chat.png" width="150"/>
+    <img src=".github/screenshots/notifications.png" width="150"/>
+    <img src=".github/screenshots/contacts.png" width="150"/>
+    <img src=".github/screenshots/settings.png" width="150"/>
+    <img src=".github/screenshots/appearance.png" width="150"/>
+</p>
 ---
 
 # chatwoot
@@ -9,11 +14,11 @@ Cross-Platform app for chatwoot! Built with Flutter.
 
 ## Support
 
-| Device  | Status         |
-| ------- | -------------- |
-| Web     | 🕛 Planned     |
-| Mobile  | 💪 In-Progress |
-| Desktop | 🕛 Planned     |
+| Platform | Status         |
+| -------- | -------------- |
+| Web      | 🕛 Planned     |
+| Mobile   | 💪 In-Progress |
+| Desktop  | 🕛 Planned     |
 
 ## Roadmap
 
@@ -28,15 +33,15 @@ Cross-Platform app for chatwoot! Built with Flutter.
 | Reports                      | 🕛 Planned     |
 | Teams (Partially)            | 🕛 Planned     |
 | Accounts (Partially)         | 🕛 Planned     |
-| Inboxes (Partially)          | 🕛 Planned     |
+| Inboxes (Partially)          | 💪 In-Progress |
 | Labels                       | 💪 In-Progress |
 | Automation                   | 🕛 Planned     |
 | Macros (Partially)           | 💪 In-Progress |
 | Agents                       | 🕛 Planned     |
-| Canned Response              | 🕛 Planned     |
+| Canned Response              | 💪 In-Progress |
 | Integrations (Partially)     | 🕛 Planned     |
 | Audit Logs                   | 🕛 Planned     |
-| Custom Attributes            | 🕛 Planned     |
+| Custom Attributes            | 💪 In-Progress |
 | Campaigns                    | 🕛 Planned     |
 | Realtime                     | 💪 In-Progress |
 | Improve performace by SQLite | 💪 In-Progress |

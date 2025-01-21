@@ -2,7 +2,7 @@ import '../controllers/index.dart';
 import '/imports.dart';
 
 class ConversationsView extends GetView<ConversationsController> {
-  final labelService = Get.find<LabelService>();
+  final labels = Get.find<LabelsController>();
   final realtimeService = Get.find<RealtimeService>();
 
   ConversationsView({super.key});
@@ -167,7 +167,7 @@ class ConversationsView extends GetView<ConversationsController> {
           ),
           if (info.labels.isNotEmpty)
             Obx(() {
-              final labels = labelService.items.value;
+              final items = labels.items.value;
 
               return Padding(
                 padding: const EdgeInsets.only(top: 8),
@@ -181,7 +181,7 @@ class ConversationsView extends GetView<ConversationsController> {
                     itemBuilder: (_, i) {
                       final item = info.labels[i];
                       final label =
-                          labels.firstWhereOrNull((e) => e.title == item);
+                          items.firstWhereOrNull((e) => e.title == item);
                       return Chip(
                         label: Row(
                           spacing: 4,

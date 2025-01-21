@@ -1,9 +1,7 @@
-import '../controllers/index.dart';
 import '/imports.dart';
 
 class MacrosView extends GetView<MacrosController> {
   final authService = Get.find<AuthService>();
-  final service = Get.find<MacroService>();
 
   MacrosView({super.key});
 
@@ -33,7 +31,8 @@ class MacrosView extends GetView<MacrosController> {
                 ),
               ),
               Obx(() {
-                final items = service.items.value;
+                final items = controller.items.value;
+
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (_, i) {

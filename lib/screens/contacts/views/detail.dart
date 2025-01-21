@@ -2,33 +2,21 @@ import '/screens/contacts/controllers/detail.dart';
 import '/imports.dart';
 
 class ContactDetailView extends StatelessWidget {
-  final attributeService = Get.find<CustomAttributeService>();
+  final attributeService = Get.find<CustomAttributesController>();
 
-  final ContactDetailController controller;
-  final int contact_id;
+  final ContactDetailController c;
+  final int id;
 
   ContactDetailView({
     super.key,
-    required this.contact_id,
+    required this.id,
     ContactInfo? initial,
-  }) : controller = Get.isRegistered<ContactDetailController>(
-          tag: contact_id.toString(),
-        )
-            ? Get.find<ContactDetailController>(tag: contact_id.toString())
-            : Get.put(
-                ContactDetailController(
-                  contact_id: contact_id,
-                  initial: initial,
-                ),
-                tag: contact_id.toString(),
-              );
+  }) : c = Get.put(ContactDetailController(id, initial: initial), tag: '$id');
 
   @override
   Widget build(BuildContext context) {
-    // final realtime = Get.find<RealtimeService>();
-
     return Obx(() {
-      var info = controller.info.value;
+      final info = c.info.value;
 
       return Scaffold(
         appBar: AppBar(
@@ -108,7 +96,7 @@ class ContactDetailView extends StatelessWidget {
 
   Widget buildAdditionalAttributes(
       ContactAdditionalAttributes additional_attributes) {
-    var unavailableText = t.unavailable;
+    final unavailableText = t.unavailable;
     return Card(
       child: Column(
         children: [
@@ -141,10 +129,10 @@ class ContactDetailView extends StatelessWidget {
   }
 
   Widget buildCustomAttributes(Map<String, dynamic> custom_attributes) {
-    var items = custom_attributes.entries.toList();
+    final items = custom_attributes.entries.toList();
     return Card(
       child: Obx(() {
-        var attributes = attributeService.items.value;
+        final attributes = attributeService.items.value;
 
         return ListView.builder(
           padding: EdgeInsets.zero,
@@ -152,8 +140,8 @@ class ContactDetailView extends StatelessWidget {
           shrinkWrap: true,
           itemCount: items.length,
           itemBuilder: (_, i) {
-            var item = items[i];
-            var label =
+            final item = items[i];
+            final label =
                 attributes.firstWhereOrNull((e) => e.attribute_key == item.key);
             return buildAttribute(
               label: label != null ? label.attribute_display_name : item.key,

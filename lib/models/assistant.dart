@@ -1,3 +1,9 @@
 import '/imports.dart';
 
-abstract class AssistantProvider {}
+class AssistantGenerativePrompt {}
+
+class AssistantGenerativeResult {}
+
+abstract class AssistantProvider {
+  Future<Result<AssistantGenerativeResult>> generative();
+}

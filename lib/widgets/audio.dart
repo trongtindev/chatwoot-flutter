@@ -77,7 +77,7 @@ class AudioPlayerController extends GetxController {
   }
 }
 
-class AudioPlayer extends GetWidget {
+class AudioPlayer extends StatelessWidget {
   final int id;
   final String url;
 

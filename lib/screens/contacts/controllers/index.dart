@@ -26,6 +26,10 @@ class ContactsController extends GetxController {
     getContacts();
   }
 
+  Future<ContactsController> init() async {
+    return this;
+  }
+
   Future<void> getContacts({
     bool? append,
     bool? reset,
@@ -76,7 +80,7 @@ class ContactsController extends GetxController {
 
   void showDetail(ContactInfo info) {
     Get.to(
-      () => ContactDetailView(contact_id: info.id, initial: info),
+      () => ContactDetailView(id: info.id, initial: info),
     );
   }
 

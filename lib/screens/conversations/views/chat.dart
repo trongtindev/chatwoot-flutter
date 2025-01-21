@@ -6,33 +6,27 @@ import '/imports.dart';
 class ConversationChatView extends StatelessWidget {
   final realtimeService = Get.find<RealtimeService>();
 
-  final ConversationChatController controller;
-  final int conversation_id;
+  final ConversationChatController c;
+  final int id;
 
   ConversationChatView({
     super.key,
-    required this.conversation_id,
+    required this.id,
     MessageInfo? initial_message,
-  }) : controller = Get.isRegistered<ConversationChatController>(
-          tag: conversation_id.toString(),
-        )
-            ? Get.find<ConversationChatController>(
-                tag: conversation_id.toString(),
-              )
-            : Get.put(
-                ConversationChatController(
-                  conversation_id: conversation_id,
-                  initial_message: initial_message,
-                ),
-                tag: conversation_id.toString(),
-              );
+  }) : c = Get.put(
+          ConversationChatController(
+            conversation_id: id,
+            initial_message: initial_message,
+          ),
+          tag: id.toString(),
+        );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Obx(() {
-          final info = controller.info.value;
+          final info = c.info.value;
           final typingUsers = realtimeService.typingUsers.value;
 
           if (info != null) {
@@ -52,14 +46,14 @@ class ConversationChatView extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(t.view_details),
-              onTap: controller.showContactDetail,
+              onTap: c.showContactDetail,
             );
           }
           return Container();
         }),
         actions: [
           Obx(() {
-            final resolved = controller.resolved.value;
+            final resolved = c.resolved.value;
             if (resolved) {
               return IconButton(
                 icon: Icon(Icons.refresh_outlined),
@@ -86,17 +80,17 @@ class ConversationChatView extends StatelessWidget {
             children: [
               Expanded(
                 child: Obx(() {
-                  if (controller.error.value.isNotEmpty) {
+                  if (c.error.value.isNotEmpty) {
                     return buildError(context);
                   }
                   return buildMessages();
                 }),
               ),
-              ConversationInput(conversation_id: controller.conversation_id),
+              ConversationInput(id: c.conversation_id),
             ],
           ),
           Obx(() {
-            final loading = controller.loading.value;
+            final loading = c.loading.value;
             if (loading) {
               return Positioned.fill(
                 child: Align(
@@ -115,20 +109,20 @@ class ConversationChatView extends StatelessWidget {
   Widget buildError(BuildContext context) {
     return error(
       context,
-      message: controller.error.value,
+      message: c.error.value,
       onRetry: () {
-        controller.getConversation();
-        controller.getMessages();
+        c.getConversation();
+        c.getMessages();
       },
     );
   }
 
   Widget buildMessages() {
     return Obx(() {
-      var messages = controller.messages;
+      var messages = c.messages;
 
       return ListView.builder(
-        controller: controller.scrollController,
+        controller: c.scrollController,
         reverse: true,
         padding: EdgeInsets.only(left: 8, right: 8),
         itemCount: messages.length,

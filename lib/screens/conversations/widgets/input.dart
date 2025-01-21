@@ -1,53 +1,48 @@
 import '/screens/conversations/controllers/input.dart';
 import '/imports.dart';
 
-class ConversationInput extends GetView<ConversationInputController> {
-  final int conversation_id;
-  const ConversationInput({
+class ConversationInput extends StatelessWidget {
+  final int id;
+  late final ConversationInputController c;
+
+  ConversationInput({
     super.key,
-    required this.conversation_id,
-  });
+    required this.id,
+  }) : c = Get.put(ConversationInputController(id), tag: '$id');
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-      init: ConversationInputController(conversation_id: conversation_id),
-      builder: (_) {
-        return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: controller.onPopInvokedWithResult,
-          child: Obx(() {
-            final isPrivate = controller.isPrivate.value;
-            return Container(
-              decoration: BoxDecoration(
-                color: isPrivate
-                    ? context.theme.colorScheme.tertiaryContainer
-                    : context.theme.colorScheme.surfaceContainer,
-              ),
-              child: Stack(
-                children: [
-                  buildBody(context),
-                  Obx(() {
-                    final isSending = controller.isSending.value;
-                    final sendMessageProgress =
-                        controller.sendMessageProgress.value;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: c.onPopInvokedWithResult,
+      child: Obx(() {
+        final isPrivate = c.isPrivate.value;
+        return Container(
+          decoration: BoxDecoration(
+            color: isPrivate
+                ? context.theme.colorScheme.tertiaryContainer
+                : context.theme.colorScheme.surfaceContainer,
+          ),
+          child: Stack(
+            children: [
+              buildBody(context),
+              Obx(() {
+                final isSending = c.isSending.value;
+                final sendMessageProgress = c.sendMessageProgress.value;
 
-                    if (!isSending) return Container();
-                    return Positioned(
-                      child: LinearProgressIndicator(
-                        value:
-                            sendMessageProgress > 0 && sendMessageProgress < 1
-                                ? sendMessageProgress
-                                : null,
-                      ),
-                    );
-                  }),
-                ],
-              ),
-            );
-          }),
+                if (!isSending) return Container();
+                return Positioned(
+                  child: LinearProgressIndicator(
+                    value: sendMessageProgress > 0 && sendMessageProgress < 1
+                        ? sendMessageProgress
+                        : null,
+                  ),
+                );
+              }),
+            ],
+          ),
         );
-      },
+      }),
     );
   }
 
@@ -63,11 +58,11 @@ class ConversationInput extends GetView<ConversationInputController> {
         children: [
           buildAttachments(),
           Obx(() {
-            final isEmpty = controller.isEmpty.value;
-            final isPrivate = controller.isPrivate.value;
-            final showMore = controller.showMore.value;
-            final showRecorder = controller.showRecorder.value;
-            final isSending = controller.isSending.value;
+            final isEmpty = c.isEmpty.value;
+            final isPrivate = c.isPrivate.value;
+            final showMore = c.showMore.value;
+            final showRecorder = c.showRecorder.value;
+            final isSending = c.isSending.value;
 
             return Column(
               children: [
@@ -77,13 +72,13 @@ class ConversationInput extends GetView<ConversationInputController> {
                       icon: Icon(isPrivate
                           ? Icons.remove_red_eye
                           : Icons.remove_red_eye_outlined),
-                      onPressed: () => controller.isPrivate.value = !isPrivate,
+                      onPressed: () => c.isPrivate.value = !isPrivate,
                     ),
                     Expanded(
                       child: TextField(
                         keyboardType: TextInputType.multiline,
-                        focusNode: controller.focusNode,
-                        controller: controller.message,
+                        focusNode: c.focusNode,
+                        controller: c.message,
                         decoration: InputDecoration(
                           hintText: isPrivate
                               ? t.message_private_hint
@@ -101,19 +96,19 @@ class ConversationInput extends GetView<ConversationInputController> {
                               ? Icons.more_horiz
                               : Icons.more_horiz_outlined,
                         ),
-                        onPressed: controller.toggleMore,
+                        onPressed: c.toggleMore,
                       ),
                     if (isEmpty)
                       IconButton(
                         icon: Icon(
                           showRecorder ? Icons.mic : Icons.mic_outlined,
                         ),
-                        onPressed: controller.toggleRecorder,
+                        onPressed: c.toggleRecorder,
                       ),
                     if (isEmpty)
                       IconButton(
                         icon: Icon(Icons.image_outlined),
-                        onPressed: controller.showFilePicker,
+                        onPressed: c.showFilePicker,
                       ),
                     if (!isEmpty)
                       IconButton(
@@ -123,7 +118,7 @@ class ConversationInput extends GetView<ConversationInputController> {
                               ? null
                               : context.theme.colorScheme.primary,
                         ),
-                        onPressed: isSending ? null : controller.sendMessage,
+                        onPressed: isSending ? null : c.sendMessage,
                       ),
                   ],
                 ),
@@ -178,7 +173,7 @@ class ConversationInput extends GetView<ConversationInputController> {
     return buildBottom(
       context: context,
       child: Obx(() {
-        final isRecording = controller.isRecording.value;
+        final isRecording = c.isRecording.value;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -207,8 +202,7 @@ class ConversationInput extends GetView<ConversationInputController> {
                               width: 32,
                             ),
                           ),
-                          Text(formatDuration(
-                              controller.recorderDuration.value)),
+                          Text(formatDuration(c.recorderDuration.value)),
                         ],
                       ),
                     ),
@@ -219,14 +213,14 @@ class ConversationInput extends GetView<ConversationInputController> {
                     spacing: 16,
                     children: [
                       IconButton.filledTonal(
-                        onPressed: () => controller.stopRecord(cancel: true),
+                        onPressed: () => c.stopRecord(cancel: true),
                         icon: Icon(
                           Icons.delete_outline,
                           size: 48,
                         ),
                       ),
                       IconButton.filled(
-                        onPressed: controller.stopRecord,
+                        onPressed: c.stopRecord,
                         icon: Icon(
                           Icons.send_outlined,
                           size: 48,
@@ -241,7 +235,7 @@ class ConversationInput extends GetView<ConversationInputController> {
                     child: Text(t.tap_to_record),
                   ),
                   IconButton.filled(
-                    onPressed: controller.startRecord,
+                    onPressed: c.startRecord,
                     icon: Icon(
                       Icons.mic_outlined,
                       size: 48,
@@ -255,7 +249,7 @@ class ConversationInput extends GetView<ConversationInputController> {
 
   Widget buildAttachments() {
     return Obx(() {
-      var files = controller.files;
+      var files = c.files;
       if (files.isEmpty) return Container();
       return SizedBox(
         height: 100,

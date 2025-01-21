@@ -262,7 +262,7 @@ class RealtimeService extends GetxService {
   }
 
   Future<void> _onConversationUpdated(ConversationInfo info) async {
-    _logger.d('${info.meta.sender.name}#${info.id}');
+    _logger.d('${info.meta.sender.name}#${info.id} status:${info.status.name}');
     events.emit(RealtimeEventId.conversationUpdated.name, info);
   }
 

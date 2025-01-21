@@ -37,9 +37,6 @@ void main() async {
     // environments
     await loadEnvironments();
 
-    // services
-    await Get.putAsync(() => ThemeService().init());
-
     // sentry
     if (env.SENTRY_DNS != null) {
       await SentryFlutter.init(

@@ -6,9 +6,13 @@ class DbService extends GetxService {
   late Database database;
   final _logger = Logger();
 
-  Future<DbService> init() async {
-    _logger.i('init()');
+  @override
+  void onClose() {
+    database.close();
+    super.onClose();
+  }
 
+  Future<DbService> init() async {
     var appDocumentsDir = await getApplicationCacheDirectory();
     var dbPath = p.join(appDocumentsDir.path, 'databases/data.db');
 
@@ -26,15 +30,6 @@ class DbService extends GetxService {
     var sql = await rootBundle.loadString('assets/sqlite/data.sql');
     if (sql.isEmpty == false) await database.execute(sql);
 
-    _logger.i('init() => successful');
     return this;
-  }
-
-  @override
-  void onClose() async {
-    super.onClose();
-    _logger.i('onClose()');
-    await database.close();
-    _logger.i('onClose() => successful');
   }
 }

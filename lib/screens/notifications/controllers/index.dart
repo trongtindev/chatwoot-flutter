@@ -51,6 +51,10 @@ class NotificationsController extends GetxController {
     super.onClose();
   }
 
+  Future<NotificationsController> init() async {
+    return this;
+  }
+
   Future<void> getNotifications({
     bool? append,
     bool? reset,
@@ -120,7 +124,7 @@ class NotificationsController extends GetxController {
 
     if (info.primary_actor_type == NotificationActorType.Conversation) {
       Get.to(
-        () => ConversationChatView(conversation_id: info.primary_actor_id),
+        () => ConversationChatView(id: info.primary_actor_id),
       );
       return;
     }

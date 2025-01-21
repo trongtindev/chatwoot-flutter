@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "save_changes": "Save changes",
   "profile": "Profile",
   "upload": "Upload",
@@ -27,7 +28,14 @@
   "quit": "Quit",
   "error": "Error",
   "error_not_found": "Resource not found, please try again.",
-  "error_response": "Failed to parse response from server, please try again.",
+  "error_response": "Failed to parse response from server, please try again. {contentTypes}",
+  "@error_response": {
+    "placeholders": {
+      "contentTypes": {
+        "type": "String"
+      }
+    }
+  },
   "error_fetching": "There was an error fetching the information, please try again.",
   "error_no_connection": "You must connect to Wi-fi or a cellular network to get online again.",
   "error_no_accounts": "You don't have access to any chatwoot accounts",
@@ -104,8 +112,10 @@
   "display_name_hint": "display_name_hint",
   "display_name_invalid": "display_name_invalid",
   "integrations": "Integrations",
-  "canned_response": "Canned response",
-  "canned_response_description": "Canned Responses are pre-written reply templates that help you quickly respond to a conversation. Agents can type the '/' character followed by the shortcode to insert a canned response during a conversation.",
+  "canned_response": "Canned Response",
+  "canned_responses": "Canned Responses",
+  "canned_responses_description": "Canned Responses are pre-written reply templates that help you quickly respond to a conversation. Agents can type the '/' character followed by the shortcode to insert a canned response during a conversation.",
+  "canned_response_add": "Add canned response",
   "macros": "Macros",
   "automation": "Automation",
   "inboxes": "Inboxes",

@@ -2,17 +2,14 @@ import '/screens/conversations/controllers/detail.dart';
 import '/imports.dart';
 
 class ConversationDetailView extends StatelessWidget {
-  final ConversationDetailController controller;
-  final int conversation_id;
+  final ConversationDetailController c;
+  final int id;
 
-  ConversationDetailView({super.key, required this.conversation_id})
-      : controller = Get.isRegistered<ConversationDetailController>(
-                tag: conversation_id.toString())
-            ? Get.find<ConversationDetailController>(
-                tag: conversation_id.toString())
-            : Get.put(
-                ConversationDetailController(conversation_id: conversation_id),
-                tag: conversation_id.toString());
+  ConversationDetailView({super.key, required this.id})
+      : c = Get.put(
+          ConversationDetailController(id),
+          tag: '$id',
+        );
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
-import 'package:get/get_state_manager/src/rx_flutter/rx_ticket_provider_mixin.dart';
+import '/screens/conversations/controllers/index.dart';
+import '/screens/notifications/controllers/index.dart';
 import '/screens/conversations/views/index.dart';
 import '/screens/contacts/views/index.dart';
 import '/screens/notifications/views/index.dart';
@@ -15,32 +16,42 @@ class DefaultLayoutController extends GetxController
   }
 
   @override
-  void onReady() {
-    super.onReady();
-    tabIndex.listen((next) => tabController.index = next);
+  void onInit() {
+    super.onInit();
+    tabController.addListener(_onTabController);
+  }
+
+  @override
+  void onClose() {
+    tabController.dispose();
+    super.onClose();
+  }
+
+  void _onTabController() {
+    if (tabController.index == tabIndex.value) return;
+    tabIndex.value = tabController.index;
   }
 }
 
 class DefaultLayout extends GetView<DefaultLayoutController> {
-  const DefaultLayout({super.key});
+  final conversations = Get.find<ConversationsController>();
+  final notifications = Get.find<NotificationsController>();
+
+  DefaultLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
       init: DefaultLayoutController(),
       builder: (_) {
-        return Obx(() {
-          var tabIndex = controller.tabIndex.value;
-          return buildMobile(context, tabIndex);
-        });
+        return buildMobile(context);
       },
     );
   }
 
-  Widget buildMobile(BuildContext context, int tabIndex) {
+  Widget buildMobile(BuildContext context) {
     return Scaffold(
       body: TabBarView(
-        physics: NeverScrollableScrollPhysics(),
         controller: controller.tabController,
         children: [
           ConversationsView(),
@@ -49,32 +60,43 @@ class DefaultLayout extends GetView<DefaultLayoutController> {
           SettingsView(),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: tabIndex,
-        onDestinationSelected: (next) => controller.tabIndex.value = next,
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.chat_outlined),
-            selectedIcon: Icon(Icons.chat),
-            label: t.conversations,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.notifications_outlined),
-            selectedIcon: Icon(Icons.notifications),
-            label: t.notifications,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.group_outlined),
-            selectedIcon: Icon(Icons.group),
-            label: t.contacts,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: t.settings,
-          )
-        ],
-      ),
+      bottomNavigationBar: Obx(() {
+        final tabIndex = controller.tabIndex.value;
+        final conversations_unread_count = conversations.unread_count.value;
+        final notifications_unread_count = notifications.unread_count.value;
+
+        return NavigationBar(
+          selectedIndex: tabIndex,
+          onDestinationSelected: (next) =>
+              controller.tabController.index = next,
+          destinations: [
+            NavigationDestination(
+              icon: Badge(
+                isLabelVisible: conversations_unread_count > 0,
+                label: Text('$conversations_unread_count'),
+                child: Icon(Icons.chat_outlined),
+              ),
+              label: t.conversations,
+            ),
+            NavigationDestination(
+              icon: Badge(
+                isLabelVisible: notifications_unread_count > 0,
+                label: Text('$notifications_unread_count'),
+                child: Icon(Icons.notifications_outlined),
+              ),
+              label: t.notifications,
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.group_outlined),
+              label: t.contacts,
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.settings_outlined),
+              label: t.settings,
+            )
+          ],
+        );
+      }),
     );
   }
 }

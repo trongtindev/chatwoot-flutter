@@ -19,6 +19,17 @@ class ThemeService extends GetxService {
   Timer? _timer;
 
   @override
+  void onInit() {
+    super.onInit();
+
+    if (mode.value == ThemeMode.auto) {
+      update();
+    } else {
+      activeMode.value = mode.value;
+    }
+  }
+
+  @override
   void onReady() {
     super.onReady();
     logger.t('onReady()');
@@ -35,19 +46,6 @@ class ThemeService extends GetxService {
     _timer?.cancel();
   }
 
-  Future<ThemeService> init() async {
-    logger.i('init()');
-
-    if (mode.value == ThemeMode.auto) {
-      update();
-    } else {
-      activeMode.value = mode.value;
-    }
-
-    logger.i('init() => successful');
-    return this;
-  }
-
   void update() {
     if (mode.value != ThemeMode.auto) {
       if (activeMode.value == mode.value) return;
@@ -55,8 +53,8 @@ class ThemeService extends GetxService {
       return;
     }
 
-    var time = DateTime.now();
-    var next =
+    final time = DateTime.now();
+    final next =
         time.hour >= 18 || time.hour <= 6 ? ThemeMode.dark : ThemeMode.light;
     if (next == activeMode.value) return;
     activeMode.value = next;

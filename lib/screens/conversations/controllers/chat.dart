@@ -133,7 +133,7 @@ class ConversationChatController extends GetxController {
   void showContactDetail() {
     Get.to(
       () => ContactDetailView(
-        contact_id: info.value!.meta.sender.id,
+        id: info.value!.meta.sender.id,
       ),
     );
   }

@@ -2,8 +2,8 @@ import '../controllers/index.dart';
 import '/imports.dart';
 
 class ConversationsFilterView extends GetView<ConversationsController> {
-  final inboxService = Get.find<InboxService>();
-  final labelService = Get.find<LabelService>();
+  final inboxes = Get.find<InboxesController>();
+  final labels = Get.find<LabelsController>();
 
   ConversationsFilterView({super.key});
 
@@ -123,7 +123,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
       children: [
         buildLabel(t.filter_by_inbox),
         Obx(() {
-          final items = labelService.items;
+          final items = labels.items.value;
           final filterbyLabels = controller.filter_by_labels.value;
 
           return Card(
@@ -164,7 +164,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
       children: [
         buildLabel(t.filter_by_inbox),
         Obx(() {
-          final items = inboxService.inboxes;
+          final items = inboxes.inboxes.value;
           final filterbyInbox = controller.filter_by_inbox.value;
 
           return Card(

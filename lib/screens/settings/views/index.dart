@@ -5,7 +5,7 @@ import '../../custom_attributes/views/index.dart';
 import '../../inboxes/views/index.dart';
 import '../../macros/views/index.dart';
 import '../../teams/views/index.dart';
-import '../../canned_response/views/index.dart';
+import '../../canned_responses/views/index.dart';
 import '../../labels/views/index.dart';
 import '../controllers/index.dart';
 import 'appearance.dart';
@@ -98,8 +98,8 @@ class SettingsView extends GetView<SettingsController> {
         ),
         SettingTab(
           iconData: Icons.forum_outlined,
-          title: t.canned_response,
-          page: () => CannedResponseView(),
+          title: t.canned_responses,
+          page: () => CannedResponsesView(),
         ),
         if (isAdmin)
           SettingTab(
@@ -205,7 +205,7 @@ class SettingsView extends GetView<SettingsController> {
                               trailing: Icon(trailingIcon),
                               onTap: () {
                                 if (item.page != null) {
-                                  Get.to(item.page);
+                                  Get.to(item.page!);
                                 } else if (item.internalUrl != null) {
                                   openInternalBrowser(item.internalUrl!);
                                 } else if (item.externalUrl != null) {

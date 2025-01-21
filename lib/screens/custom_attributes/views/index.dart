@@ -1,71 +1,70 @@
-import '../controllers/index.dart';
 import '/imports.dart';
 
 class CustomAttributesView extends GetView<CustomAttributesController> {
-  final authService = Get.find<AuthService>();
-  final service = Get.find<CustomAttributeService>();
+  final auth = Get.find<AuthService>();
 
   CustomAttributesView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-      init: CustomAttributesController(),
-      builder: (_) {
-        return Scaffold(
-          body: NestedScrollView(
-            floatHeaderSlivers: true,
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  pinned: true,
-                  floating: true,
-                  expandedHeight: 250.0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    title: Text(t.custom_attributes_title),
-                    centerTitle: true,
-                    background: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Center(
-                        child: Text(
-                          t.custom_attributes_description,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+    return Scaffold(
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              pinned: true,
+              floating: true,
+              expandedHeight: 250.0,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(t.custom_attributes_title),
+                centerTitle: true,
+                background: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      t.custom_attributes_description,
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  bottom: TabBar(
-                    controller: controller.tabController,
-                    tabs: AttributeModel.values.map((e) {
-                      return Tab(
-                        text: e.label,
-                      );
-                    }).toList(),
-                  ),
                 ),
-              ];
-            },
-            body: TabBarView(
+              ),
+            ),
+          ];
+        },
+        body: Column(
+          children: [
+            TabBar(
               controller: controller.tabController,
-              children: AttributeModel.values.map((e) {
-                return buildList(context, e);
+              tabs: AttributeModel.values.map((e) {
+                return Tab(
+                  text: e.label,
+                );
               }).toList(),
             ),
-          ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {},
-            label: Text(t.custom_attributes_add),
-            icon: Icon(Icons.add_outlined),
-          ),
-        );
-      },
+            Expanded(
+              child: TabBarView(
+                controller: controller.tabController,
+                children: AttributeModel.values.map((e) {
+                  return buildList(context, e);
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: Text(t.custom_attributes_add),
+        icon: Icon(Icons.add_outlined),
+      ),
     );
   }
 
   Widget buildList(BuildContext context, AttributeModel model) {
     return Obx(() {
       final items =
-          service.items.value.where((e) => e.attribute_model == model);
+          controller.items.value.where((e) => e.attribute_model == model);
       return ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: items.length,
@@ -77,7 +76,7 @@ class CustomAttributesView extends GetView<CustomAttributesController> {
   }
 
   Widget buildItem(BuildContext context, CustomAttribute info) {
-    final isAdmin = authService.profile.value!.role == UserRole.administrator;
+    final isAdmin = auth.profile.value!.role == UserRole.administrator;
     return ListTile(
       title: Text(info.attribute_display_name),
       subtitle: Text(info.attribute_description),
