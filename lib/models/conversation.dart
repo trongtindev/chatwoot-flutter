@@ -10,7 +10,7 @@ class ConversationAssigneeInfo {
   final String? email;
   final String? available_name;
   final String name;
-  final ProfileRole? role;
+  final UserRole? role;
   final String? avatar_url;
   final String thumbnail;
   final dynamic custom_role_id; // TODO: unk type
@@ -35,7 +35,7 @@ class ConversationAssigneeInfo {
         ? AvailabilityStatus.values.byName(json['availability_status'])
         : null;
     var role =
-        json['role'] != null ? ProfileRole.values.byName(json['role']) : null;
+        json['role'] != null ? UserRole.values.byName(json['role']) : null;
 
     return ConversationAssigneeInfo(
       id: json['id'],
@@ -120,7 +120,7 @@ class ConversationInfo {
   final ConversationMeta meta;
   final int id;
   final List<MessageInfo> messages;
-  final int account_id;
+  final int? account_id;
   final String? uuid;
   final ConversationAttribute? additional_attributes;
   final DateTime? agent_last_seen_at;
@@ -147,7 +147,7 @@ class ConversationInfo {
     required this.meta,
     required this.id,
     required this.messages,
-    required this.account_id,
+    this.account_id,
     this.uuid,
     this.additional_attributes,
     this.agent_last_seen_at,

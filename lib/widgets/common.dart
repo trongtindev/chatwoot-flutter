@@ -97,7 +97,10 @@ Widget emptyState(
   String? image,
   required String title,
   required String description,
+  List<Widget>? actions,
 }) {
+  actions ??= [];
+
   return SizedBox(
     width: double.infinity,
     child: Padding(
@@ -128,5 +131,20 @@ Widget emptyState(
         ],
       ),
     ),
+  );
+}
+
+Widget errorState(
+  BuildContext context, {
+  String? title,
+  required String error,
+  StackTrace? stackTrace,
+  Function()? onRetry,
+}) {
+  return emptyState(
+    context,
+    image: 'error.png',
+    title: t.error,
+    description: error.toString(),
   );
 }

@@ -5,15 +5,17 @@ import 'change_url.dart';
 import 'forgot_password.dart';
 
 class LoginView extends GetView<LoginController> {
-  const LoginView({super.key});
+  final api = Get.find<ApiService>();
+
+  final bool? logout;
+  LoginView({super.key, this.logout});
 
   @override
   Widget build(BuildContext context) {
-    final api = Get.find<ApiService>();
     var width = double.infinity; // TODO: responsive
 
     return GetBuilder(
-      init: LoginController(),
+      init: LoginController(logout: logout),
       builder: (_) {
         return Scaffold(
           body: buildBody(

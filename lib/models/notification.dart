@@ -1,24 +1,5 @@
 import '/imports.dart';
 
-class ListNotificationMeta extends ApiListMeta {
-  int unread_count;
-
-  ListNotificationMeta({
-    required this.unread_count,
-    required super.count,
-    required super.current_page,
-  });
-
-  factory ListNotificationMeta.fromJson(dynamic json) {
-    var base = ApiListMeta.fromJson(json);
-    return ListNotificationMeta(
-      unread_count: json['unread_count'],
-      count: base.count,
-      current_page: base.current_page,
-    );
-  }
-}
-
 class NotificationPrimaryActorMeta {
   final SenderInfo sender;
 
@@ -48,19 +29,19 @@ class NotificationPrimaryActor {
 }
 
 class NotificationInfo {
-  int id;
-  NotificationType notification_type;
-  String push_message_title;
-  NotificationActorType primary_actor_type;
-  int primary_actor_id;
-  NotificationPrimaryActor primary_actor;
+  final int id;
+  final NotificationType notification_type;
+  final String push_message_title;
+  final NotificationActorType primary_actor_type;
+  final int primary_actor_id;
+  final NotificationPrimaryActor primary_actor;
   DateTime? read_at;
-  dynamic secondary_actor; // TODO: unk type
-  UserInfo user;
-  DateTime created_at;
-  DateTime last_activity_at;
-  dynamic snoozed_until; // TODO: unk type
-  dynamic meta;
+  final dynamic secondary_actor; // TODO: unk type
+  final UserInfo? user;
+  final DateTime created_at;
+  final DateTime last_activity_at;
+  final dynamic snoozed_until; // TODO: unk type
+  final dynamic meta;
 
   NotificationInfo({
     required this.id,
@@ -71,7 +52,7 @@ class NotificationInfo {
     required this.primary_actor,
     this.read_at,
     required this.secondary_actor,
-    required this.user,
+    this.user,
     required this.created_at,
     required this.last_activity_at,
     required this.snoozed_until,
@@ -79,9 +60,9 @@ class NotificationInfo {
   });
 
   factory NotificationInfo.fromJson(dynamic json) {
-    var read_at =
+    final read_at =
         json['read_at'] != null ? DateTime.parse(json['read_at']) : null;
-    var primary_actor =
+    final primary_actor =
         NotificationPrimaryActor.fromJson(json['primary_actor']);
 
     return NotificationInfo(
@@ -95,13 +76,32 @@ class NotificationInfo {
       primary_actor: primary_actor,
       read_at: read_at, // 1737081406
       secondary_actor: json['secondary_actor'],
-      user: UserInfo.fromJson(json['user']),
+      user: json['user'] != null ? UserInfo.fromJson(json['user']) : null,
       created_at: DateTime.fromMillisecondsSinceEpoch(
           json['created_at'] * 1000), // 1737081406
       last_activity_at: DateTime.fromMillisecondsSinceEpoch(
           json['last_activity_at'] * 1000), // 1737081406
       snoozed_until: json['snoozed_until'],
       meta: json['meta'],
+    );
+  }
+}
+
+class ListNotificationMeta extends ApiListMeta {
+  int unread_count;
+
+  ListNotificationMeta({
+    required this.unread_count,
+    required super.count,
+    required super.current_page,
+  });
+
+  factory ListNotificationMeta.fromJson(dynamic json) {
+    var base = ApiListMeta.fromJson(json);
+    return ListNotificationMeta(
+      unread_count: json['unread_count'],
+      count: base.count,
+      current_page: base.current_page,
     );
   }
 }

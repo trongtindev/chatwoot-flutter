@@ -5,12 +5,21 @@ class LoginController extends GetxController {
   final _auth = Get.find<AuthService>();
   final _logger = Logger();
 
+  final bool? logout;
+  LoginController({this.logout});
+
   final formKey = GlobalKey<FormState>();
   final email = TextEditingController();
   final password = TextEditingController();
   final visiblePassword = false.obs;
   final isSigning = false.obs;
   final canSubmit = false.obs;
+
+  @override
+  void onReady() {
+    super.onReady();
+    if (logout != null && logout!) _auth.logout();
+  }
 
   void toggleVisiblePassword() {
     visiblePassword.value = !visiblePassword.value;

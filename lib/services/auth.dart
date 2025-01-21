@@ -19,8 +19,6 @@ class AuthService extends GetxService {
   Rx<bool> isAuthorized = false.obs;
 
   Future<AuthService> init() async {
-    _logger.i('init()');
-
     profile.listen((data) {
       if (kDebugMode) print(profile);
       isAuthorized.value = data != null;
@@ -31,8 +29,7 @@ class AuthService extends GetxService {
     return this;
   }
 
-  Future<void> signOut() async {
-    _logger.i('signOut()');
+  Future<void> logout() async {
     profile.value = null;
   }
 }

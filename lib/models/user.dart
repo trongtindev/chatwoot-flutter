@@ -5,8 +5,8 @@ class UserInfo {
   final int? account_id;
   final String name;
   final String available_name;
-  final String avatar_url;
-  final AvailabilityStatus availability_status;
+  final String? avatar_url;
+  final AvailabilityStatus? availability_status;
   final bool auto_offline;
   final bool confirmed;
   final String thumbnail;
@@ -17,8 +17,8 @@ class UserInfo {
     this.account_id,
     required this.name,
     required this.available_name,
-    required this.avatar_url,
-    required this.availability_status,
+    this.avatar_url,
+    this.availability_status,
     required this.thumbnail,
     required this.auto_offline,
     required this.confirmed,
@@ -26,14 +26,17 @@ class UserInfo {
   });
 
   factory UserInfo.fromJson(dynamic json) {
+    final availability_status = json['availability_status'] != null
+        ? AvailabilityStatus.values.byName(json['availability_status'])
+        : null;
+
     return UserInfo(
       id: json['id'],
       account_id: json['account_id'],
       name: json['name'],
       available_name: json['available_name'],
       avatar_url: json['avatar_url'],
-      availability_status:
-          AvailabilityStatus.values.byName(json['availability_status']),
+      availability_status: availability_status,
       thumbnail: json['thumbnail'],
       auto_offline: json['auto_offline'] ?? false,
       confirmed: json['confirmed'] ?? false,

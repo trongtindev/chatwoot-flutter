@@ -2,7 +2,7 @@ import '/screens/contacts/controllers/detail.dart';
 import '/imports.dart';
 
 class ContactDetailView extends StatelessWidget {
-  final attributeService = Get.find<AttributeService>();
+  final attributeService = Get.find<CustomAttributeService>();
 
   final ContactDetailController controller;
   final int contact_id;

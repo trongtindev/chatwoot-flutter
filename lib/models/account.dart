@@ -1,19 +1,11 @@
 import '/imports.dart';
 
-enum AccountStatus { active }
-
-enum AccountRole { administrator }
-
-enum AccountPermission { administrator }
-
-// enum AccountAvailability { online }
-
 class AccountInfo {
   final int id;
   final String name;
   final AccountStatus status;
-  final AccountRole role;
-  final List<AccountPermission> permissions;
+  final UserRole role;
+  final List<UserRole> permissions;
   final String availability; // TODO: unk
   final AvailabilityStatus availability_status; // TODO: unk
   final bool auto_offline;
@@ -39,10 +31,9 @@ class AccountInfo {
       id: json['id'],
       name: json['name'],
       status: AccountStatus.values.byName(json['status']),
-      role: AccountRole.values.byName(json['role']),
-      permissions: permissions
-          .map((e) => AccountPermission.values.byName(e.toString()))
-          .toList(),
+      role: UserRole.values.byName(json['role']),
+      permissions:
+          permissions.map((e) => UserRole.values.byName(e.toString())).toList(),
       availability: json['availability'],
       availability_status:
           AvailabilityStatus.values.byName(json['availability_status']),

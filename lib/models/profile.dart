@@ -1,11 +1,5 @@
 import '/imports.dart';
 
-// class InboxFilterBy {
-//   String type;
-//   String status;
-//   String sort_by;
-// }
-
 // class UISettings {
 //   bool rtl_view;
 //   bool is_macro_open;
@@ -35,10 +29,10 @@ class ProfileInfo {
   final String name;
   final String provider;
   final String pubsub_token;
-  final ProfileRole role; // administrator
+  final UserRole role; // administrator
   // final UISettings ui_settings;
   final String uid;
-  final ProfileType type;
+  final ProfileType? type;
   final List<AccountInfo> accounts;
 
   const ProfileInfo({
@@ -48,7 +42,7 @@ class ProfileInfo {
     required this.avatar_url,
     required this.confirmed,
     required this.display_name,
-    required this.message_signature,
+    this.message_signature,
     required this.email,
     required this.id,
     required this.inviter_id,
@@ -57,11 +51,13 @@ class ProfileInfo {
     required this.pubsub_token,
     required this.role,
     required this.uid,
-    required this.type,
+    this.type,
     required this.accounts,
   });
 
   factory ProfileInfo.fromJson(dynamic json) {
+    var type =
+        json['type'] != null ? ProfileType.values.byName(json['type']) : null;
     List<dynamic> accounts = json['accounts'];
 
     return ProfileInfo(
@@ -70,7 +66,7 @@ class ProfileInfo {
       available_name: json['available_name'],
       avatar_url: json['avatar_url'],
       confirmed: json['confirmed'],
-      display_name: json['display_name'],
+      display_name: json['display_name'] ?? json['name'],
       message_signature: json['message_signature'],
       email: json['email'],
       id: json['id'],
@@ -78,9 +74,9 @@ class ProfileInfo {
       name: json['name'],
       provider: json['provider'],
       pubsub_token: json['pubsub_token'],
-      role: ProfileRole.values.byName(json['role']),
+      role: UserRole.values.byName(json['role']),
       uid: json['uid'],
-      type: ProfileType.values.byName(json['type']),
+      type: type,
       accounts: accounts.map(AccountInfo.fromJson).toList(),
     );
   }
@@ -102,7 +98,7 @@ class ProfileInfo {
       'pubsub_token': pubsub_token,
       'role': role.name,
       'uid': uid,
-      'type': type.name,
+      'type': type?.name,
       'accounts': accounts.map((e) => e.toJson()).toList(),
     };
   }

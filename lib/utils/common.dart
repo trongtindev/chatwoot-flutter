@@ -54,3 +54,39 @@ T valueOrDefault<T>(T? value, T defaultValue) {
   }
   return value ?? defaultValue;
 }
+
+Future<bool> confirm(String message) async {
+  final result = await Get.dialog<bool?>(AlertDialog(
+    title: Text(t.confirm),
+    content: Text(message),
+    actions: [
+      TextButton(
+        onPressed: () => Get.back(),
+        child: Text(t.cancel),
+      ),
+      TextButton(
+        onPressed: () => Get.back(result: true),
+        child: Text(t.confirm),
+      )
+    ],
+  ));
+  return result ?? false;
+}
+
+Future<bool> confirmDelete({required String name}) async {
+  final result = await Get.dialog<bool?>(AlertDialog(
+    title: Text(t.confirm_delete),
+    content: Text(t.confirm_delete_message(name)),
+    actions: [
+      TextButton(
+        onPressed: () => Get.back(),
+        child: Text(t.cancel),
+      ),
+      TextButton(
+        onPressed: () => Get.back(result: true),
+        child: Text(t.delete),
+      )
+    ],
+  ));
+  return result ?? false;
+}

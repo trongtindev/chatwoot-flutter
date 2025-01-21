@@ -1,8 +1,15 @@
 import '/imports.dart';
+import '../../agents/views/index.dart';
+import '../../audit_logs/views/index.dart';
+import '../../custom_attributes/views/index.dart';
+import '../../inboxes/views/index.dart';
+import '../../macros/views/index.dart';
+import '../../teams/views/index.dart';
 import '../../canned_response/views/index.dart';
 import '../../labels/views/index.dart';
 import '../controllers/index.dart';
 import 'appearance.dart';
+import 'change_password.dart';
 import 'profile.dart';
 
 class SettingTab {
@@ -21,13 +28,14 @@ class SettingTab {
   });
 }
 
-class SettingsView extends StatelessWidget {
-  final auth = Get.find<AuthService>();
+class SettingsView extends GetView<SettingsController> {
+  final authService = Get.find<AuthService>();
 
   SettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isAdmin = authService.profile.value!.role == UserRole.administrator;
     final items = [
       [
         SettingTab(
@@ -38,59 +46,73 @@ class SettingsView extends StatelessWidget {
         SettingTab(
           iconData: Icons.lock_outline,
           title: t.change_password,
-          page: () => SettingsProfileView(),
+          page: () => SettingsChangePasswordView(),
         ),
       ],
       [
-        SettingTab(
-          iconData: Icons.work_outline,
-          title: t.account,
-        ),
-        SettingTab(
-          iconData: Icons.support_agent_outlined,
-          title: t.agents,
-        ),
-        SettingTab(
-          iconData: Icons.groups_2_outlined,
-          title: t.teams,
-        ),
-        SettingTab(
-          iconData: Icons.all_inbox_outlined,
-          title: t.inboxes,
-        ),
-        SettingTab(
-          iconData: Icons.label_outline,
-          title: t.labels,
-          page: () => LabelsView(),
-        ),
-        SettingTab(
-          iconData: Icons.code_outlined,
-          title: t.custom_attributes,
-        ),
-        SettingTab(
-          iconData: Icons.auto_mode_outlined,
-          title: t.automation,
-          internalUrl: 'settings/automation/list',
-        ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.work_outline,
+            title: t.account,
+          ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.support_agent_outlined,
+            title: t.agents,
+            page: () => AgentsView(),
+          ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.groups_2_outlined,
+            title: t.teams,
+            page: () => TeamsView(),
+          ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.all_inbox_outlined,
+            title: t.inboxes,
+            page: () => InboxesView(),
+          ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.label_outline,
+            title: t.labels,
+            page: () => LabelsView(),
+          ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.code_outlined,
+            title: t.custom_attributes,
+            page: () => CustomAttributesView(),
+          ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.auto_mode_outlined,
+            title: t.automation,
+            internalUrl: 'settings/automation/list',
+          ),
         SettingTab(
           iconData: Icons.code_outlined,
           title: t.macros,
-          internalUrl: 'settings/macros',
+          page: () => MacrosView(),
         ),
         SettingTab(
           iconData: Icons.forum_outlined,
           title: t.canned_response,
           page: () => CannedResponseView(),
         ),
-        SettingTab(
-          iconData: Icons.integration_instructions_outlined,
-          title: t.integrations,
-          internalUrl: 'settings/integrations',
-        ),
-        SettingTab(
-          iconData: Icons.history_outlined,
-          title: t.audit_logs,
-        ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.integration_instructions_outlined,
+            title: t.integrations,
+            internalUrl: 'settings/integrations',
+          ),
+        if (isAdmin)
+          SettingTab(
+            iconData: Icons.history_outlined,
+            title: t.audit_logs,
+            page: () => AuditLogsView(),
+          ),
       ],
       [
         SettingTab(
@@ -133,69 +155,75 @@ class SettingsView extends StatelessWidget {
   }
 
   Widget buildMobile(BuildContext context, List<List<SettingTab>> items) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(t.settings),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Column(
+    return GetBuilder(
+      init: SettingsController(),
+      builder: (_) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(t.settings),
+            centerTitle: true,
+          ),
+          body: ListView(
+            padding: EdgeInsets.zero,
             children: [
-              Obx(() {
-                var profile = auth.profile.value!;
-                return profileInfo(context, profile: profile);
-              }),
-              warningButton(
-                label: t.edit,
-                onPressed: () {},
-              ),
-              Padding(padding: EdgeInsets.all(8)),
-              ListView.builder(
-                padding: EdgeInsets.all(4),
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: items.length,
-                itemBuilder: (_, i) {
-                  return Card(
-                    child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: items[i].length,
-                      itemBuilder: (_, j) {
-                        var item = items[i][j];
-                        var trailingIcon = Icons.chevron_right;
+              Column(
+                children: [
+                  Obx(() {
+                    var profile = authService.profile.value!;
+                    return profileInfo(context, profile: profile);
+                  }),
+                  warningButton(
+                    label: t.logout,
+                    appendIcon: Icon(Icons.logout_outlined),
+                    onPressed: controller.logout,
+                  ),
+                  Padding(padding: EdgeInsets.all(8)),
+                  ListView.builder(
+                    padding: EdgeInsets.all(4),
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    itemBuilder: (_, i) {
+                      return Card(
+                        child: ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: items[i].length,
+                          itemBuilder: (_, j) {
+                            var item = items[i][j];
+                            var trailingIcon = Icons.chevron_right;
 
-                        if (item.internalUrl != null) {
-                          trailingIcon = Icons.open_in_browser;
-                        } else if (item.externalUrl != null) {
-                          trailingIcon = Icons.open_in_new;
-                        }
-
-                        return ListTile(
-                          leading: Icon(item.iconData),
-                          title: Text(item.title),
-                          trailing: Icon(trailingIcon),
-                          onTap: () {
-                            if (item.page != null) {
-                              Get.to(item.page);
-                            } else if (item.internalUrl != null) {
-                              openInternalBrowser(item.internalUrl!);
+                            if (item.internalUrl != null) {
+                              trailingIcon = Icons.open_in_browser;
                             } else if (item.externalUrl != null) {
-                              openBrowser(item.externalUrl!);
+                              trailingIcon = Icons.open_in_new;
                             }
+
+                            return ListTile(
+                              leading: Icon(item.iconData),
+                              title: Text(item.title),
+                              trailing: Icon(trailingIcon),
+                              onTap: () {
+                                if (item.page != null) {
+                                  Get.to(item.page);
+                                } else if (item.internalUrl != null) {
+                                  openInternalBrowser(item.internalUrl!);
+                                } else if (item.externalUrl != null) {
+                                  openBrowser(item.externalUrl!);
+                                }
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
-                  );
-                },
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

@@ -1,4 +1,4 @@
-import '/screens/conversations/views/index_filter.dart';
+import '../widgets/filter.dart';
 import '/screens/conversations/views/chat.dart';
 import '/imports.dart';
 
@@ -11,17 +11,31 @@ class ConversationsController extends GetxController {
 
   final all_count = 0.obs;
   final mine_count = 0.obs;
-  final conversations = RxList<ConversationInfo>();
+  final items = RxList<ConversationInfo>();
   final loading = true.obs;
   final error = ''.obs;
   final page = 1.obs;
-  final isLoadMore = false.obs;
-  final isNoMore = false.obs;
-  final assigneeType = AssigneeType.mine.obs;
-  final status = ConversationStatus.open.obs;
+  final is_load_more = false.obs;
+  final is_no_more = false.obs;
+  final assignee_type = PersistentRxCustom(
+    AssigneeType.mine,
+    key: 'conversations:assignee_type',
+    encode: (value) => value.name,
+    decode: (value) => AssigneeType.values.byName(value),
+  );
+  final filter_by_status = PersistentRxCustom(
+    ConversationStatus.open,
+    key: 'conversations:filter_by_status',
+    encode: (value) => value.name,
+    decode: (value) => ConversationStatus.values.byName(value),
+  );
   final sort_order = ConversationSortType.last_activity_at_desc.obs;
-  final filterbyInbox = Rxn<int>();
+  final filter_by_inbox = Rxn<int>();
+  final filter_by_labels = RxList<LabelInfo>();
 
+  EventListener<ConversationInfo>? _onConversationCreatedListener;
+  EventListener<ConversationInfo>? _onConversationUpdatedListener;
+  EventListener<ConversationInfo>? _onConversationReadListener;
   EventListener<MessageInfo>? _messageCreatedListener;
   EventListener<MessageInfo>? _messageUpdatedListener;
 
@@ -29,19 +43,35 @@ class ConversationsController extends GetxController {
   void onInit() {
     super.onInit();
 
-    assigneeType.listen((next) => getConversations(reset: true));
-    status.listen((next) => getConversations(reset: true));
+    assignee_type.listen((next) => getConversations(reset: true));
+    filter_by_status.listen((next) => getConversations(reset: true));
     sort_order.listen((next) => getConversations(reset: true));
-    filterbyInbox.listen((next) => getConversations(reset: true));
+    filter_by_inbox.listen((next) => getConversations(reset: true));
+    filter_by_labels.listen((next) => getConversations(reset: true));
+
+    _onConversationCreatedListener = _realtime.events.on(
+      RealtimeEventId.conversationCreated.name,
+      _onConversationCreated,
+    );
+
+    _onConversationUpdatedListener = _realtime.events.on(
+      RealtimeEventId.conversationUpdated.name,
+      _onConversationUpdated,
+    );
+
+    _onConversationReadListener = _realtime.events.on(
+      RealtimeEventId.conversationRead.name,
+      _onConversationRead,
+    );
 
     _messageCreatedListener = _realtime.events.on(
       RealtimeEventId.messageCreated.name,
-      _onMessageHandle,
+      _onMessageCreated,
     );
 
     _messageUpdatedListener = _realtime.events.on(
       RealtimeEventId.messageUpdated.name,
-      _onMessageHandle,
+      _onMessageUpdated,
     );
   }
 
@@ -55,6 +85,9 @@ class ConversationsController extends GetxController {
 
   @override
   void onClose() {
+    _onConversationCreatedListener?.cancel();
+    _onConversationUpdatedListener?.cancel();
+    _onConversationReadListener?.cancel();
     _messageCreatedListener?.cancel();
     _messageUpdatedListener?.cancel();
 
@@ -72,21 +105,22 @@ class ConversationsController extends GetxController {
       loading.value = true;
       if (reset) {
         page.value = 1;
-        isLoadMore.value = false;
-        isNoMore.value = false;
+        is_load_more.value = false;
+        is_no_more.value = false;
       }
 
       var result = await _api.listConversations(
         account_id: _auth.profile.value!.account_id,
         page: page.value,
-        status: status.value,
-        inbox_id: filterbyInbox.value,
-        assignee_type: assigneeType.value,
+        status: filter_by_status.value,
+        labels: filter_by_labels.map((e) => e.title).toList(),
+        inbox_id: filter_by_inbox.value,
+        assignee_type: assignee_type.value,
         sort_order: sort_order.value,
         onCacheHit: append || reset
             ? null
             : (data) {
-                conversations.value = data.payload;
+                items.value = data.payload;
                 all_count.value = data.meta.all_count;
                 mine_count.value = data.meta.mine_count;
               },
@@ -94,11 +128,11 @@ class ConversationsController extends GetxController {
       var data = result.getOrThrow();
 
       if (append) {
-        conversations.addAll(data.payload);
+        items.addAll(data.payload);
       } else {
-        conversations.value = data.payload;
+        items.value = data.payload;
       }
-      isNoMore.value =
+      is_no_more.value =
           data.payload.isEmpty || data.payload.length < env.PAGE_SIZE;
 
       all_count.value = data.meta.all_count;
@@ -123,8 +157,10 @@ class ConversationsController extends GetxController {
   Future<void> readAll() async {}
 
   Future<void> onTap(ConversationInfo info) async {
-    final index = conversations.indexWhere((e) => e.id == info.id);
-    conversations[index].unread_count = 0;
+    if (info.unread_count > 0) {
+      info.unread_count = 0;
+      items.refresh();
+    }
 
     Get.to(
       () => ConversationChatView(
@@ -135,27 +171,70 @@ class ConversationsController extends GetxController {
   }
 
   Future<void> loadMore() async {
-    if (isNoMore.value) return;
-    if (isLoadMore.value) return;
+    if (is_no_more.value) return;
+    if (is_load_more.value) return;
 
     page.value += 1;
-    isLoadMore.value = true;
+    is_load_more.value = true;
     await getConversations(append: true);
-    isLoadMore.value = false;
+    is_load_more.value = false;
   }
 
-  void _onMessageHandle(MessageInfo info) {
-    var element =
-        conversations.firstWhereOrNull((e) => e.id == info.conversation_id);
-    if (element == null) {
-      _logger.d('_onMessageHandle() => not found element!');
+  void _onConversationCreated(ConversationInfo info) {
+    items.insert(0, info);
+  }
+
+  void _onConversationUpdated(ConversationInfo info) {
+    final index = items.indexWhere((e) => e.id == info.id);
+
+    if (filter_by_status.value == info.status) {
+      if (index >= 0) {
+        items[index] = info;
+      } else {
+        items.insert(0, info);
+      }
       return;
     }
 
-    element.last_non_activity_message = info;
-    element.last_activity_at = info.created_at;
+    if (index >= 0) items.removeAt(index);
+  }
 
-    conversations
-        .sort((a, b) => b.last_activity_at.compareTo(a.last_activity_at));
+  void _onConversationRead(ConversationInfo info) {
+    final index = items.indexWhere((e) => e.id == info.id);
+    if (index < 0) return;
+
+    items[index].unread_count = 0;
+    items.refresh();
+  }
+
+  void _onMessageCreated(MessageInfo info) {
+    final index = items.indexWhere((e) => e.id == info.conversation_id);
+    if (index < 0) return;
+
+    items[index].last_non_activity_message = info;
+    items[index].last_activity_at = info.updated_at ?? info.created_at;
+    items[index].unread_count += 1;
+
+    items.sort((a, b) => b.last_activity_at.compareTo(a.last_activity_at));
+    // conversations.refresh();
+  }
+
+  void _onMessageUpdated(MessageInfo info) {
+    final index = items.indexWhere((e) => e.id == info.conversation_id);
+    if (index < 0) return;
+
+    items[index].last_non_activity_message = info;
+    items[index].last_activity_at = info.updated_at ?? info.created_at;
+
+    items.sort((a, b) => b.last_activity_at.compareTo(a.last_activity_at));
+    // conversations.refresh();
+  }
+
+  void toggleLabel(LabelInfo info) {
+    if (filter_by_labels.contains(info)) {
+      filter_by_labels.remove(info);
+      return;
+    }
+    filter_by_labels.add(info);
   }
 }

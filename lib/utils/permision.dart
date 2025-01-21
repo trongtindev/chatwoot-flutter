@@ -44,7 +44,7 @@ Future<bool> ensurePermissionsGranted({
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text(t.close),
+            child: Text(t.understand),
           )
         ],
       ));

@@ -31,6 +31,8 @@ Widget warningButton({
   bool? loading,
   required void Function()? onPressed,
   bool? block,
+  Icon? prependIcon,
+  Icon? appendIcon,
 }) {
   block ??= false;
   loading ??= false;
@@ -47,7 +49,15 @@ Widget warningButton({
                 strokeWidth: 2,
               ),
             )
-          : Text(label),
+          : Row(
+              spacing: 8,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (prependIcon != null) prependIcon,
+                Text(label),
+                if (appendIcon != null) appendIcon,
+              ],
+            ),
     ),
   );
 }

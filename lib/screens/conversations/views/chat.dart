@@ -4,7 +4,7 @@ import '/screens/conversations/widgets/input.dart';
 import '/imports.dart';
 
 class ConversationChatView extends StatelessWidget {
-  final realtime = Get.find<RealtimeService>();
+  final realtimeService = Get.find<RealtimeService>();
 
   final ConversationChatController controller;
   final int conversation_id;
@@ -33,16 +33,18 @@ class ConversationChatView extends StatelessWidget {
       appBar: AppBar(
         title: Obx(() {
           final info = controller.info.value;
+          final typingUsers = realtimeService.typingUsers.value;
+
           if (info != null) {
             return ListTile(
               contentPadding: EdgeInsets.only(),
               leading: avatar(
                 context,
                 url: info.meta.sender.thumbnail,
+                size: 28,
                 fallback: info.meta.sender.name.substring(0, 1),
-                isOnline: realtime.online.contains(info.meta.sender.id),
-                width: 28,
-                height: 28,
+                isOnline: realtimeService.online.contains(info.meta.sender.id),
+                isTyping: typingUsers.contains(info.meta.sender.id),
               ),
               title: Text(
                 info.meta.sender.name,

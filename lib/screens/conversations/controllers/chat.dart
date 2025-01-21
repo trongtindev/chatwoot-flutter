@@ -108,7 +108,7 @@ class ConversationChatController extends GetxController {
       );
       var data = result.getOrThrow();
 
-      if (messages.isNotEmpty) {
+      if (before != null) {
         messages.addAll(data.payload.reversed);
       } else if (data.payload.isNotEmpty) {
         messages.value = data.payload.reversed.toList();

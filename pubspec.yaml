@@ -36,13 +36,14 @@ dependencies:
   timeago: ^3.7.0 # Converts a date into a humanized text
   flutter_native_splash: ^2.4.4 # Customize Flutter's default white native splash screen
   flutter_markdown: ^0.7.5 # A markdown renderer for Flutter.
-  # web_socket_channel: ^3.0.1 # It provides a cross-platform WebSocketChannel API
   action_cable: ^1.3.0 # ActionCable is the default realtime websocket framework and protocol in Rails.
   flutter_local_notifications: ^18.0.1 # A cross platform plugin for displaying local notifications.
   permission_handler: ^11.3.1 # Request permissions and check their status
   app_settings: ^5.1.1 # for opening iOS and Android phone settings from an app.
   chewie: ^1.9.2 # video player for Flutter with a heart of gold.
   just_audio: ^0.9.43 # feature-rich audio player
+  record: ^5.2.0 # Audio recorder from microphone to a given file path or stream.
+  mime: ^2.0.0 # MIME type definitions and for processing streams of MIME multipart media types.
 
   # desktop
   window_manager: ^0.4.3 # This plugin allows Flutter desktop apps to resizing and repositioning the window.

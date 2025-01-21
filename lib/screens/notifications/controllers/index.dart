@@ -1,11 +1,12 @@
 import '/screens/conversations/views/chat.dart';
-import '/screens/notifications/views/index_filter.dart';
+import '../widgets/filter.dart';
 import '/imports.dart';
 
 class NotificationsController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
   final _auth = Get.find<AuthService>();
+  final _realtimeService = Get.find<RealtimeService>();
 
   final unread_count = 0.obs;
   final includes = NotificationStatus.values.obs;
@@ -16,11 +17,38 @@ class NotificationsController extends GetxController {
   final isLoadMore = false.obs;
   final isNoMore = false.obs;
 
+  EventListener<NotificationInfo>? _onCreatedListener;
+  EventListener<int>? _onDeletedListener;
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    includes.listen((_) => getNotifications());
+
+    _realtimeService.events.on(
+      RealtimeEventId.notificationCreated.name,
+      _onCreated,
+    );
+    _realtimeService.events.on(
+      RealtimeEventId.notificationDeleted.name,
+      _onDeleted,
+    );
+  }
+
   @override
   void onReady() {
     super.onReady();
+
     getNotifications();
-    includes.listen((_) => getNotifications());
+  }
+
+  @override
+  void onClose() {
+    _onCreatedListener?.cancel();
+    _onDeletedListener?.cancel();
+
+    super.onClose();
   }
 
   Future<void> getNotifications({
@@ -39,7 +67,7 @@ class NotificationsController extends GetxController {
         isNoMore.value = false;
       }
 
-      var result = await _api.listNotifications(
+      final result = await _api.listNotifications(
         account_id: _auth.profile.value!.account_id,
         includes: includes,
         page: page.value,
@@ -50,16 +78,16 @@ class NotificationsController extends GetxController {
                 unread_count.value = data.meta.unread_count;
               },
       );
-      var data = result.getOrThrow();
+      final data = result.getOrThrow();
 
       if (append) {
         items.addAll(data.payload);
       } else {
         items.value = data.payload;
       }
+
       isNoMore.value =
           data.payload.isEmpty || data.payload.length < env.PAGE_SIZE;
-
       unread_count.value = data.meta.unread_count;
     } on ApiError catch (reason) {
       _logger.w(reason);
@@ -73,14 +101,23 @@ class NotificationsController extends GetxController {
   }
 
   Future<void> showFilter() async {
-    var result = await Get.bottomSheet<bool>(NotificationsFilterView());
+    final result = await Get.bottomSheet<bool>(NotificationsFilterView());
     if (result == null || !result) return;
-    getNotifications();
   }
 
   Future<void> readAll() async {}
 
   Future<void> onTap(NotificationInfo info) async {
+    if (info.read_at == null) {
+      _api.markNotificationsRead(
+        primary_actor_id: info.primary_actor_id,
+        primary_actor_type: info.primary_actor_type,
+      );
+
+      info.read_at = DateTime.now();
+      items.refresh();
+    }
+
     if (info.primary_actor_type == NotificationActorType.Conversation) {
       Get.to(
         () => ConversationChatView(conversation_id: info.primary_actor_id),
@@ -97,5 +134,15 @@ class NotificationsController extends GetxController {
     isLoadMore.value = true;
     await getNotifications(append: true);
     isLoadMore.value = false;
+  }
+
+  void _onCreated(NotificationInfo info) {
+    items.insert(0, info);
+  }
+
+  void _onDeleted(int id) {
+    final index = items.indexWhere((e) => e.id == id);
+    if (index < 0) return;
+    items.removeAt(index);
   }
 }

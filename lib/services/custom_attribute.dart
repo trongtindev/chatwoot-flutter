@@ -1,6 +1,6 @@
 import '/imports.dart';
 
-class AttributeService extends GetxService {
+class CustomAttributeService extends GetxService {
   final _logger = Logger();
 
   final items = RxList<CustomAttribute>();

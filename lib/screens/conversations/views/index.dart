@@ -3,7 +3,7 @@ import '/imports.dart';
 
 class ConversationsView extends GetView<ConversationsController> {
   final labelService = Get.find<LabelService>();
-  final realtime = Get.find<RealtimeService>();
+  final realtimeService = Get.find<RealtimeService>();
 
   ConversationsView({super.key});
 
@@ -33,12 +33,13 @@ class ConversationsView extends GetView<ConversationsController> {
             },
             onRefresh: () => controller.getConversations(reset: true),
             child: Obx(() {
-              if (controller.loading.value &&
-                  controller.conversations.isEmpty) {
+              final typingUsers = realtimeService.typingUsers.value;
+
+              if (controller.loading.value && controller.items.isEmpty) {
                 return buildPlaceholder();
               } else if (controller.error.isNotEmpty) {
                 return buildError(context);
-              } else if (controller.conversations.isEmpty) {
+              } else if (controller.items.isEmpty) {
                 return emptyState(
                   context,
                   image: 'conversations.png',
@@ -46,25 +47,29 @@ class ConversationsView extends GetView<ConversationsController> {
                   description: t.conversation_empty_description,
                 );
               }
+
               return ListView(
                 padding: EdgeInsets.zero,
                 children: [
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: controller.conversations.length,
+                    itemCount: controller.items.length,
                     itemBuilder: (_, i) {
-                      return buildItem(context, controller.conversations[i]);
+                      final item = controller.items[i];
+                      final isTyping =
+                          typingUsers.contains(item.meta.sender.id);
+                      return buildItem(context, item, isTyping: isTyping);
                     },
                   ),
-                  if (controller.isLoadMore.value) loadMore(),
-                  if (controller.isNoMore.value) noMore(),
+                  if (controller.is_load_more.value) loadMore(),
+                  if (controller.is_no_more.value) noMore(),
                 ],
               );
             }),
           ),
           Obx(() {
-            if (controller.loading.value && !controller.isLoadMore.value) {
+            if (controller.loading.value && !controller.is_load_more.value) {
               return Positioned.fill(
                 child: Align(
                   alignment: Alignment.topCenter,
@@ -94,9 +99,13 @@ class ConversationsView extends GetView<ConversationsController> {
     );
   }
 
-  Widget buildItem(BuildContext context, ConversationInfo info) {
-    var last_activity_at = formatTimeago(info.last_activity_at);
-    var typeIcon = (() {
+  Widget buildItem(
+    BuildContext context,
+    ConversationInfo info, {
+    required bool isTyping,
+  }) {
+    final last_activity_at = formatTimeago(info.last_activity_at);
+    final typeIcon = (() {
       var type = info.messages.first.message_type;
       switch (type) {
         case MessageType.incoming:
@@ -113,7 +122,8 @@ class ConversationsView extends GetView<ConversationsController> {
           context,
           url: info.meta.sender.thumbnail,
           fallback: info.meta.sender.name.substring(0, 1),
-          isOnline: realtime.online.contains(info.meta.sender.id),
+          isOnline: realtimeService.online.contains(info.meta.sender.id),
+          isTyping: isTyping,
         );
       }),
       title: Row(

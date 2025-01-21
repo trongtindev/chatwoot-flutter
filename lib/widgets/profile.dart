@@ -11,8 +11,8 @@ Widget profileInfo(
         context,
         url: profile.avatar_url,
         isOnline: true,
-        width: 128,
-        height: 128,
+        size: 128,
+        fallback: profile.display_name.substring(0, 1),
       ),
       Padding(padding: EdgeInsets.all(8)),
       Text(

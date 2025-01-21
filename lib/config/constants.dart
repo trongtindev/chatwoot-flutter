@@ -1,18 +1,20 @@
 import '/imports.dart';
 import 'package:flutter/material.dart' as material;
 
-enum ProfileRole { administrator }
+enum AccountStatus { active }
+
+enum UserRole { administrator, agent }
 
 enum ProfileType { SuperAdmin }
 
 enum AvailabilityStatus { online, busy, offline }
 
 enum ConversationStatus implements Comparable<ConversationStatus> {
-  open(),
-  resolved(),
-  pending(),
-  snoozed(),
-  all();
+  open,
+  resolved,
+  pending,
+  snoozed,
+  all;
 
   String get label {
     switch (this) {
@@ -224,7 +226,22 @@ enum AttachmentType implements Comparable<AttachmentType> {
   int compareTo(AttachmentType other) => index - other.index;
 }
 
-enum AttributeModel { contact_attribute }
+enum AttributeModel implements Comparable<AttributeModel> {
+  conversation_attribute,
+  contact_attribute;
+
+  String get label {
+    switch (this) {
+      case AttributeModel.conversation_attribute:
+        return t.conversation;
+      case AttributeModel.contact_attribute:
+        return t.contact;
+    }
+  }
+
+  @override
+  int compareTo(AttributeModel other) => index - other.index;
+}
 
 enum ContactSortBy implements Comparable<ContactSortBy> {
   name(),
@@ -306,4 +323,19 @@ enum ThemeMode implements Comparable<ThemeMode> {
   int compareTo(ThemeMode other) => index - other.index;
 }
 
-enum MacroVisibility { global }
+enum MacroVisibility implements Comparable<MacroVisibility> {
+  global,
+  personal;
+
+  String get label {
+    switch (this) {
+      case MacroVisibility.global:
+        return t.macro_visibility_global;
+      case MacroVisibility.personal:
+        return t.macro_visibility_personal;
+    }
+  }
+
+  @override
+  int compareTo(MacroVisibility other) => index - other.index;
+}

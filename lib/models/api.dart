@@ -10,7 +10,28 @@ class ApiError implements Exception {
   });
 
   factory ApiError.fromException(DioException dioException) {
+    logger.w(dioException, stackTrace: dioException.stackTrace);
+
+    if (dioException.response?.statusCode == 404) {
+      return ApiError(
+        success: false,
+        errors: [t.error_not_found],
+      );
+    }
+
     dynamic data = dioException.response?.data;
+    List<dynamic> contentTypes =
+        dioException.response?.headers['content-type'] ?? [];
+
+    if (!contentTypes.contains('application/json') ||
+        data is String ||
+        data == null) {
+      return ApiError(
+        success: false,
+        errors: [t.error_response],
+      );
+    }
+
     List<dynamic> errors = data['errors'] ?? [data['error']];
     return ApiError(
       success: dioException.response?.data['success'] ?? true,

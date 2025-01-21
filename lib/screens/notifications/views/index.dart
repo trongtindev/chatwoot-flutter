@@ -38,23 +38,34 @@ class NotificationsView extends GetView<NotificationsController> {
             },
             onRefresh: () => controller.getNotifications(reset: true),
             child: Obx(() {
-              if (controller.loading.value && controller.items.isEmpty) {
+              final error = controller.error.value;
+              final items = controller.items.value;
+              final loading = controller.loading.value;
+
+              if (loading && items.isEmpty) {
                 return buildPlaceholder();
-              } else if (controller.error.isNotEmpty) {
-                return buildError(context);
-              } else if (controller.items.isEmpty) {
-                return buildEmptyState();
+              } else if (error.isNotEmpty) {
+                return errorState(
+                  context,
+                  error: error,
+                  onRetry: controller.getNotifications,
+                );
+              } else if (items.isEmpty) {
+                return emptyState(
+                  context,
+                  image: 'conversations.png',
+                  title: t.notification_empty_title,
+                  description: t.notification_empty_description,
+                );
               }
               return ListView(
                 children: [
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    prototypeItem:
-                        buildItem(context, info: controller.items.first),
-                    itemCount: controller.items.length,
+                    itemCount: items.length,
                     itemBuilder: (_, i) {
-                      return buildItem(context, info: controller.items[i]);
+                      return buildItem(context, info: items[i]);
                     },
                   ),
                   if (controller.isLoadMore.value) loadMore(),
@@ -64,7 +75,10 @@ class NotificationsView extends GetView<NotificationsController> {
             }),
           ),
           Obx(() {
-            if (controller.loading.value && !controller.isLoadMore.value) {
+            final loading = controller.loading.value;
+            final isLoadMore = controller.loading.value;
+
+            if (loading && !isLoadMore) {
               return Positioned.fill(
                 child: Align(
                   alignment: Alignment.topCenter,
@@ -72,6 +86,7 @@ class NotificationsView extends GetView<NotificationsController> {
                 ),
               );
             }
+
             return Container();
           }),
         ],
@@ -79,23 +94,11 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  // TODO: make this better with skeleton
+  // TODO: better with skeleton
   Widget buildPlaceholder() {
     return Center(
       child: CircularProgressIndicator(),
     );
-  }
-
-  Widget buildError(BuildContext context) {
-    return error(
-      context,
-      message: controller.error.value,
-      onRetry: controller.getNotifications,
-    );
-  }
-
-  Widget buildEmptyState() {
-    return Text('empty_state');
   }
 
   Widget buildItem(

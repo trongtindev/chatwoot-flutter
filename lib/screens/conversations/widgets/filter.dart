@@ -2,7 +2,9 @@ import '../controllers/index.dart';
 import '/imports.dart';
 
 class ConversationsFilterView extends GetView<ConversationsController> {
-  final shared = Get.find<InboxService>();
+  final inboxService = Get.find<InboxService>();
+  final labelService = Get.find<LabelService>();
+
   ConversationsFilterView({super.key});
 
   @override
@@ -43,6 +45,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
       children: [
         buildFilterAssigneeType(),
         buildFilterStatus(),
+        buildFilterLabels(context),
         buildFilterInbox(context),
       ],
     );
@@ -56,7 +59,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
       children: [
         buildLabel(t.filter_by_assignee_type),
         Obx(() {
-          final assigneeType = controller.assigneeType.value;
+          final assigneeType = controller.assignee_type.value;
 
           return Card(
             child: ListView.builder(
@@ -71,7 +74,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
                   value: item,
                   selected: assigneeType == item,
                   groupValue: assigneeType,
-                  onChanged: (next) => controller.assigneeType.value = item,
+                  onChanged: (next) => controller.assignee_type.value = item,
                 );
               },
             ),
@@ -89,7 +92,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
       children: [
         buildLabel(t.filter_by_status),
         Obx(() {
-          final status = controller.status.value;
+          final status = controller.filter_by_status.value;
 
           return Card(
             child: ListView.builder(
@@ -104,7 +107,48 @@ class ConversationsFilterView extends GetView<ConversationsController> {
                   value: item,
                   selected: status == item,
                   groupValue: status,
-                  onChanged: (next) => controller.status.value = item,
+                  onChanged: (next) => controller.filter_by_status.value = item,
+                );
+              },
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget buildFilterLabels(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildLabel(t.filter_by_inbox),
+        Obx(() {
+          final items = labelService.items;
+          final filterbyLabels = controller.filter_by_labels.value;
+
+          return Card(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              itemCount: items.length,
+              itemBuilder: (_, i) {
+                var item = items[i];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: item.color,
+                  ),
+                  title: Text(item.title),
+                  subtitle: Text(
+                    item.description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: Checkbox(
+                    value: filterbyLabels.contains(item),
+                    onChanged: (next) => controller.toggleLabel(item),
+                  ),
+                  onTap: () => controller.toggleLabel(item),
                 );
               },
             ),
@@ -120,8 +164,8 @@ class ConversationsFilterView extends GetView<ConversationsController> {
       children: [
         buildLabel(t.filter_by_inbox),
         Obx(() {
-          final items = shared.inboxes;
-          final filterbyInbox = controller.filterbyInbox.value;
+          final items = inboxService.inboxes;
+          final filterbyInbox = controller.filter_by_inbox.value;
 
           return Card(
             child: ListView.builder(
@@ -149,9 +193,9 @@ class ConversationsFilterView extends GetView<ConversationsController> {
                     value: item.id,
                     groupValue: filterbyInbox,
                     onChanged: (next) =>
-                        controller.filterbyInbox.value = item.id,
+                        controller.filter_by_inbox.value = item.id,
                   ),
-                  onTap: () => controller.filterbyInbox.value = item.id,
+                  onTap: () => controller.filter_by_inbox.value = item.id,
                 );
               },
             ),

@@ -1,130 +1,155 @@
 import '/imports.dart';
 import 'package:just_audio/just_audio.dart' as just_audio;
+import 'package:just_audio/just_audio.dart' show ProcessingState;
 
-class AudioPlayer extends StatefulWidget {
+class AudioPlayerController extends GetxController {
+  final String url;
+  AudioPlayerController({
+    required this.url,
+  });
+
+  final duration = Duration.zero.obs;
+  final position = Duration.zero.obs;
+  final isPlaying = false.obs;
+  final isLoaded = false.obs;
+  final isEnded = false.obs;
+
+  late StreamSubscription _stateStream;
+  late StreamSubscription _durationStream;
+  late StreamSubscription _playingStream;
+  late StreamSubscription _positionStream;
+  late just_audio.AudioPlayer _audioPlayer;
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    _audioPlayer = just_audio.AudioPlayer();
+    _stateStream = _audioPlayer.playerStateStream.listen((next) {
+      if (next.processingState == ProcessingState.ready) isLoaded.value = true;
+      if (next.processingState == ProcessingState.completed) {
+        isEnded.value = true;
+        isPlaying.value = false;
+      }
+    });
+    _durationStream = _audioPlayer.durationStream.listen((next) {
+      if (next == null) return;
+      duration.value = next;
+    });
+    _playingStream = _audioPlayer.playingStream.listen((next) {
+      isPlaying.value = next;
+    });
+    _positionStream = _audioPlayer.positionStream.listen((next) {
+      position.value = next;
+    });
+
+    _audioPlayer.setUrl(url);
+  }
+
+  @override
+  void onClose() {
+    _audioPlayer.dispose();
+    _stateStream.cancel();
+    _durationStream.cancel();
+    _playingStream.cancel();
+    _positionStream.cancel();
+
+    super.onClose();
+  }
+
+  Future<void> pause() async {
+    isPlaying.value = false;
+    _audioPlayer.pause();
+  }
+
+  Future<void> play() async {
+    if (isPlaying.value) return;
+    isPlaying.value = true;
+    _audioPlayer.play();
+  }
+
+  Future<void> restart() async {
+    isEnded.value = false;
+    isPlaying.value = false;
+    _audioPlayer.seek(Duration.zero);
+    isPlaying.value = true;
+    _audioPlayer.play();
+  }
+}
+
+class AudioPlayer extends GetWidget {
+  final int id;
   final String url;
 
   const AudioPlayer({
     super.key,
+    required this.id,
     required this.url,
   });
 
   @override
-  State<AudioPlayer> createState() => AudioPlayerState();
-}
-
-class AudioPlayerState extends State<AudioPlayer> {
-  just_audio.AudioPlayer? _audioPlayer;
-
-  Duration duration = Duration(seconds: 0);
-  Duration position = Duration(seconds: 0);
-  bool isPlaying = false;
-  bool isLoading = false;
-  bool isLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer?.dispose();
-    super.dispose();
-  }
-
-  double get durationInMilliseconds => duration.inMilliseconds.toDouble();
-  double get positionInMilliseconds =>
-      min(durationInMilliseconds, position.inMilliseconds.toDouble());
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.theme.colorScheme.tertiaryContainer,
-      ),
-      child: Row(
-        children: [
-          if (isPlaying)
-            IconButton(
-              onPressed: _audioPlayer?.pause,
-              icon: Icon(Icons.pause_circle_filled_outlined),
-            )
-          else
-            IconButton(
-              onPressed: play,
-              icon: Icon(Icons.play_circle_fill_outlined),
+    return GetBuilder<AudioPlayerController>(
+      init: AudioPlayerController(url: url),
+      tag: id.toString(),
+      builder: (controller) {
+        return Obx(() {
+          final isPlaying = controller.isPlaying.value;
+          final isEnded = controller.isEnded.value;
+          final position = controller.position.value;
+          final duration = controller.duration.value;
+
+          final durationInMilliseconds = duration.inMilliseconds.toDouble();
+          final positionInMilliseconds =
+              min(durationInMilliseconds, position.inMilliseconds.toDouble());
+
+          return Container(
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.tertiaryContainer,
             ),
-          Expanded(
-            child: Column(
+            child: Row(
               children: [
-                Slider(
-                  value: positionInMilliseconds,
-                  max: durationInMilliseconds,
-                  onChanged: (next) {},
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: Row(
+                if (isEnded)
+                  IconButton(
+                    onPressed: controller.restart,
+                    icon: Icon(Icons.restart_alt_outlined),
+                  )
+                else if (isPlaying)
+                  IconButton(
+                    onPressed: controller.pause,
+                    icon: Icon(Icons.pause_circle_filled_outlined),
+                  )
+                else
+                  IconButton(
+                    onPressed: controller.play,
+                    icon: Icon(Icons.play_circle_fill_outlined),
+                  ),
+                Expanded(
+                  child: Column(
                     children: [
-                      Text(formatDuration(position)),
-                      Spacer(),
-                      Text(formatDuration(duration)),
+                      Slider(
+                        value: positionInMilliseconds,
+                        max: durationInMilliseconds,
+                        onChanged: (next) {},
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Row(
+                          children: [
+                            Text(formatDuration(position)),
+                            Spacer(),
+                            Text(formatDuration(duration)),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+          );
+        });
+      },
     );
   }
-
-  Future<void> play() async {
-    try {
-      if (_audioPlayer == null) {
-        setState(() {
-          isLoading = true;
-        });
-
-        _audioPlayer = just_audio.AudioPlayer();
-        _audioPlayer!.durationStream.listen((next) {
-          if (next == null) return;
-          duration = next;
-          setState(() {});
-        });
-        _audioPlayer!.playingStream.listen((next) {
-          isPlaying = next;
-          setState(() {});
-        });
-        _audioPlayer!.positionStream.listen((next) {
-          position = next;
-          setState(() {});
-        });
-
-        await _audioPlayer!.setUrl(widget.url);
-        await _audioPlayer!.play();
-
-        setState(() {
-          isLoading = false;
-          isLoaded = true;
-        });
-      } else {
-        setState(() {
-          position = Duration.zero;
-        });
-        _audioPlayer!.seek(Duration(seconds: 0));
-        await _audioPlayer!.play();
-      }
-    } catch (error) {
-      print(error);
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future<void> pause() async {}
 }

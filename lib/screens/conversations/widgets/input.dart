@@ -16,30 +16,36 @@ class ConversationInput extends GetView<ConversationInputController> {
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: controller.onPopInvokedWithResult,
-          child: Container(
-            decoration: BoxDecoration(
-              color: context.theme.colorScheme.surfaceContainer,
-            ),
-            child: Stack(
-              children: [
-                buildBody(context),
-                Obx(() {
-                  final isSending = controller.isSending.value;
-                  final sendMessageProgress =
-                      controller.sendMessageProgress.value;
+          child: Obx(() {
+            final isPrivate = controller.isPrivate.value;
+            return Container(
+              decoration: BoxDecoration(
+                color: isPrivate
+                    ? context.theme.colorScheme.tertiaryContainer
+                    : context.theme.colorScheme.surfaceContainer,
+              ),
+              child: Stack(
+                children: [
+                  buildBody(context),
+                  Obx(() {
+                    final isSending = controller.isSending.value;
+                    final sendMessageProgress =
+                        controller.sendMessageProgress.value;
 
-                  if (!isSending) return Container();
-                  return Positioned(
-                    child: LinearProgressIndicator(
-                      value: sendMessageProgress > 0 && sendMessageProgress < 1
-                          ? sendMessageProgress
-                          : null,
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
+                    if (!isSending) return Container();
+                    return Positioned(
+                      child: LinearProgressIndicator(
+                        value:
+                            sendMessageProgress > 0 && sendMessageProgress < 1
+                                ? sendMessageProgress
+                                : null,
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            );
+          }),
         );
       },
     );
@@ -57,19 +63,21 @@ class ConversationInput extends GetView<ConversationInputController> {
         children: [
           buildAttachments(),
           Obx(() {
-            var isEmpty = controller.isEmpty.value;
-            var showEmoji = controller.showEmoji.value;
-            var showMore = controller.showMore.value;
-            var showRecorder = controller.showRecorder.value;
-            var isSending = controller.isSending.value;
+            final isEmpty = controller.isEmpty.value;
+            final isPrivate = controller.isPrivate.value;
+            final showMore = controller.showMore.value;
+            final showRecorder = controller.showRecorder.value;
+            final isSending = controller.isSending.value;
 
             return Column(
               children: [
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.emoji_symbols),
-                      onPressed: controller.toggleEmoji,
+                      icon: Icon(isPrivate
+                          ? Icons.remove_red_eye
+                          : Icons.remove_red_eye_outlined),
+                      onPressed: () => controller.isPrivate.value = !isPrivate,
                     ),
                     Expanded(
                       child: TextField(
@@ -77,23 +85,29 @@ class ConversationInput extends GetView<ConversationInputController> {
                         focusNode: controller.focusNode,
                         controller: controller.message,
                         decoration: InputDecoration(
-                          hintText: t.message_hint,
+                          hintText: isPrivate
+                              ? t.message_private_hint
+                              : t.message_hint,
                           border: InputBorder.none,
                         ),
                         minLines: 1,
                         maxLines: 3,
                       ),
                     ),
-                    if (isEmpty)
+                    if (isEmpty && !isPrivate)
                       IconButton(
-                        icon: Icon(showMore
-                            ? Icons.more_horiz
-                            : Icons.more_horiz_outlined),
+                        icon: Icon(
+                          showMore
+                              ? Icons.more_horiz
+                              : Icons.more_horiz_outlined,
+                        ),
                         onPressed: controller.toggleMore,
                       ),
                     if (isEmpty)
                       IconButton(
-                        icon: Icon(Icons.mic_outlined),
+                        icon: Icon(
+                          showRecorder ? Icons.mic : Icons.mic_outlined,
+                        ),
                         onPressed: controller.toggleRecorder,
                       ),
                     if (isEmpty)
@@ -101,7 +115,7 @@ class ConversationInput extends GetView<ConversationInputController> {
                         icon: Icon(Icons.image_outlined),
                         onPressed: controller.showFilePicker,
                       ),
-                    if (isEmpty == false)
+                    if (!isEmpty)
                       IconButton(
                         icon: Icon(
                           Icons.send_outlined,
@@ -113,9 +127,7 @@ class ConversationInput extends GetView<ConversationInputController> {
                       ),
                   ],
                 ),
-                if (showEmoji)
-                  buildEmoji(context)
-                else if (showMore)
+                if (showMore)
                   buildMore(context)
                 else if (showRecorder)
                   buildRecorder(context),
@@ -132,15 +144,18 @@ class ConversationInput extends GetView<ConversationInputController> {
     return SizedBox(
       width: double.infinity,
       height: height,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: context.theme.colorScheme.outlineVariant,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: context.theme.colorScheme.outlineVariant,
+              ),
             ),
           ),
+          child: child,
         ),
-        child: child,
       ),
     );
   }
@@ -162,7 +177,79 @@ class ConversationInput extends GetView<ConversationInputController> {
   Widget buildRecorder(BuildContext context) {
     return buildBottom(
       context: context,
-      child: Text('buildRecorder'),
+      child: Obx(() {
+        final isRecording = controller.isRecording.value;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: isRecording
+              ? [
+                  // TODO: make waveform
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      bottom: 16,
+                      right: 16,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: context.theme.colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Image.asset(
+                              'assets/images/typing.gif',
+                              width: 32,
+                            ),
+                          ),
+                          Text(formatDuration(
+                              controller.recorderDuration.value)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 16,
+                    children: [
+                      IconButton.filledTonal(
+                        onPressed: () => controller.stopRecord(cancel: true),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          size: 48,
+                        ),
+                      ),
+                      IconButton.filled(
+                        onPressed: controller.stopRecord,
+                        icon: Icon(
+                          Icons.send_outlined,
+                          size: 48,
+                        ),
+                      ),
+                    ],
+                  ),
+                ]
+              : [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(t.tap_to_record),
+                  ),
+                  IconButton.filled(
+                    onPressed: controller.startRecord,
+                    icon: Icon(
+                      Icons.mic_outlined,
+                      size: 48,
+                    ),
+                  ),
+                ],
+        );
+      }),
     );
   }
 
@@ -183,7 +270,7 @@ class ConversationInput extends GetView<ConversationInputController> {
     });
   }
 
-  Widget buildAttachment(PlatformFile file) {
+  Widget buildAttachment(FileInfo file) {
     return Card(
       child: InkWell(
         onTap: () {
@@ -196,8 +283,7 @@ class ConversationInput extends GetView<ConversationInputController> {
             children: [
               Expanded(
                 child: Builder(builder: (_) {
-                  var isImage =
-                      ['jpg', 'png', 'jpeg'].contains(file.extension ?? '');
+                  var isImage = ['jpg', 'png', 'jpeg'].contains(file.extension);
                   if (isImage) {
                     return Image.file(
                       File(file.path!),

@@ -7,7 +7,9 @@ export 'package:get/get.dart'
         Obx,
         GetBuilder,
         GetView,
-        ObxWidget;
+        ObxWidget,
+        GetWidget;
+export 'package:get/get_state_manager/src/rx_flutter/rx_ticket_provider_mixin.dart';
 export 'package:get/get_instance/get_instance.dart';
 export 'package:get/route_manager.dart' hide Translations;
 export 'package:get/get_utils/get_utils.dart' hide Trans;
@@ -50,6 +52,7 @@ export 'models/cache.dart';
 export 'models/common.dart';
 export 'models/contact.dart';
 export 'models/conversation.dart';
+export 'models/file.dart';
 export 'models/inbox.dart';
 export 'models/label.dart';
 export 'models/macro.dart';
@@ -62,12 +65,13 @@ export 'models/user.dart';
 export 'services/analytics.dart';
 export 'services/api.dart';
 export 'services/assistant.dart';
-export 'services/attribute.dart';
+export 'services/custom_attribute.dart';
 export 'services/auth.dart';
 export 'services/db.dart';
 export 'services/deeplink.dart';
 export 'services/inbox.dart';
 export 'services/label.dart';
+export 'services/macro.dart';
 export 'services/notification.dart';
 export 'services/realtime.dart';
 export 'services/settings.dart';

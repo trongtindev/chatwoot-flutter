@@ -59,9 +59,8 @@ class NotificationService extends GetxService {
 
     _tokenRefreshSubscription = _firebaseMessaging.onTokenRefresh.listen(
       (next) => token.value = next,
-      onError: (error, StackTrace stackTrace) {
-        _logger.e('onTokenRefresh() => $error');
-        _logger.e(stackTrace);
+      onError: (error, stackTrace) {
+        _logger.e(error, stackTrace: stackTrace);
       },
     );
 

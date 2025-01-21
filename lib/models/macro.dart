@@ -1,7 +1,7 @@
 import '/imports.dart';
 
 class MacroAction {
-  final int action_name;
+  final String action_name;
   final List<dynamic> action_params; // TODO: unk type
 
   const MacroAction({

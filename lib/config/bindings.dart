@@ -15,9 +15,10 @@ class BindingsConfig extends Bindings {
 
     Get.lazyPut(() => AnalyticsService());
     Get.lazyPut(() => AssistantService());
-    Get.lazyPut(() => AttributeService());
+    Get.lazyPut(() => CustomAttributeService());
     Get.lazyPut(() => InboxService());
     Get.lazyPut(() => LabelService());
+    Get.lazyPut(() => MacroService());
 
     Get.lazyPut(() => ContactsController());
     Get.lazyPut(() => ConversationsController()); // TODO: convert to service

@@ -65,6 +65,7 @@ class Message extends StatelessWidget {
     var isOwner = sender.id == auth.profile.value!.id;
     var isAgent = !isOwner && sender.type == MessageSenderType.user;
     var backgroundColor = (() {
+      if (info.private) return context.theme.colorScheme.tertiaryContainer;
       if (isAgent) return context.theme.colorScheme.secondaryContainer;
       return isOwner
           ? context.theme.colorScheme.primaryContainer
@@ -134,8 +135,7 @@ class Message extends StatelessWidget {
                     url: sender.thumbnail,
                     isOnline: online.contains(sender.id),
                     fallback: sender.name.substring(0, 1),
-                    width: 28,
-                    height: 28,
+                    size: 28,
                   );
                 }),
               ),
@@ -159,6 +159,13 @@ class Message extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         spacing: 8,
                         children: [
+                          if (info.private)
+                            Text(
+                              t.private,
+                              style: TextStyle(
+                                fontSize: Get.textTheme.labelSmall!.fontSize,
+                              ),
+                            ),
                           if (isOwner == false)
                             Text(
                               sender.available_name ?? sender.name,
@@ -211,15 +218,18 @@ class Message extends StatelessWidget {
   Widget buildAttachments(BuildContext context) {
     final length = info.attachments.length;
 
-    if (length == 1) {
-      final first = info.attachments.first;
+    final first = info.attachments.first;
+    if (length == 1 && first.data_url != null) {
       switch (first.file_type) {
         case AttachmentType.audio:
-          return AudioPlayer(url: first.data_url!);
+          return AudioPlayer(
+            id: first.id,
+            url: first.data_url!,
+          );
         case AttachmentType.image:
           return buildImageAttachment(context, info: info.attachments.first);
         default:
-          return Text('failed to parse attachment type: $first.file_type');
+          return Text('failed to parse attachment type: ${first.file_type}');
       }
     }
 
