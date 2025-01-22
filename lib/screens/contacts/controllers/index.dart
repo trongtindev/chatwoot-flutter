@@ -86,7 +86,10 @@ class ContactsController extends GetxController {
   }
 
   Future<void> showFilter() async {
-    var result = await Get.bottomSheet<bool>(ContactFilterView());
+    final result = await Get.bottomSheet<bool>(
+      ContactFilterView(),
+      showDragHandle: false,
+    );
     if (result == null || !result) return;
   }
 

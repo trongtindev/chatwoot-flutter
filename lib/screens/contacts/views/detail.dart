@@ -1,7 +1,10 @@
+import '../../conversations/widgets/item.dart';
 import '/screens/contacts/controllers/detail.dart';
 import '/imports.dart';
 
 class ContactDetailView extends StatelessWidget {
+  final labels = Get.find<LabelsController>();
+  final realtime = Get.find<RealtimeService>();
   final attributeService = Get.find<CustomAttributesController>();
 
   final ContactDetailController c;
@@ -17,139 +20,256 @@ class ContactDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final info = c.info.value;
+      if (info == null) {
+        return Scaffold(
+          body: CircularProgressIndicator(),
+        );
+      }
 
       return Scaffold(
-        appBar: AppBar(
-          title: info != null ? Text(info.name) : null,
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.edit_outlined),
-              onPressed: () {},
-            ),
-            Padding(padding: EdgeInsets.only(right: 8)),
-          ],
-        ),
-        body: Builder(
-          builder: (_) {
-            if (info == null) return Center(child: CircularProgressIndicator());
-
-            return ListView(
-              padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
-              children: [
-                buildCommonAttributes(info),
-                Padding(padding: EdgeInsets.only(top: 8)),
-                buildAdditionalAttributes(info.additional_attributes),
-                Padding(padding: EdgeInsets.only(top: 8)),
-                buildCustomAttributes(info.custom_attributes),
-              ],
-            );
+        body: NestedScrollView(
+          floatHeaderSlivers: true,
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                pinned: true,
+                floating: true,
+                expandedHeight: 250.0,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Text(
+                      info.name,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  centerTitle: true,
+                  background: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Center(
+                      child: avatar(
+                        context,
+                        url: info.thumbnail,
+                        size: 96,
+                        isOnline: realtime.online.contains(info.id),
+                      ),
+                    ),
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.edit_outlined),
+                    onPressed: () {},
+                  ),
+                  Padding(padding: EdgeInsets.only(right: 8)),
+                ],
+              ),
+            ];
           },
+          body: Builder(
+            builder: (_) {
+              return ListView(
+                padding: EdgeInsets.all(4),
+                children: [
+                  buildProfile(info),
+                  buildLabels(context),
+                  buildConversations(context),
+                  buildAdditionalAttributes(info.additional_attributes),
+                  buildCustomAttributes(info.custom_attributes),
+                ],
+              );
+            },
+          ),
         ),
       );
     });
   }
 
-  Widget buildCommonAttributes(ContactInfo info) {
-    return Card(
-      child: Column(
-        children: [
-          buildAttribute(
-            label: 'contact.id',
-            value: info.id.toString(),
-            iconData: Icons.numbers_outlined,
+  Widget buildProfile(ContactInfo info) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildLabel(t.profile),
+        Card(
+          child: Column(
+            children: [
+              if (info.phone_number != null && info.phone_number!.isNotEmpty)
+                buildAttribute(
+                  label: t.phone,
+                  value: info.phone_number!,
+                  iconData: Icons.phone_outlined,
+                ),
+              if (info.email != null && info.email!.isNotEmpty)
+                buildAttribute(
+                  label: t.email,
+                  value: info.email!,
+                  iconData: Icons.email_outlined,
+                ),
+              if (info.last_activity_at != null)
+                buildAttribute(
+                  label: t.last_activity_at,
+                  value: formatTimeago(info.last_activity_at!),
+                  iconData: Icons.visibility_outlined,
+                ),
+              if (info.created_at != null)
+                buildAttribute(
+                  label: t.created_at,
+                  value: formatTimeago(info.created_at!),
+                  iconData: Icons.more_time_outlined,
+                ),
+            ],
           ),
-          if (info.phone_number != null && info.phone_number!.isNotEmpty)
-            buildAttribute(
-              label: 'contact.phone',
-              value: info.phone_number!,
-              iconData: Icons.phone_outlined,
-            ),
-          if (info.email != null && info.email!.isNotEmpty)
-            buildAttribute(
-              label: 'contact.email',
-              value: info.email!,
-              iconData: Icons.email_outlined,
-            ),
-          if (info.identifier != null)
-            buildAttribute(
-              label: 'contact.identifier',
-              value: info.identifier!,
-              iconData: Icons.key_outlined,
-            ),
-          if (info.last_activity_at != null)
-            buildAttribute(
-              label: 'contact.last_activity_at',
-              value: formatTimeago(info.last_activity_at!),
-              iconData: Icons.visibility_outlined,
-            ),
-          if (info.created_at != null)
-            buildAttribute(
-              label: 'contact.created_at',
-              value: formatTimeago(info.created_at!),
-              iconData: Icons.more_time_outlined,
-            ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Widget buildLabels(BuildContext context) {
+    return Obx(() {
+      final items = c.labels.value;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabel(t.labels),
+          Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: Wrap(
+              spacing: 8,
+              children: [
+                ...items.map((e) {
+                  final label = labels.items
+                      .firstWhereOrNull((label) => label.title == e);
+
+                  return Chip(
+                    label: Row(
+                      spacing: 8,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: label?.color ??
+                                context.theme.colorScheme.surfaceContainerHigh,
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        Text(e),
+                      ],
+                    ),
+                    // deleteIcon: Icon(Icons.label_off_outlined),
+                    // onDeleted: () {},
+                  );
+                }),
+                Chip(
+                  label: Text(t.modify),
+                  deleteIcon: Icon(Icons.edit),
+                  onDeleted: c.modifyLabels,
+                )
+              ],
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget buildConversations(BuildContext context) {
+    return Obx(() {
+      final items = c.conversations.value;
+      if (items.isEmpty) return Container();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabel(t.conversations),
+          Card(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: items.length,
+              itemBuilder: (_, i) {
+                final item = items[i];
+                return ConversationItem(item, compact: true);
+              },
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   Widget buildAdditionalAttributes(
       ContactAdditionalAttributes additional_attributes) {
     final unavailableText = t.unavailable;
-    return Card(
-      child: Column(
-        children: [
-          buildAttribute(
-            label: 'contact.attributes.city',
-            value: valueOrDefault(additional_attributes.city, unavailableText),
-            iconData: Icons.my_location_outlined,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildLabel(t.attributes),
+        Card(
+          child: Column(
+            children: [
+              buildAttribute(
+                label: t.city,
+                value:
+                    valueOrDefault(additional_attributes.city, unavailableText),
+                iconData: Icons.location_on_outlined,
+              ),
+              buildAttribute(
+                label: t.country,
+                value: valueOrDefault(
+                    additional_attributes.country, unavailableText),
+                iconData: Icons.public_outlined,
+              ),
+              buildAttribute(
+                label: t.company,
+                value: valueOrDefault(
+                    additional_attributes.company_name, unavailableText),
+                iconData: Icons.work_outline,
+              ),
+            ],
           ),
-          buildAttribute(
-            label: 'contact.attributes.country',
-            value:
-                valueOrDefault(additional_attributes.country, unavailableText),
-            iconData: Icons.phone_outlined,
-          ),
-          buildAttribute(
-            label: 'contact.attributes.company_name',
-            value: valueOrDefault(
-                additional_attributes.company_name, unavailableText),
-            iconData: Icons.work_outline,
-          ),
-          buildAttribute(
-            label: 'contact.attributes.country_code',
-            value: valueOrDefault(
-                additional_attributes.country_code, unavailableText),
-            iconData: Icons.my_location_outlined,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget buildCustomAttributes(Map<String, dynamic> custom_attributes) {
     final items = custom_attributes.entries.toList();
-    return Card(
-      child: Obx(() {
-        final attributes = attributeService.items.value;
+    if (items.isEmpty) return Container();
 
-        return ListView.builder(
-          padding: EdgeInsets.zero,
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: items.length,
-          itemBuilder: (_, i) {
-            final item = items[i];
-            final label =
-                attributes.firstWhereOrNull((e) => e.attribute_key == item.key);
-            return buildAttribute(
-              label: label != null ? label.attribute_display_name : item.key,
-              value: item.value,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildLabel(t.custom_attributes),
+        Card(
+          child: Obx(() {
+            final attributes = attributeService.items.value;
+
+            return ListView.builder(
+              padding: EdgeInsets.zero,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (_, i) {
+                final item = items[i];
+                final label = attributes
+                    .firstWhereOrNull((e) => e.attribute_key == item.key);
+                return buildAttribute(
+                  label:
+                      label != null ? label.attribute_display_name : item.key,
+                  value: item.value,
+                );
+              },
             );
-          },
-        );
-      }),
+          }),
+        ),
+      ],
     );
   }
 
