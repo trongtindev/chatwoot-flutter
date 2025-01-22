@@ -133,6 +133,8 @@ class ApiService extends GetxService {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    _logger.t('[${options.method}] ${options.uri}');
+
     // inject user-agent
     options.headers['user-agent'] =
         '${_packageInfo.appName}/${_packageInfo.version}';
@@ -160,11 +162,13 @@ class ApiService extends GetxService {
   Future<Result<ProfileInfo>> signIn({
     required String email,
     required String password,
+    String? sso_auth_token,
   }) async {
     try {
-      var result = await _http.post('${baseUrl.value}/auth/sign_in', data: {
+      final result = await _http.post('${baseUrl.value}/auth/sign_in', data: {
         'email': email,
         'password': password,
+        'sso_auth_token': sso_auth_token,
       });
       return ProfileInfo.fromJson(result.data['data']).toSuccess();
     } on DioException catch (error) {
@@ -176,7 +180,7 @@ class ApiService extends GetxService {
 
   Future<Result<ProfileInfo>> getProfile() async {
     try {
-      var result = await _http.get('${baseUrl.value}/profile');
+      final result = await _http.get('${baseUrl.value}/profile');
       return ProfileInfo.fromJson(result.data).toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
@@ -197,7 +201,7 @@ class ApiService extends GetxService {
 
       // if onCacheHit defined
       if (onCacheHit != null) {
-        var cached = await getCache(url: path);
+        final cached = await getCache(url: path);
         if (cached != null) {
           var json = jsonDecode(cached.data);
           var transformedData = ConversationInfo.fromJson(json);
@@ -284,7 +288,7 @@ class ApiService extends GetxService {
 
       // if onCacheHit defined
       if (onCacheHit != null) {
-        var cached = await getCache(url: path);
+        final cached = await getCache(url: path);
         if (cached != null) {
           var json = jsonDecode(cached.data);
           var transformedData = ListNotificationResult.fromJson(json['data']);
@@ -783,6 +787,68 @@ class ApiService extends GetxService {
 
       List<dynamic> items = result.data;
       return items.map(CannedResponseInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<ProfileInfo>> updatePassword({
+    required String current_password,
+    required String password,
+    required String password_confirmation,
+  }) async {
+    try {
+      final result = await _http.put(
+        '/profile',
+        data: {
+          'profile': {
+            'current_password': current_password,
+            'password': password,
+            'password_confirmation': password_confirmation,
+          }
+        },
+      );
+      return ProfileInfo.fromJson(result.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<ProfileInfo>> updateProfile({
+    String? name,
+    String? email,
+    String? display_name,
+    String? signature,
+  }) async {
+    try {
+      final profile = <String, String>{};
+      if (name != null) profile['name'] = name;
+      if (email != null) profile['email'] = email;
+      if (display_name != null) profile['display_name'] = display_name;
+      if (signature != null) profile['signature'] = '**$signature**';
+
+      final result = await _http.put('/profile', data: {'profile': profile});
+      return ProfileInfo.fromJson(result.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<String>> resetPassword({
+    required String email,
+  }) async {
+    try {
+      final result = await _http.post(
+        '${baseUrl.value}/auth/password',
+        data: {'email': email},
+      );
+      return '${result.data['message']}'.toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {
