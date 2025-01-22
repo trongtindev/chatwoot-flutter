@@ -1,4 +1,5 @@
-export 'package:get/get.dart'
+import 'package:shared_preferences/shared_preferences.dart';
+export 'package:refreshed/refreshed.dart'
     show
         Get,
         GetxController,
@@ -11,12 +12,11 @@ export 'package:get/get.dart'
         GetWidget,
         Binding,
         Bind;
-export 'package:get/get_state_manager/src/rx_flutter/rx_ticket_provider_mixin.dart';
-export 'package:get/get_instance/get_instance.dart';
-export 'package:get/route_manager.dart' hide Translations;
-export 'package:get/get_utils/get_utils.dart' hide Trans;
-export 'package:get/get_rx/get_rx.dart';
-export 'package:get_storage/get_storage.dart';
+export 'package:refreshed/get_state_manager/src/rx_flutter/rx_ticker_provider_mixin.dart';
+export 'package:refreshed/get_instance/get_instance.dart';
+export 'package:refreshed/route_manager.dart' hide Translations;
+export 'package:refreshed/get_utils/get_utils.dart';
+export 'package:refreshed/get_rx/get_rx.dart';
 export 'package:flutter/material.dart' hide Page, Table, TableRow, ThemeMode;
 export 'package:flutter/services.dart' show rootBundle;
 export 'package:events_emitter/events_emitter.dart';
@@ -106,3 +106,5 @@ export 'screens/macros/controllers/index.dart';
 export 'screens/canned_responses/controllers/index.dart';
 export 'screens/teams/controllers/index.dart';
 export 'screens/agents/controllers/index.dart';
+
+late SharedPreferences prefs;

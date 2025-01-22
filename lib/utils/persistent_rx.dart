@@ -4,11 +4,12 @@ class PersistentRx<T> extends Rx<T> {
   final String key;
 
   PersistentRx(T initial, {required this.key}) : super(initial) {
-    var storage = GetStorage();
-    if (storage.hasData(key)) {
-      value = storage.read<T>(key) ?? initial;
+    if (prefs.containsKey(key)) {
+      value = jsonDecode(prefs.getString(key)!) as T;
+    } else {
+      value = initial;
     }
-    ever(this, (value) => storage.write(key, value));
+    ever(this, (value) => prefs.setString(key, jsonEncode(value)));
   }
 }
 
@@ -16,11 +17,10 @@ class PersistentRxn<T> extends Rxn<T> {
   final String key;
 
   PersistentRxn({required this.key, T? initial}) : super(initial) {
-    var storage = GetStorage();
-    if (storage.hasData(key)) {
-      value = storage.read<T>(key) ?? initial;
+    if (prefs.containsKey(key)) {
+      value = jsonDecode(prefs.getString(key)!) as T;
     }
-    ever(this, (value) => storage.write(key, value));
+    ever(this, (value) => prefs.setString(key, jsonEncode(value)));
   }
 }
 
@@ -44,17 +44,16 @@ class PersistentRxColor extends Rx<Color> {
   final String key;
 
   PersistentRxColor(Color initial, {required this.key}) : super(initial) {
-    var storage = GetStorage();
-    if (storage.hasData(key)) {
+    if (prefs.containsKey(key)) {
       try {
-        value = Color(storage.read<int>(key) ?? 0);
-      } catch (error) {
-        print(error);
+        value = Color(prefs.getInt(key)!);
+      } on Error catch (error) {
+        logger.e(error, stackTrace: error.stackTrace);
         value = initial;
-        storage.remove(key);
+        prefs.remove(key);
       }
     }
-    ever(this, (color) => storage.write(key, color.value));
+    ever(this, (color) => prefs.setInt(key, color.value));
   }
 }
 
@@ -69,17 +68,16 @@ class PersistentRxCustom<T> extends Rx<T> {
     required this.encode,
     required this.decode,
   }) : super(initial) {
-    var storage = GetStorage();
-    if (storage.hasData(key)) {
+    if (prefs.containsKey(key)) {
       try {
-        var store = storage.read<String>(key);
+        var store = prefs.getString(key);
         value = store != null ? decode(store) : initial;
-      } catch (error) {
-        print(error);
+      } on Error catch (error) {
+        logger.e(error, stackTrace: error.stackTrace);
         value = initial;
-        storage.remove(key);
+        prefs.remove(key);
       }
     }
-    ever(this, (next) => storage.write(key, encode(next)));
+    ever(this, (next) => prefs.setString(key, encode(next)!));
   }
 }

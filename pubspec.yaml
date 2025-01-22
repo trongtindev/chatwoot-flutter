@@ -11,15 +11,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  path: ^1.9.0 # The path package provides common operations for manipulating paths
+  path: any # The path package provides common operations for manipulating paths
   intl: any # Provides internationalization and localization facilities
   flutter_localizations:
     sdk: flutter
-  path_provider: ^2.1.5
+  path_provider: any
+
+  shared_preferences: ^2.3.5
   dio: ^5.7.0 # A powerful HTTP networking package for Dart/Flutter
   logger: ^2.5.0
-  get: ^4.6.6 # High-performance state management
-  get_storage: ^2.1.1 # A fast, extra light and synchronous key-value in memory
+  refreshed: ^2.10.4 # This is a refreshed version of GetX
   events_emitter: ^0.6.0
   url_launcher: ^6.3.1 # Launching a URL
   google_fonts: ^6.2.1

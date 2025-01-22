@@ -3,8 +3,7 @@ import '/screens/contacts/controllers/index.dart';
 import '/screens/notifications/controllers/index.dart';
 import '/imports.dart';
 
-class BindingsConfig extends Bindings {
-  @override
+class BindingsConfig {
   Future<void> dependencies() async {
     // global services
     await Get.putAsync(() => DbService().init());

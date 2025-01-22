@@ -3,6 +3,7 @@ import 'imports.dart';
 import 'package:path/path.dart' as p;
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:logger/logger.dart' as logger;
@@ -83,14 +84,8 @@ void main() async {
       await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
     }
 
-    // storage
-    if (GetPlatform.isDesktop) {
-      var path = p.join(appDocumentsDir.path, 'databases');
-      var storage = GetStorage('GetStorage', path);
-      await storage.initStorage;
-    } else {
-      await GetStorage.init();
-    }
+    // preferences
+    prefs = await SharedPreferences.getInstance();
 
     // app
     runApp(SentryWidget(child: App()));
