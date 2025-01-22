@@ -40,7 +40,11 @@ class NotificationsController extends GetxController {
   void onReady() {
     super.onReady();
 
-    getNotifications();
+    _auth.isSignedIn.listen((next) {
+      if (!next) return;
+      getNotifications();
+    });
+    if (_auth.isSignedIn.value) getNotifications();
   }
 
   @override
@@ -72,7 +76,6 @@ class NotificationsController extends GetxController {
       }
 
       final result = await _api.listNotifications(
-        account_id: _auth.profile.value!.account_id,
         includes: includes,
         page: page.value,
         onCacheHit: append || reset

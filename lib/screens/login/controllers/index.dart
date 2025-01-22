@@ -18,6 +18,7 @@ class LoginController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+
     if (logout != null && logout!) _auth.logout();
   }
 
@@ -31,18 +32,17 @@ class LoginController extends GetxController {
     _logger.i('submit()');
 
     try {
-      var result = await _api.signIn(
+      final result = await _api.signIn(
         email: email.text,
         password: password.text,
       );
-      var profile = result.getOrThrow();
+      final profile = result.getOrThrow();
 
-      _logger.i('submit() => Logged in to ${profile.name}#${profile.id}');
+      _logger.i('Logged in to ${profile.name}#${profile.id}');
       _auth.profile.value = profile;
 
       Get.offAll(() => DefaultLayout());
     } catch (error) {
-      if (error is! ApiError) _logger.e(error);
       errorHandler(error);
     } finally {
       isSigning.value = false;

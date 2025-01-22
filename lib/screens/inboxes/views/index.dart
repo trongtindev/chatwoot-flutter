@@ -1,4 +1,3 @@
-import '../controllers/index.dart';
 import '/imports.dart';
 
 class InboxesView extends GetView<InboxesController> {
@@ -29,24 +28,40 @@ class InboxesView extends GetView<InboxesController> {
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (_, int index) {
-                    return ListTile(
-                      leading: Container(
-                          padding: EdgeInsets.all(8),
-                          width: 100,
-                          child: Placeholder()),
-                      title: Text('Place ${index + 1}'),
-                    );
-                  },
-                  childCount: 20,
-                ),
-              ),
+              Obx(() {
+                final items = controller.inboxes.value;
+
+                return SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (_, i) => buildItem(context, items[i]),
+                    childCount: items.length,
+                  ),
+                );
+              }),
             ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {},
+            label: Text(t.inboxes_add),
+            icon: Icon(Icons.add_outlined),
           ),
         );
       },
+    );
+  }
+
+  Widget buildItem(BuildContext context, InboxInfo info) {
+    return ListTile(
+      leading: isNullOrEmpty(info.avatar_url)
+          ? info.channel_type.icon
+          : avatar(
+              context,
+              url: info.avatar_url,
+              fallback: info.name.substring(0, 1),
+            ),
+      title: Text(info.name),
+      subtitle: Text(info.channel_type.name),
+      trailing: Icon(Icons.open_in_browser_outlined),
     );
   }
 }

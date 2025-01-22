@@ -49,6 +49,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                 }
                 return null;
               },
+              onFieldSubmitted: (_) => controller.submit,
             ),
             Padding(padding: EdgeInsets.only(top: 8)),
             SizedBox(

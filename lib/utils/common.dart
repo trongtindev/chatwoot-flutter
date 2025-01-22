@@ -2,7 +2,7 @@ import '../imports.dart';
 
 void errorHandler(Object error) {
   if (error is ApiError) {
-    var apiException = error;
+    final apiException = error;
     Get.dialog(AlertDialog(
       title: Text(t.error),
       content: Text(apiException.errors.join(';')),
@@ -14,7 +14,10 @@ void errorHandler(Object error) {
       ],
     ));
     return;
-  } else if (error is Error) {
+  } else if (error is ApiError) {
+    logger.w(error, stackTrace: StackTrace.current);
+  }
+  if (error is Error) {
     logger.e(error, stackTrace: error.stackTrace);
   }
 

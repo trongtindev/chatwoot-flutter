@@ -22,8 +22,11 @@ class ContactsController extends GetxController {
 
     sortBy.listen((_) => getContacts());
     orderBy.listen((_) => getContacts());
-
-    getContacts();
+    _auth.isSignedIn.listen((next) {
+      if (!next) return;
+      getContacts();
+    });
+    if (_auth.isSignedIn.value) getContacts();
   }
 
   Future<ContactsController> init() async {
@@ -46,8 +49,7 @@ class ContactsController extends GetxController {
         isNoMore.value = false;
       }
 
-      var result = await _api.listContacts(
-        account_id: _auth.profile.value!.account_id,
+      final result = await _api.listContacts(
         sortBy: sortBy.value,
         orderBy: orderBy.value,
         page: page.value,
@@ -57,7 +59,7 @@ class ContactsController extends GetxController {
                 items.value = data.payload;
               },
       );
-      var data = result.getOrThrow();
+      final data = result.getOrThrow();
 
       if (append) {
         items.addAll(data.payload);
@@ -70,8 +72,7 @@ class ContactsController extends GetxController {
       _logger.w(reason);
       error.value = reason.errors.join(';');
     } on Error catch (reason) {
-      _logger.e(reason);
-      _logger.e(reason.stackTrace);
+      _logger.e(reason, stackTrace: reason.stackTrace);
       error.value = reason.toString();
     } finally {
       loading.value = false;

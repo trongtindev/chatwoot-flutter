@@ -63,6 +63,7 @@ export 'models/message.dart';
 export 'models/notification.dart';
 export 'models/profile.dart';
 export 'models/realtime.dart';
+export 'models/team.dart';
 export 'models/user.dart';
 
 export 'services/analytics.dart';

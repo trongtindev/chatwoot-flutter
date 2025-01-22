@@ -1,10 +1,10 @@
 <p align="center">
-    <img src=".github/screenshots/conversations.png" width="150"/>
-    <img src=".github/screenshots/conversation_chat.png" width="150"/>
-    <img src=".github/screenshots/notifications.png" width="150"/>
-    <img src=".github/screenshots/contacts.png" width="150"/>
-    <img src=".github/screenshots/settings.png" width="150"/>
-    <img src=".github/screenshots/appearance.png" width="150"/>
+    <img src=".github/screenshots/conversations.png" width="160"/>
+    <img src=".github/screenshots/conversation_chat.png" width="160"/>
+    <img src=".github/screenshots/notifications.png" width="160"/>
+    <img src=".github/screenshots/contacts.png" width="160"/>
+    <img src=".github/screenshots/settings.png" width="160"/>
+    <img src=".github/screenshots/appearance.png" width="160"/>
 </p>
 ---
 

@@ -24,19 +24,18 @@ class ContactDetailController extends GetxController {
 
   Future<void> getContact() async {
     try {
-      var result = await _api.getContact(
+      final result = await _api.getContact(
         account_id: _auth.profile.value!.account_id,
         contact_id: contact_id,
         onCacheHit: (data) => info.value = data,
       );
-      var data = result.getOrThrow();
+      final data = result.getOrThrow();
       info.value = data;
     } on ApiError catch (reason) {
       _logger.w(reason);
       error.value = reason.errors.join(';');
     } on Error catch (reason) {
-      _logger.e(reason.stackTrace);
-      _logger.e(reason);
+      _logger.e(reason, stackTrace: reason.stackTrace);
       error.value = reason.toString();
     }
   }

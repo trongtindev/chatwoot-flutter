@@ -20,13 +20,19 @@ class ApiError implements Exception {
     }
 
     dynamic data = dioException.response?.data;
-    List<dynamic> contentTypes =
-        dioException.response?.headers['content-type'] ?? [];
+    String contentTypes = '${dioException.response?.headers['content-type']}';
 
     if (!contentTypes.contains('json') || data is String || data == null) {
       return ApiError(
         success: false,
-        errors: [t.error_response(contentTypes.join(';'))],
+        errors: [t.error_response(contentTypes)],
+      );
+    }
+
+    if (isNotNullOrEmpty(data['message'])) {
+      return ApiError(
+        success: true,
+        errors: [data['message']],
       );
     }
 

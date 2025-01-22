@@ -8,16 +8,15 @@ class ConversationChatController extends GetxController {
   final _realtime = Get.find<RealtimeService>();
 
   final scrollController = ScrollController();
-  final int conversation_id;
+  final int id;
   final loading = false.obs;
   final isNoMore = false.obs;
   final info = Rxn<ConversationInfo>();
   final error = ''.obs;
-  final resolved = false.obs;
   late RxList<MessageInfo> messages;
 
   ConversationChatController({
-    required this.conversation_id,
+    required this.id,
     MessageInfo? initial_message,
   }) : messages = RxList<MessageInfo>(
             initial_message != null ? [initial_message] : []);
@@ -29,13 +28,7 @@ class ConversationChatController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _logger.i('onInit(conversation_id:$conversation_id)');
-
-    info.listen((next) {
-      _logger.d('conversation_id:$conversation_id info changed');
-      if (next == null) return;
-      resolved.value = next.status == ConversationStatus.resolved;
-    });
+    _logger.i('onInit(conversation_id:$id)');
 
     scrollController.addListener(_onScroll);
 
@@ -60,7 +53,7 @@ class ConversationChatController extends GetxController {
     super.onReady();
 
     getConversation().then((_) {
-      _api.markMessageRead(conversation_id: conversation_id);
+      _api.markMessageRead(conversation_id: id);
     });
     getMessages();
   }
@@ -79,7 +72,7 @@ class ConversationChatController extends GetxController {
     try {
       var result = await _api.getConversation(
         account_id: _auth.profile.value!.account_id,
-        conversation_id: conversation_id,
+        conversation_id: id,
         onCacheHit: (data) => info.value = data,
       );
 
@@ -99,7 +92,7 @@ class ConversationChatController extends GetxController {
 
       var result = await _api.listMessages(
         account_id: _auth.profile.value!.account_id,
-        conversation_id: conversation_id,
+        conversation_id: id,
         before: before,
         onCacheHit: (data) {
           if (before != null) return;
@@ -174,5 +167,43 @@ class ConversationChatController extends GetxController {
     if (ratio < 0.8) return;
     loading.value = true;
     getMessages(before: messages.last.id);
+  }
+
+  Future<void> changeStatus(
+    ConversationStatus status, {
+    DateTime? snoozed_until,
+    bool? skipConfirm,
+  }) async {
+    skipConfirm ??= false;
+
+    if (!skipConfirm) {
+      final result = await Get.dialog<bool?>(
+        AlertDialog(
+          title: Text(t.conversation_change_status),
+          content: Text(
+            t.conversation_change_status_message(
+              info.value!.status.label,
+              status.label,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text(t.cancel),
+            ),
+            TextButton(
+              onPressed: () => Get.back(result: true),
+              child: Text(t.confirm),
+            )
+          ],
+        ),
+      );
+      if (result == null || !result) return;
+    }
+
+    info.value!.status = status;
+    info.refresh();
+
+    _api.changeConversationStatus(conversation_id: id, status: status);
   }
 }

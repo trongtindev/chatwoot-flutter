@@ -46,22 +46,27 @@ class RealtimeService extends GetxService {
   @override
   void onReady() {
     super.onReady();
-    _logger.i('onReady()');
+
+    _getAuth.isSignedIn.listen((next) {
+      if (next) {
+        connect();
+        return;
+      }
+      _subscription?.cancel();
+      _actionCable?.disconnect();
+    });
     if (_getAuth.isSignedIn.value) connect();
   }
 
   @override
   void onClose() {
-    _logger.d('onClose()');
     _subscription?.cancel();
     _actionCable?.disconnect();
+
     super.onClose();
   }
 
   Future<RealtimeService> init() async {
-    _logger.i('init()');
-
-    _logger.i('init() => successful');
     return this;
   }
 
@@ -200,6 +205,8 @@ class RealtimeService extends GetxService {
         // case 'contact.deleted':
         //   break;
         // case 'first.reply.created':
+        //   break;
+        // case 'team.changed':
         //   break;
 
         default:

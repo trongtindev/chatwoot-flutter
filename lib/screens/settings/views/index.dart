@@ -169,7 +169,8 @@ class SettingsView extends GetView<SettingsController> {
               Column(
                 children: [
                   Obx(() {
-                    var profile = authService.profile.value!;
+                    final profile = authService.profile.value;
+                    if (profile == null) return Container();
                     return profileInfo(context, profile: profile);
                   }),
                   warningButton(

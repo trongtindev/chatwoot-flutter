@@ -57,15 +57,29 @@
     }
   },
   "conversation": "Conversation",
+  "conversation_id": "Conversation ID",
   "conversations": "Conversations",
   "conversation_empty_title": "No conversations yet!",
   "conversation_empty_description": "Once you start receiving conversations, they'll appear here.",
   "conversation_unassign": "Unassign conversation",
   "conversation_self_assign": "Assign to me",
+  "conversation_change_status": "Change status",
+  "conversation_change_status_message": "Are you sure you want to change status from {from} to {to}?",
+  "@conversation_change_status_message": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "contact": "Contact",
   "contacts": "Contacts",
   "contacts_empty_title": "No contacts found in this account",
   "contacts_empty_description": "Start adding new contacts by clicking on the button below",
+  "contacts_add": "Add contact",
   "settings": "Settings",
   "login_title": "Log in to your account",
   "login_description": "You are connected to {base_url}.",
@@ -78,8 +92,16 @@
   },
   "login_submit": "Sign In",
   "forgot_password": "Forgot your password?",
-  "forgot_password_title": "Forgot Password?",
-  "forgot_password_description": "Don't worry! We got your back",
+  "forgot_password_title": "Reset password",
+  "forgot_password_description": "Enter the email address you use to log in to {baseUrl} to get the password reset instructions.",
+  "@forgot_password_description": {
+    "placeholders": {
+      "baseUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "forgot_password_submit": "Reset password",
   "change_url": "Change URL",
   "change_url_title": "Installation URL",
   "change_url_description": "If you are using a self-hosted Chatwoot installation, input your server URL. Otherwise, use {url}.",
@@ -121,20 +143,25 @@
   "inboxes": "Inboxes",
   "inboxes_title": "Inboxes",
   "inboxes_description": "A channel is the mode of communication your customer chooses to interact with you. An inbox is where you manage interactions for a specific channel. It can include communications from various sources such as email, live chat, and social media.",
+  "inboxes_add": "Add inbox",
+  "agent": "Agent",
   "agents": "Agents",
   "agents_title": "Agents",
   "agents_description": "An agent is a member of your customer support team who can view and respond to user messages. The list below shows all the agents in your account.",
   "account": "Account",
   "change_password": "Change password",
+  "change_password_invalid": "Please enter a password of length 6 or more",
   "change_password_current": "Current password",
   "change_password_current_hint": "Please enter the current password",
   "change_password_new": "New password",
   "change_password_new_hint": "Please enter a new password",
   "change_password_confirm": "Confirm new password",
   "change_password_confirm_hint": "Please re-enter your new password",
+  "change_password_mismatch": "Confirm password should match the password",
   "labels": "Labels",
   "labels_description": "Labels help you categorize and prioritize conversations and leads. You can assign a label to a conversation or contact using the side panel.",
   "labels_add": "Add label",
+  "attributes": "Attributes",
   "custom_attributes": "Custom Attributes",
   "custom_attributes_title": "Custom Attributes",
   "custom_attributes_description": "A custom attribute tracks additional details about your contacts or conversations—such as the subscription plan or the date of their first purchase. You can add different types of custom attributes, such as text, lists, or numbers, to capture the specific information you need.",
@@ -145,6 +172,7 @@
   "set_availability": "Set availability",
   "read_docs": "Read docs",
   "edit": "Edit",
+  "team": "Team",
   "teams": "Teams",
   "teams_title": "Teams",
   "teams_description": "Teams allow you to organize agents into groups based on their responsibilities. An agent can belong to multiple teams. When working collaboratively, you can assign conversations to specific teams.",
@@ -256,5 +284,15 @@
   },
   "snooze_until": "Snooze until",
   "private": "Private",
-  "tap_to_record": "Tap to record"
+  "tap_to_record": "Tap to record",
+  "successful": "Successful",
+  "participants": "Participants",
+  "participants_add": "Add participant",
+  "initiated_at": "Initiated at",
+  "initiated_from": "Initiated from",
+  "browser": "Browser",
+  "operating_system": "Operating system",
+  "add": "Add",
+  "assignee": "Assignee",
+  "actions": "Actions"
 }

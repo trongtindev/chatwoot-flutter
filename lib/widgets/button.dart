@@ -11,7 +11,7 @@ Widget primaryButton({
 
   return SizedBox(
     width: block ? double.infinity : null,
-    child: ElevatedButton(
+    child: FilledButton(
       onPressed: loading ? null : onPressed,
       child: loading
           ? SizedBox(

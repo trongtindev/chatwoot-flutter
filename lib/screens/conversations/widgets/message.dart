@@ -253,6 +253,8 @@ class Message extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: width / height,
         child: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surfaceContainerHigh,
           ),

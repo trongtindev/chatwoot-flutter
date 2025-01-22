@@ -1,77 +1,26 @@
 import '/imports.dart';
 import 'package:intl/intl.dart';
 
-class ConversationAssigneeInfo {
-  final int id;
-  final int? account_id;
-  final AvailabilityStatus? availability_status;
-  final bool auto_offline;
-  final bool? confirmed;
-  final String? email;
-  final String? available_name;
-  final String name;
-  final UserRole? role;
-  final String? avatar_url;
-  final String thumbnail;
-  final dynamic custom_role_id; // TODO: unk type
-
-  const ConversationAssigneeInfo({
-    required this.id,
-    this.account_id,
-    this.availability_status,
-    required this.auto_offline,
-    this.confirmed,
-    this.email,
-    this.available_name,
-    required this.name,
-    required this.role,
-    this.avatar_url,
-    required this.thumbnail,
-    required this.custom_role_id,
-  });
-
-  factory ConversationAssigneeInfo.fromJson(dynamic json) {
-    var availability_status = json['availability_status'] != null
-        ? AvailabilityStatus.values.byName(json['availability_status'])
-        : null;
-    var role =
-        json['role'] != null ? UserRole.values.byName(json['role']) : null;
-
-    return ConversationAssigneeInfo(
-      id: json['id'],
-      account_id: json['account_id'],
-      availability_status: availability_status,
-      auto_offline: json['auto_offline'] ?? false,
-      confirmed: json['confirmed'],
-      email: json['email'],
-      available_name: json['available_name'],
-      name: json['name'],
-      role: role,
-      avatar_url: json['avatar_url'],
-      thumbnail: json['thumbnail'],
-      custom_role_id: json['custom_role_id'],
-    );
-  }
-}
-
 class ConversationMeta {
   final SenderInfo sender;
   final InboxChannelType? channel;
-  final ConversationAssigneeInfo? assignee;
+  final UserInfo? assignee;
+  final TeamInfo? team;
   final bool hmac_verified;
 
   const ConversationMeta({
     required this.sender,
     this.channel,
     this.assignee,
+    this.team,
     required this.hmac_verified,
   });
 
   factory ConversationMeta.fromJson(dynamic json) {
-    var assignee = json['assignee'] != null
-        ? ConversationAssigneeInfo.fromJson(json['assignee'])
-        : null;
-    var channel = json['channel'] != null
+    final assignee =
+        json['assignee'] != null ? UserInfo.fromJson(json['assignee']) : null;
+    final team = json['team'] != null ? TeamInfo.fromJson(json['team']) : null;
+    final channel = json['channel'] != null
         ? InboxChannelType.values.firstWhere((e) => e.value == json['channel'])
         : null;
 
@@ -79,6 +28,7 @@ class ConversationMeta {
       sender: SenderInfo.fromJson(json['sender']),
       channel: channel,
       assignee: assignee,
+      team: team,
       hmac_verified: json['hmac_verified'],
     );
   }
@@ -88,12 +38,14 @@ class ConversationAttribute {
   final BrowserAttribute? browser;
   final String? referer;
   final DateTime? initiated_at;
+  final String? initiated_from;
   final String? browser_language;
 
   const ConversationAttribute({
     this.browser,
     this.referer,
     this.initiated_at,
+    this.initiated_from,
     this.browser_language,
   });
 
@@ -111,6 +63,7 @@ class ConversationAttribute {
       initiated_at: timestamp != null
           ? DateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z").parse(timestamp)
           : null,
+      initiated_from: json['initiated_from'],
       browser_language: json['browser_language'],
     );
   }
@@ -132,7 +85,7 @@ class ConversationInfo {
   final List<String> labels; // TODO: unk type
   final bool? muted;
   final dynamic snoozed_until; // TODO: unk type
-  final ConversationStatus status;
+  ConversationStatus status;
   final DateTime created_at;
   final DateTime timestamp;
   final DateTime? first_reply_created_at;

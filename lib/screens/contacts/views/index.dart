@@ -35,9 +35,18 @@ class ContactsView extends GetView<ContactsController> {
               if (controller.loading.value && controller.items.isEmpty) {
                 return buildPlaceholder();
               } else if (controller.error.isNotEmpty) {
-                return buildError(context);
+                return errorState(
+                  context,
+                  error: controller.error.value,
+                  onRetry: () => controller.getContacts(reset: true),
+                );
               } else if (controller.items.isEmpty) {
-                return buildEmptyState();
+                return emptyState(
+                  context,
+                  image: 'conversations.png',
+                  title: t.contacts_empty_title,
+                  description: t.contacts_empty_description,
+                );
               }
               return ListView(
                 children: [
@@ -69,6 +78,11 @@ class ContactsView extends GetView<ContactsController> {
           }),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: Text(t.contacts_add),
+        icon: Icon(Icons.add_outlined),
+      ),
     );
   }
 
@@ -77,18 +91,6 @@ class ContactsView extends GetView<ContactsController> {
     return Center(
       child: CircularProgressIndicator(),
     );
-  }
-
-  Widget buildError(BuildContext context) {
-    return error(
-      context,
-      message: controller.error.value,
-      onRetry: () => controller.getContacts(reset: true),
-    );
-  }
-
-  Widget buildEmptyState() {
-    return Text('empty_state');
   }
 
   Widget buildItem(BuildContext context, ContactInfo info) {

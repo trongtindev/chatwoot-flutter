@@ -40,7 +40,6 @@ class NotificationService extends GetxService {
   @override
   void onReady() {
     super.onReady();
-    _logger.d('onReady()');
 
     _getAuth.profile.listen((next) {
       if (next == null) {
@@ -55,7 +54,10 @@ class NotificationService extends GetxService {
       if (next) requestPermission();
     });
 
-    _tokenChangeSubscription = token.listen((next) => saveDeviceDetails());
+    _tokenChangeSubscription = token.listen((next) {
+      if (isNullOrEmpty(next)) return;
+      saveDeviceDetails();
+    });
 
     _tokenRefreshSubscription = _firebaseMessaging.onTokenRefresh.listen(
       (next) => token.value = next,
@@ -72,8 +74,6 @@ class NotificationService extends GetxService {
 
   @override
   void onClose() {
-    _logger.d('onClose()');
-
     _enabledChangeSubscription?.cancel();
     _tokenChangeSubscription?.cancel();
     _tokenRefreshSubscription?.cancel();
@@ -118,12 +118,12 @@ class NotificationService extends GetxService {
   }
 
   Future<void> saveDeviceDetails() async {
-    if (token.value == null || token.value!.isEmpty) {
+    if (isNullOrEmpty(token.value)) {
       _logger.w('saveDeviceDetails() => token is empty');
       return;
     }
-    _logger.i('saveDeviceDetails()');
+    _logger.d('saveDeviceDetails()');
     await _getApi.saveDeviceDetails(push_token: token.value!);
-    _logger.i('saveDeviceDetails() => successful');
+    _logger.d('saveDeviceDetails() => successful');
   }
 }

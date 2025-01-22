@@ -79,9 +79,12 @@ class ConversationsController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    _logger.d('onReady');
 
-    getConversations();
+    _auth.isSignedIn.listen((next) {
+      if (!next) return;
+      getConversations();
+    });
+    if (_auth.isSignedIn.value) getConversations();
   }
 
   @override
@@ -114,8 +117,7 @@ class ConversationsController extends GetxController {
         is_no_more.value = false;
       }
 
-      var result = await _api.listConversations(
-        account_id: _auth.profile.value!.account_id,
+      final result = await _api.listConversations(
         page: page.value,
         status: filter_by_status.value,
         labels: filter_by_labels.map((e) => e.title).toList(),
@@ -130,7 +132,7 @@ class ConversationsController extends GetxController {
                 mine_count.value = data.meta.mine_count;
               },
       );
-      var data = result.getOrThrow();
+      final data = result.getOrThrow();
 
       if (append) {
         items.addAll(data.payload);

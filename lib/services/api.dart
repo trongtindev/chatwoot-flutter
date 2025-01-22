@@ -855,4 +855,67 @@ class ApiService extends GetxService {
       return error.toFailure();
     }
   }
+
+  Future<Result<String>> changeConversationStatus({
+    int? account_id,
+    required int conversation_id,
+    required ConversationStatus status,
+    DateTime? snoozed_until,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      final result = await _http.post(
+        '/accounts/$account_id/conversations/$conversation_id/toggle_status',
+        data: {
+          'status': status.name,
+          'snoozed_until': snoozed_until?.toString(),
+        },
+      );
+      return '${result.data['message']}'.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<UserInfo>>> getAssignableAgents({
+    int? account_id,
+    required int conversation_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path =
+          '/accounts/$account_id/conversations/$conversation_id/assignable_agents';
+
+      final result = await _http.get(path);
+      List<dynamic> items = result.data['payload'];
+
+      return items.map(UserInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<UserInfo>>> getAgents({
+    int? account_id,
+    required int conversation_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/agents';
+
+      final result = await _http.get(path);
+      List<dynamic> items = result.data;
+
+      return items.map(UserInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
 }

@@ -13,10 +13,10 @@ class PrettyPrinter extends _logger.PrettyPrinter {
     }
 
     final stackTrace = StackTrace.current.toString().split('\n');
-    List<String> items = ['[${event.level.name}] ${event.message}'];
+    List<String> items = ['- [${event.level.name}] ${event.message}'];
     if (stackTrace.length >= 4) {
       final stackLine = stackTrace[3].replaceFirst(RegExp(r'#\d+\s+'), '');
-      items[0] = '$stackLine ${items[0]}';
+      items.insert(0, stackLine);
     }
 
     return items;

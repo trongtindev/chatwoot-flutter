@@ -31,6 +31,51 @@ enum ConversationStatus implements Comparable<ConversationStatus> {
     }
   }
 
+  IconData get icon {
+    switch (this) {
+      case ConversationStatus.open:
+        return Icons.cached_outlined;
+      case ConversationStatus.resolved:
+        return Icons.task_alt_outlined;
+      case ConversationStatus.pending:
+        return Icons.pending_outlined;
+      case ConversationStatus.snoozed:
+        return Icons.notifications_off_outlined;
+      default:
+        return Icons.abc;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case ConversationStatus.open:
+        return Get.context!.theme.colorScheme.surfaceContainer;
+      case ConversationStatus.resolved:
+        return Get.context!.theme.colorScheme.primaryContainer;
+      case ConversationStatus.pending:
+        return Get.context!.theme.colorScheme.tertiaryContainer;
+      case ConversationStatus.snoozed:
+        return Get.context!.theme.colorScheme.secondaryContainer;
+      case ConversationStatus.all:
+        return Color(0xff858585);
+    }
+  }
+
+  Color get outlineColor {
+    switch (this) {
+      case ConversationStatus.open:
+        return Get.context!.theme.colorScheme.outlineVariant;
+      case ConversationStatus.resolved:
+        return Get.context!.theme.colorScheme.primary;
+      case ConversationStatus.pending:
+        return Get.context!.theme.colorScheme.tertiary;
+      case ConversationStatus.snoozed:
+        return Get.context!.theme.colorScheme.secondary;
+      case ConversationStatus.all:
+        return Color(0xff858585);
+    }
+  }
+
   @override
   int compareTo(ConversationStatus other) => index - other.index;
 }
@@ -169,9 +214,9 @@ enum InboxChannelType implements Comparable<InboxChannelType> {
     if (isNotNullOrEmpty(iconPath)) {
       return Image.asset(iconPath!);
     } else if (iconData != null) {
-      return Icon(iconData);
+      return CircleAvatar(child: Icon(iconData));
     }
-    return Icon(Icons.inbox_outlined);
+    return CircleAvatar(child: Icon(Icons.inbox_outlined));
   }
 
   @override
