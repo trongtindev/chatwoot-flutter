@@ -4,11 +4,13 @@ import '/imports.dart';
 class ConversationInput extends StatelessWidget {
   final int id;
   late final ConversationInputController c;
+  late final CannedResponsesController cannedResponses;
 
   ConversationInput({
     super.key,
     required this.id,
-  }) : c = Get.put(ConversationInputController(id), tag: '$id');
+  })  : c = Get.put(ConversationInputController(id: id), tag: '$id'),
+        cannedResponses = Get.find<CannedResponsesController>();
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +282,7 @@ class ConversationInput extends StatelessWidget {
                   var isImage = ['jpg', 'png', 'jpeg'].contains(file.extension);
                   if (isImage) {
                     return Image.file(
-                      File(file.path!),
+                      File(file.path),
                       width: double.infinity,
                       height: double.infinity,
                     );

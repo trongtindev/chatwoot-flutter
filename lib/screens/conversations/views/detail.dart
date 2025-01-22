@@ -89,7 +89,7 @@ class ConversationDetailView extends StatelessWidget {
                   leading: Obx(() {
                     return avatar(
                       context,
-                      url: agent.avatar_url,
+                      url: agent.thumbnail,
                       isOnline: realtime.online.contains(agent.id),
                     );
                   }),
@@ -108,6 +108,10 @@ class ConversationDetailView extends StatelessWidget {
                 ),
               if (team != null)
                 ListTile(
+                  leading: avatar(
+                    context,
+                    fallback: team.name.substring(0, 1),
+                  ),
                   title: Text(t.team),
                   subtitle: Text(team.name),
                   trailing: Icon(Icons.chevron_right_outlined),
@@ -129,48 +133,52 @@ class ConversationDetailView extends StatelessWidget {
   }
 
   Widget buildLabels(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildLabel(t.labels),
-        Wrap(
-          spacing: 8,
-          children: [
-            ...base.info.value!.labels.map((e) {
-              final label =
-                  labels.items.firstWhereOrNull((label) => label.title == e);
+    return Obx(() {
+      final items = base.info.value!;
 
-              return Chip(
-                label: Row(
-                  spacing: 8,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: label?.color ??
-                            context.theme.colorScheme.surfaceContainerHigh,
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(5),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabel(t.labels),
+          Wrap(
+            spacing: 8,
+            children: [
+              ...items.labels.map((e) {
+                final label =
+                    labels.items.firstWhereOrNull((label) => label.title == e);
+
+                return Chip(
+                  label: Row(
+                    spacing: 8,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: label?.color ??
+                              context.theme.colorScheme.surfaceContainerHigh,
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                       ),
-                    ),
-                    Text(e),
-                  ],
-                ),
-                deleteIcon: Icon(Icons.label_off_outlined),
-                onDeleted: () {},
-              );
-            }),
-            Chip(
-              label: Text(t.add),
-              deleteIcon: Icon(Icons.add_outlined),
-              onDeleted: () {},
-            )
-          ],
-        ),
-      ],
-    );
+                      Text(e),
+                    ],
+                  ),
+                  // deleteIcon: Icon(Icons.label_off_outlined),
+                  // onDeleted: label == null ? null : () => c.removeLabel(label),
+                );
+              }),
+              Chip(
+                label: Text(t.modify),
+                onDeleted: c.showLabelPicker,
+                deleteIcon: Icon(Icons.edit),
+              )
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   Widget buildParticipants(BuildContext context) {

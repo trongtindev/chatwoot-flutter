@@ -23,7 +23,7 @@ class ConversationChatController extends GetxController {
 
   EventListener<MessageInfo>? _messageCreatedListener;
   EventListener<MessageInfo>? _messageUpdatedListener;
-  EventListener<ConversationInfo>? _conversationStatusChangedListener;
+  EventListener<ConversationInfo>? _conversationUpdatedListener;
 
   @override
   void onInit() {
@@ -42,9 +42,9 @@ class ConversationChatController extends GetxController {
       _onMessageUpdated,
     );
 
-    _conversationStatusChangedListener = _realtime.events.on(
-      RealtimeEventId.conversationStatusChanged.name,
-      _onConversationStatusChanged,
+    _conversationUpdatedListener = _realtime.events.on(
+      RealtimeEventId.conversationUpdated.name,
+      _onConversationUpdated,
     );
   }
 
@@ -62,7 +62,7 @@ class ConversationChatController extends GetxController {
   void onClose() {
     _messageCreatedListener?.cancel();
     _messageUpdatedListener?.cancel();
-    _conversationStatusChangedListener?.cancel();
+    _conversationUpdatedListener?.cancel();
     scrollController.dispose();
 
     super.onClose();
@@ -150,7 +150,7 @@ class ConversationChatController extends GetxController {
     messages[index] = info;
   }
 
-  void _onConversationStatusChanged(ConversationInfo info) {
+  void _onConversationUpdated(ConversationInfo info) {
     if (info.id != this.info.value?.id) return;
     this.info.value = info;
   }
@@ -177,28 +177,14 @@ class ConversationChatController extends GetxController {
     skipConfirm ??= false;
 
     if (!skipConfirm) {
-      final result = await Get.dialog<bool?>(
-        AlertDialog(
-          title: Text(t.conversation_change_status),
-          content: Text(
-            t.conversation_change_status_message(
-              info.value!.status.label,
-              status.label,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: Text(t.cancel),
-            ),
-            TextButton(
-              onPressed: () => Get.back(result: true),
-              child: Text(t.confirm),
-            )
-          ],
+      final result = await confirm(
+        t.conversation_change_status_message(
+          info.value!.status.label,
+          status.label,
         ),
+        title: t.conversation_change_status,
       );
-      if (result == null || !result) return;
+      if (!result) return;
     }
 
     info.value!.status = status;

@@ -27,7 +27,7 @@ class ConversationInputController extends GetxController {
   AudioRecorder? _recorder;
   Timer? _fetchAmplitudeTimer;
 
-  ConversationInputController(this.id);
+  ConversationInputController({required this.id});
 
   @override
   void onInit() {

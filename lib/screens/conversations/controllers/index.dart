@@ -157,7 +157,10 @@ class ConversationsController extends GetxController {
 
   Future<void> showFilter() async {
     _inboxes.getInboxes();
-    var result = await Get.bottomSheet<bool>(ConversationsFilterView());
+    var result = await Get.bottomSheet<bool>(
+      ConversationsFilterView(),
+      showDragHandle: false,
+    );
     if (result == null || !result) return;
   }
 
@@ -165,6 +168,7 @@ class ConversationsController extends GetxController {
 
   Future<void> onTap(ConversationInfo info) async {
     if (info.unread_count > 0) {
+      unread_count.value -= 1;
       info.unread_count = 0;
       items.refresh();
     }
@@ -212,6 +216,7 @@ class ConversationsController extends GetxController {
     if (index < 0) return;
 
     items[index].unread_count = 0;
+    unread_count.value -= 1;
     items.refresh();
   }
 
@@ -221,7 +226,10 @@ class ConversationsController extends GetxController {
 
     items[index].last_non_activity_message = info;
     items[index].last_activity_at = info.updated_at ?? info.created_at;
-    items[index].unread_count += 1;
+    if (info.sender?.type != MessageSenderType.user) {
+      items[index].unread_count += 1;
+      unread_count.value += 1;
+    }
 
     updateSortItems();
   }
