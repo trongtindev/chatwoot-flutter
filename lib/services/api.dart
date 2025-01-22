@@ -189,6 +189,72 @@ class ApiService extends GetxService {
     }
   }
 
+  /// Creating a conversation in chatwoot requires a source id.
+  /// Learn more about source_id: https://github.com/chatwoot/chatwoot/wiki/Building-on-Top-of-Chatwoot:-Importing-Existing-Contacts-and-Creating-Conversations
+  Future<Result<ConversationInfo>> createConversation({
+    int? account_id,
+    required int inbox_id,
+    required int contact_id,
+    required String source_id,
+    int? assignee_id,
+    int? team_id,
+    ConversationStatus? status,
+    required String content,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      final path = '/accounts/$account_id/conversations';
+      final result = await _http.post(
+        path,
+        data: {
+          'inbox_id': inbox_id,
+          'contact_id': contact_id,
+          'source_id': source_id,
+          'assignee_id': assignee_id,
+          'team_id': team_id,
+          'status': status?.name,
+          'message': {
+            'content': content,
+          },
+        },
+      );
+
+      return ConversationInfo.fromJson(result.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  /// Toggles the priority of conversation
+  Future<Result<bool>> updateConversationPriority({
+    int? account_id,
+    required int conversation_id,
+    required ConversationPriority priority,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      final path =
+          '/accounts/$account_id/conversations/$conversation_id/toggle_priority';
+      await _http.post(
+        path,
+        data: {
+          'priority': priority.name,
+        },
+      );
+
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  /// Get all details regarding a conversation with all messages in the conversation
   Future<Result<ConversationInfo>> getConversation({
     int? account_id,
     required int conversation_id,
@@ -215,6 +281,60 @@ class ApiService extends GetxService {
       if (onCacheHit != null) saveCache(url: path, data: result.data);
 
       return ConversationInfo.fromJson(result.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<UserInfo>>> getConversationParticipants({
+    int? account_id,
+    required int conversation_id,
+    Function(List<UserInfo> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path =
+          '/accounts/$account_id/conversations/$conversation_id/participants';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        final cached = await getCache(url: path);
+        if (cached != null) {
+          List<dynamic> items = jsonDecode(cached.data);
+          final transformedData = items.map(UserInfo.fromJson).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      final result = await _http.get(path);
+      List<dynamic> items = result.data;
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      return items.map(UserInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> updateConversationLabels({
+    int? account_id,
+    required int conversation_id,
+    required List<String> labels,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path =
+          '/accounts/$account_id/conversations/$conversation_id/labels';
+
+      await _http.post(path, data: {'labels': labels});
+
+      return true.toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {
@@ -268,6 +388,50 @@ class ApiService extends GetxService {
       if (onCacheHit != null) saveCache(url: path, data: result.data);
 
       return ListConversationResult.fromJson(result.data['data']).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<String>> changeConversationStatus({
+    int? account_id,
+    required int conversation_id,
+    required ConversationStatus status,
+    DateTime? snoozed_until,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
+      final result = await _http.post(
+        '/accounts/$account_id/conversations/$conversation_id/toggle_status',
+        data: {
+          'status': status.name,
+          'snoozed_until': snoozed_until?.toString(),
+        },
+      );
+      return '${result.data['message']}'.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<UserInfo>>> listAssignableAgents({
+    int? account_id,
+    required int conversation_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path =
+          '/accounts/$account_id/conversations/$conversation_id/assignable_agents';
+
+      final result = await _http.get(path);
+      List<dynamic> items = result.data['payload'];
+
+      return items.map(UserInfo.fromJson).toList().toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {
@@ -340,6 +504,8 @@ class ApiService extends GetxService {
     }
   }
 
+  /// Listing all the resolved contacts with pagination (Page size = 15).
+  /// Resolved contacts are the ones with a value for identifier, email or phone number.
   Future<Result<ListContactResult>> listContacts({
     int? account_id,
     int? page,
@@ -472,11 +638,13 @@ class ApiService extends GetxService {
   }
 
   Future<Result<ContactInfo>> getContact({
-    required int account_id,
+    int? account_id,
     required int contact_id,
     Function(ContactInfo data)? onCacheHit,
   }) async {
     try {
+      account_id ??= _getAuth.profile.value!.account_id;
+
       final path = '/accounts/$account_id/contacts/$contact_id';
 
       // if onCacheHit defined
@@ -734,7 +902,7 @@ class ApiService extends GetxService {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
 
-      var path = '/accounts/$account_id/labels';
+      final path = '/accounts/$account_id/labels';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
@@ -761,6 +929,7 @@ class ApiService extends GetxService {
     }
   }
 
+  /// List all Canned Responses in an Account
   Future<Result<List<CannedResponseInfo>>> listCannedResponses({
     int? account_id,
     AttributeModel? attribute_model,
@@ -787,6 +956,32 @@ class ApiService extends GetxService {
 
       List<dynamic> items = result.data;
       return items.map(CannedResponseInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  /// Add a new Canned Response to Account
+  Future<Result<CannedResponseInfo>> createCannedResponse({
+    int? account_id,
+    required String content,
+    required String short_code,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/canned_responses';
+
+      final result = await _http.post(
+        path,
+        data: {
+          'content': content,
+          'short_code': short_code,
+        },
+      );
+
+      return CannedResponseInfo.fromJson(result.data).toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {
@@ -856,51 +1051,8 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<Result<String>> changeConversationStatus({
-    int? account_id,
-    required int conversation_id,
-    required ConversationStatus status,
-    DateTime? snoozed_until,
-  }) async {
-    try {
-      account_id ??= _getAuth.profile.value!.account_id;
-
-      final result = await _http.post(
-        '/accounts/$account_id/conversations/$conversation_id/toggle_status',
-        data: {
-          'status': status.name,
-          'snoozed_until': snoozed_until?.toString(),
-        },
-      );
-      return '${result.data['message']}'.toSuccess();
-    } on DioException catch (error) {
-      return ApiError.fromException(error).toFailure();
-    } on Exception catch (error) {
-      return error.toFailure();
-    }
-  }
-
-  Future<Result<List<UserInfo>>> getAssignableAgents({
-    int? account_id,
-    required int conversation_id,
-  }) async {
-    try {
-      account_id ??= _getAuth.profile.value!.account_id;
-      final path =
-          '/accounts/$account_id/conversations/$conversation_id/assignable_agents';
-
-      final result = await _http.get(path);
-      List<dynamic> items = result.data['payload'];
-
-      return items.map(UserInfo.fromJson).toList().toSuccess();
-    } on DioException catch (error) {
-      return ApiError.fromException(error).toFailure();
-    } on Exception catch (error) {
-      return error.toFailure();
-    }
-  }
-
-  Future<Result<List<UserInfo>>> getAgents({
+  /// List Agents in Account
+  Future<Result<List<UserInfo>>> listAgents({
     int? account_id,
     required int conversation_id,
   }) async {
@@ -912,6 +1064,123 @@ class ApiService extends GetxService {
       List<dynamic> items = result.data;
 
       return items.map(UserInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<String>>> getContactLabels({
+    int? account_id,
+    required int contact_id,
+    Function(List<String> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/contacts/$contact_id/labels';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        final cached = await getCache(url: path);
+        if (cached != null) {
+          List<dynamic> items = jsonDecode(cached.data)['payload'];
+          final transformedData = items.map((e) => e.toString()).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      final result = await _http.get(path);
+      List<dynamic> items = result.data['payload'];
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      return items.map((e) => e.toString()).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> updateContactLabels({
+    int? account_id,
+    required int contact_id,
+    required List<String> labels,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/contacts/$contact_id/labels';
+
+      await _http.post(path, data: {'labels': labels});
+
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<ConversationInfo>>> getContactConversations({
+    int? account_id,
+    required int contact_id,
+    Function(List<ConversationInfo> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/contacts/$contact_id/conversations';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        final cached = await getCache(url: path);
+        if (cached != null) {
+          List<dynamic> items = jsonDecode(cached.data)['payload'];
+          final transformedData = items.map(ConversationInfo.fromJson).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      final result = await _http.get(path);
+      List<dynamic> items = result.data['payload'];
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      return items.map(ConversationInfo.fromJson).toList().toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<List<TeamInfo>>> getTeams({
+    int? account_id,
+    Function(List<TeamInfo> data)? onCacheHit,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/teams';
+
+      // if onCacheHit defined
+      if (onCacheHit != null) {
+        final cached = await getCache(url: path);
+        if (cached != null) {
+          List<dynamic> items = jsonDecode(cached.data);
+          final transformedData = items.map(TeamInfo.fromJson).toList();
+          onCacheHit(transformedData);
+        }
+      }
+
+      final result = await _http.get(path);
+      List<dynamic> items = result.data;
+
+      // if onCacheHit defined
+      if (onCacheHit != null) saveCache(url: path, data: result.data);
+
+      return items.map(TeamInfo.fromJson).toList().toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {
