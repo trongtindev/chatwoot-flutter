@@ -108,7 +108,10 @@ class NotificationsController extends GetxController {
   }
 
   Future<void> showFilter() async {
-    final result = await Get.bottomSheet<bool>(NotificationsFilterView());
+    final result = await Get.bottomSheet<bool>(
+      NotificationsFilterView(),
+      showDragHandle: false,
+    );
     if (result == null || !result) return;
   }
 

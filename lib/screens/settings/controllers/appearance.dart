@@ -14,13 +14,14 @@ class SettingsAppearanceController extends GetxController {
             var mode = ThemeMode.values[i];
             return ListTile(
               title: Text(mode.label),
-              onTap: () => Get.back(result: mode),
+              onTap: () => Navigator.of(Get.context!).pop(mode),
               selected: selected,
               trailing: selected ? Icon(Icons.check_outlined) : null,
             );
           },
         ),
       ),
+      showDragHandle: false,
     );
     if (result == null) return;
     theme.mode.value = result;

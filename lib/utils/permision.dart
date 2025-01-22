@@ -17,12 +17,12 @@ Future<bool> ensurePermissionsGranted({
           content: Text(t.permission_denied_message(permission.toString())),
           actions: [
             TextButton(
-              onPressed: () => Get.back(),
+              onPressed: () => Get.close(),
               child: Text(t.close),
             ),
             TextButton(
               onPressed: () {
-                Get.back();
+                Get.close();
 
                 // TODO: handle
                 switch (permission) {
@@ -43,7 +43,7 @@ Future<bool> ensurePermissionsGranted({
         content: Text(t.permission_request_message(permission.toString())),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: () => Get.close(),
             child: Text(t.understand),
           )
         ],
@@ -61,7 +61,7 @@ Future<bool> ensurePermissionsGranted({
       content: Text(t.exception_message(error.toString())),
       actions: [
         TextButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Get.close(),
           child: Text(t.close),
         )
       ],

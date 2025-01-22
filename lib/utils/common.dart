@@ -8,7 +8,7 @@ void errorHandler(Object error) {
       content: Text(apiException.errors.join(';')),
       actions: [
         TextButton(
-          onPressed: () => Get.back(),
+          onPressed: () => Get.close(),
           child: Text(t.close),
         ),
       ],
@@ -26,7 +26,7 @@ void errorHandler(Object error) {
     content: Text(t.exception_message(error.toString())),
     actions: [
       TextButton(
-        onPressed: () => Get.back(),
+        onPressed: () => Get.close(),
         child: Text(t.close),
       ),
     ],
@@ -58,21 +58,22 @@ T valueOrDefault<T>(T? value, T defaultValue) {
   return value ?? defaultValue;
 }
 
-Future<bool> confirm(String message) async {
+Future<bool> confirm(String message, {String? title}) async {
   final result = await Get.dialog<bool?>(AlertDialog(
-    title: Text(t.confirm),
+    title: Text(title ?? t.confirm),
     content: Text(message),
     actions: [
       TextButton(
-        onPressed: () => Get.back(),
+        onPressed: () => Get.close(),
         child: Text(t.cancel),
       ),
       TextButton(
-        onPressed: () => Get.back(result: true),
+        onPressed: () => Navigator.of(Get.context!).pop(true),
         child: Text(t.confirm),
       )
     ],
   ));
+  logger.d('result: $result');
   return result ?? false;
 }
 
@@ -82,14 +83,15 @@ Future<bool> confirmDelete({required String name}) async {
     content: Text(t.confirm_delete_message(name)),
     actions: [
       TextButton(
-        onPressed: () => Get.back(),
+        onPressed: () => Get.close(),
         child: Text(t.cancel),
       ),
       TextButton(
-        onPressed: () => Get.back(result: true),
+        onPressed: () => Navigator.of(Get.context!).pop(true),
         child: Text(t.delete),
       )
     ],
   ));
+  logger.d('result: $result');
   return result ?? false;
 }

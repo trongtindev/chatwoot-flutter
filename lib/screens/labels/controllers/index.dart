@@ -1,3 +1,4 @@
+import '../widgets/picker.dart';
 import '/imports.dart';
 
 class LabelsController extends GetxController {
@@ -40,4 +41,13 @@ class LabelsController extends GetxController {
   }
 
   Future<void> addLabel() async {}
+
+  Future<List<LabelInfo>> showPicker({List<String>? selected}) async {
+    final result = await Get.bottomSheet<List<LabelInfo>?>(
+      LabelsPicker(
+        selected: selected,
+      ),
+    );
+    return result ?? [];
+  }
 }

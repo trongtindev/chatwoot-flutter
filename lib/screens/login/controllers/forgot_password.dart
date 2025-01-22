@@ -25,7 +25,7 @@ class ForgotPasswordController extends GetxController {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () => Get.back(),
+              onPressed: () => Get.close(),
               child: Text(t.understand),
             )
           ],

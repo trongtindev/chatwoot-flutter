@@ -11,6 +11,7 @@ class ChangeUrlController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+
     baseUrl.text = Uri.parse(_api.baseUrl.value).host;
   }
 
@@ -20,12 +21,14 @@ class ChangeUrlController extends GetxController {
     _logger.i('submit()');
 
     try {
-      var finalUrl = 'https://${baseUrl.text}';
-      var result = await _api.getInfo(baseUrl: finalUrl);
-      var info = result.getOrThrow();
+      final finalUrl = 'https://${baseUrl.text}';
+      final result = await _api.getInfo(baseUrl: finalUrl);
+      final info = result.getOrThrow();
+
       _logger.i('submit() => successful! version: ${info.version}');
       _api.baseUrl.value = finalUrl;
-      Get.back(result: true);
+
+      Get.back();
     } catch (error) {
       if (error is! ApiError) _logger.e(error);
       errorHandler(error);

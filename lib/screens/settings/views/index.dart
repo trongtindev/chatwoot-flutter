@@ -44,6 +44,10 @@ class SettingsView extends GetView<SettingsController> {
           page: () => SettingsProfileView(),
         ),
         SettingTab(
+          iconData: Icons.visibility_outlined,
+          title: t.set_availability,
+        ),
+        SettingTab(
           iconData: Icons.lock_outline,
           title: t.change_password,
           page: () => SettingsChangePasswordView(),
@@ -116,10 +120,6 @@ class SettingsView extends GetView<SettingsController> {
       ],
       [
         SettingTab(
-          iconData: Icons.visibility_outlined,
-          title: t.set_availability,
-        ),
-        SettingTab(
           iconData: Icons.notifications_outlined,
           title: t.notifications,
           page: () => SettingsProfileView(),
@@ -158,70 +158,96 @@ class SettingsView extends GetView<SettingsController> {
     return GetBuilder(
       init: SettingsController(),
       builder: (_) {
+        final profile = authService.profile.value;
+        if (profile == null) return Scaffold();
+
         return Scaffold(
-          appBar: AppBar(
-            title: Text(t.settings),
-            centerTitle: true,
-          ),
-          body: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              Column(
-                children: [
-                  Obx(() {
-                    final profile = authService.profile.value;
-                    if (profile == null) return Container();
-                    return profileInfo(context, profile: profile);
-                  }),
-                  warningButton(
-                    label: t.logout,
-                    appendIcon: Icon(Icons.logout_outlined),
-                    onPressed: controller.logout,
-                  ),
-                  Padding(padding: EdgeInsets.all(8)),
-                  ListView.builder(
-                    padding: EdgeInsets.all(4),
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: items.length,
-                    itemBuilder: (_, i) {
-                      return Card(
-                        child: ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: items[i].length,
-                          itemBuilder: (_, j) {
-                            var item = items[i][j];
-                            var trailingIcon = Icons.chevron_right;
-
-                            if (item.internalUrl != null) {
-                              trailingIcon = Icons.open_in_browser;
-                            } else if (item.externalUrl != null) {
-                              trailingIcon = Icons.open_in_new;
-                            }
-
-                            return ListTile(
-                              leading: Icon(item.iconData),
-                              title: Text(item.title),
-                              trailing: Icon(trailingIcon),
-                              onTap: () {
-                                if (item.page != null) {
-                                  Get.to(item.page!);
-                                } else if (item.internalUrl != null) {
-                                  openInternalBrowser(item.internalUrl!);
-                                } else if (item.externalUrl != null) {
-                                  openBrowser(item.externalUrl!);
-                                }
-                              },
-                            );
-                          },
+          body: NestedScrollView(
+            floatHeaderSlivers: true,
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  pinned: true,
+                  floating: true,
+                  expandedHeight: 250.0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: Text(
+                        profile.name,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    centerTitle: true,
+                    background: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: avatar(
+                          context,
+                          url: profile.avatar_url,
+                          size: 96,
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ];
+            },
+            body: ListView(
+              padding: EdgeInsets.all(4),
+              children: [
+                Column(
+                  children: [
+                    warningButton(
+                      label: t.logout,
+                      appendIcon: Icon(Icons.logout_outlined),
+                      onPressed: controller.logout,
+                    ),
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: items.length,
+                      itemBuilder: (_, i) {
+                        return Card(
+                          child: ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: items[i].length,
+                            itemBuilder: (_, j) {
+                              var item = items[i][j];
+                              var trailingIcon = Icons.chevron_right;
+
+                              if (item.internalUrl != null) {
+                                trailingIcon = Icons.open_in_browser;
+                              } else if (item.externalUrl != null) {
+                                trailingIcon = Icons.open_in_new;
+                              }
+
+                              return ListTile(
+                                leading: Icon(item.iconData),
+                                title: Text(item.title),
+                                trailing: Icon(trailingIcon),
+                                onTap: () {
+                                  if (item.page != null) {
+                                    Get.to(item.page!);
+                                  } else if (item.internalUrl != null) {
+                                    openInternalBrowser(item.internalUrl!);
+                                  } else if (item.externalUrl != null) {
+                                    openBrowser(item.externalUrl!);
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

@@ -42,7 +42,7 @@ class AppState extends State<App> {
           content: Text(t.error_message(error.toString())),
           actions: [
             TextButton(
-              onPressed: () => Get.back(),
+              onPressed: () => Get.close(),
               child: Text(t.quit),
             )
           ],

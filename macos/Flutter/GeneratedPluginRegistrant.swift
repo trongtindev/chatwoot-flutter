@@ -18,6 +18,7 @@ import path_provider_foundation
 import record_darwin
 import screen_retriever_macos
 import sentry_flutter
+import shared_preferences_foundation
 import sqflite_darwin
 import url_launcher_macos
 import video_player_avfoundation
@@ -38,6 +39,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   RecordPlugin.register(with: registry.registrar(forPlugin: "RecordPlugin"))
   ScreenRetrieverMacosPlugin.register(with: registry.registrar(forPlugin: "ScreenRetrieverMacosPlugin"))
   SentryFlutterPlugin.register(with: registry.registrar(forPlugin: "SentryFlutterPlugin"))
+  SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
   SqflitePlugin.register(with: registry.registrar(forPlugin: "SqflitePlugin"))
   UrlLauncherPlugin.register(with: registry.registrar(forPlugin: "UrlLauncherPlugin"))
   FVPVideoPlayerPlugin.register(with: registry.registrar(forPlugin: "FVPVideoPlayerPlugin"))

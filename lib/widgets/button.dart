@@ -39,7 +39,7 @@ Widget warningButton({
 
   return SizedBox(
     width: block ? double.infinity : null,
-    child: ElevatedButton(
+    child: FilledButton.tonal(
       onPressed: loading ? null : onPressed,
       child: loading
           ? SizedBox(

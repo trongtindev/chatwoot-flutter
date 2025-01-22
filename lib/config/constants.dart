@@ -307,7 +307,7 @@ enum ContactSortBy implements Comparable<ContactSortBy> {
       case ContactSortBy.phone_number:
         return t.phone_number;
       case ContactSortBy.company_name:
-        return t.company_name;
+        return t.company;
       case ContactSortBy.country:
         return t.country;
       case ContactSortBy.city:

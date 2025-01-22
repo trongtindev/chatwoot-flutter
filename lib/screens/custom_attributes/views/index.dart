@@ -65,6 +65,7 @@ class CustomAttributesView extends GetView<CustomAttributesController> {
     return Obx(() {
       final items =
           controller.items.value.where((e) => e.attribute_model == model);
+
       return ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: items.length,
@@ -77,6 +78,7 @@ class CustomAttributesView extends GetView<CustomAttributesController> {
 
   Widget buildItem(BuildContext context, CustomAttribute info) {
     final isAdmin = auth.profile.value!.role == UserRole.administrator;
+
     return ListTile(
       title: Text(info.attribute_display_name),
       subtitle: Text(info.attribute_description),
