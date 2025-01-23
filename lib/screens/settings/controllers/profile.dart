@@ -29,13 +29,16 @@ class SettingsProfileController extends GetxController {
   Future<void> submit() async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
-    _logger.i('submit()');
+    _logger.d('submit()');
 
     try {
-      // var result = await _api.getInfo(baseUrl: finalUrl);
-      // var info = result.getOrThrow();
-      // _logger.i('submit() => successful! version: ${info.version}');
-      // _api.baseUrl.value = finalUrl;
+      final result = await _api.updateProfile(
+        name: full_name.text,
+        display_name: display_name.text,
+        email: email.text,
+      );
+      _auth.profile.value = result.getOrThrow();
+      Get.snackbar(t.successful, t.profile_update_successful);
     } catch (error) {
       if (error is! ApiError) _logger.e(error);
       errorHandler(error);
