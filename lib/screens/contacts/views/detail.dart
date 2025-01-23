@@ -1,3 +1,5 @@
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../conversations/widgets/item.dart';
 import '/screens/contacts/controllers/detail.dart';
 import '/imports.dart';
@@ -70,20 +72,16 @@ class ContactDetailView extends StatelessWidget {
               ),
             ];
           },
-          body: Builder(
-            builder: (_) {
-              return ListView(
-                padding: EdgeInsets.all(4),
-                children: [
-                  buildActions(),
-                  buildProfile(info),
-                  buildLabels(context),
-                  buildConversations(context),
-                  buildAdditionalAttributes(info.additional_attributes),
-                  buildCustomAttributes(info.custom_attributes),
-                ],
-              );
-            },
+          body: ListView(
+            padding: EdgeInsets.all(4),
+            children: [
+              buildActions(),
+              buildProfile(info),
+              buildLabels(context),
+              buildConversations(context),
+              buildAdditionalAttributes(info.additional_attributes),
+              buildCustomAttributes(info.custom_attributes),
+            ],
           ),
         ),
       );
@@ -91,45 +89,61 @@ class ContactDetailView extends StatelessWidget {
   }
 
   Widget buildActions() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      childAspectRatio: 2 / 1.25,
-      padding: EdgeInsets.all(8),
-      crossAxisCount: 3,
-      children: [
-        buildAction(
-          iconData: Icons.call_outlined,
-          label: t.call,
-        ),
-        buildAction(
-          iconData: Icons.chat_outlined,
-          label: t.message,
-        ),
-        buildAction(
-          iconData: Icons.email_outlined,
-          label: t.email,
-        ),
-      ],
+    final info = c.info.value;
+
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: buildAction(
+              onPressed: isNullOrEmpty(info?.phone_number)
+                  ? null
+                  : () => launchUrl(Uri.parse('tel:${info!.phone_number}')),
+              iconData: Icons.call_outlined,
+              label: t.call,
+            ),
+          ),
+          Expanded(
+            child: buildAction(
+              iconData: Icons.chat_outlined,
+              label: t.message,
+            ),
+          ),
+          Expanded(
+            child: buildAction(
+              onPressed: isNullOrEmpty(info?.email)
+                  ? null
+                  : () => launchUrl(Uri.parse('mailto:${info!.email}')),
+              iconData: Icons.email_outlined,
+              label: t.email,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget buildAction({
+    Function()? onPressed,
     required IconData iconData,
     required String label,
   }) {
-    return Card(
-      child: InkWell(
-        onTap: () {},
-        child: Column(
-          children: [
-            Expanded(child: Icon(iconData)),
-            Padding(
-              padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-              child: Text(label),
-            ),
-          ],
-        ),
+    return FilledButton.tonal(
+      onPressed: onPressed,
+      child: Column(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 4),
+            child: Icon(iconData),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+            child: Text(label),
+          ),
+        ],
       ),
     );
   }
