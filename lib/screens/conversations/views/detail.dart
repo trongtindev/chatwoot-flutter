@@ -3,28 +3,36 @@ import '/screens/conversations/controllers/detail.dart';
 import '/imports.dart';
 
 class ConversationDetailView extends StatelessWidget {
+  final macros = Get.find<MacrosController>();
   final labels = Get.find<LabelsController>();
   final realtime = Get.find<RealtimeService>();
 
-  final int id;
+  final int conversation_id;
   final ConversationDetailController c;
   final ConversationChatController base;
 
-  ConversationDetailView({super.key, required this.id})
-      : c = Get.put(ConversationDetailController(id: id), tag: '$id'),
-        base = Get.put(ConversationChatController(id: id), tag: '$id');
+  ConversationDetailView({super.key, required this.conversation_id})
+      : c = Get.put(
+          ConversationDetailController(conversation_id: conversation_id),
+          tag: '$conversation_id',
+        ),
+        base = Get.put(
+          ConversationChatController(conversation_id: conversation_id),
+          tag: '$conversation_id',
+        );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: ListView(
-        padding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+        padding: EdgeInsets.all(8),
         children: [
           buildStatus(context),
           buildActions(context),
+          buildMacros(context),
           buildLabels(context),
-          // buildParticipants(context),
+          buildParticipants(context),
           buildAttributes(context),
         ],
       ),
@@ -73,63 +81,103 @@ class ConversationDetailView extends StatelessWidget {
   }
 
   Widget buildActions(BuildContext context) {
-    final agent = base.info.value!.meta.assignee;
-    final team = base.info.value!.meta.team;
+    return Obx(() {
+      final info = base.info.value!;
+      final agent = info.meta.assignee;
+      final team = info.meta.team;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildLabel(t.actions),
-        Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (agent != null)
-                ListTile(
-                  leading: Obx(() {
-                    return avatar(
-                      context,
-                      url: agent.thumbnail,
-                      isOnline: realtime.online.contains(agent.id),
-                    );
-                  }),
-                  title: Text(t.agent),
-                  subtitle: Text(agent.name),
-                  trailing: Icon(Icons.chevron_right_outlined),
-                  onTap: c.showAgentAssign,
-                )
-              else
-                ListTile(
-                  leading: CircleAvatar(),
-                  title: Text(t.agent),
-                  subtitle: Text(t.unassigned),
-                  trailing: Icon(Icons.chevron_right_outlined),
-                  onTap: c.showAgentAssign,
-                ),
-              if (team != null)
-                ListTile(
-                  leading: avatar(
-                    context,
-                    fallback: team.name.substring(0, 1),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabel(t.actions),
+          Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (agent != null)
+                  ListTile(
+                    leading: Obx(() {
+                      return avatar(
+                        context,
+                        url: agent.thumbnail,
+                        isOnline: realtime.online.contains(agent.id),
+                      );
+                    }),
+                    title: Text(t.agent),
+                    subtitle: Text(agent.name),
+                    trailing: Icon(Icons.chevron_right_outlined),
+                    onTap: c.showAgentAssign,
+                  )
+                else
+                  ListTile(
+                    leading: CircleAvatar(),
+                    title: Text(t.agent),
+                    subtitle: Text(t.unassigned),
+                    trailing: Icon(Icons.chevron_right_outlined),
+                    onTap: c.showAgentAssign,
                   ),
-                  title: Text(t.team),
-                  subtitle: Text(team.name),
-                  trailing: Icon(Icons.chevron_right_outlined),
-                  onTap: c.showTeamAssign,
-                )
-              else
-                ListTile(
-                  leading: CircleAvatar(),
-                  title: Text(t.team),
-                  subtitle: Text(t.unassigned),
-                  trailing: Icon(Icons.chevron_right_outlined),
-                  onTap: c.showTeamAssign,
-                )
-            ],
+                if (team != null)
+                  ListTile(
+                    leading: avatar(
+                      context,
+                      fallback: team.name.substring(0, 1),
+                    ),
+                    title: Text(t.team),
+                    subtitle: Text(team.name),
+                    trailing: Icon(Icons.chevron_right_outlined),
+                    onTap: c.showTeamAssign,
+                  )
+                else
+                  ListTile(
+                    leading: CircleAvatar(),
+                    title: Text(t.team),
+                    subtitle: Text(t.unassigned),
+                    trailing: Icon(Icons.chevron_right_outlined),
+                    onTap: c.showTeamAssign,
+                  )
+              ],
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
+  }
+
+  Widget buildMacros(BuildContext context) {
+    return Obx(() {
+      final items = macros.items.value;
+      final executingId = c.executingMacroId.value;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabel(t.macros),
+          Card(
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (_, i) {
+                final item = items[i];
+
+                return CustomListTile(
+                  enabled: executingId == null,
+                  title: Text(item.name),
+                  trailing: executingId == item.id
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 3),
+                        )
+                      : Icon(Icons.play_circle),
+                  onTap: () => c.executeMacro(item),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   Widget buildLabels(BuildContext context) {
@@ -182,10 +230,35 @@ class ConversationDetailView extends StatelessWidget {
   }
 
   Widget buildParticipants(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [buildLabel(t.participants), Text('buildParticipants')],
-    );
+    return Obx(() {
+      final items = c.participants.value;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          buildLabel(t.participants),
+          Card(
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Wrap(
+                  spacing: 8,
+                  children: items.map((e) {
+                    return avatar(
+                      context,
+                      url: e.thumbnail,
+                      isOnline: realtime.online.value.contains(e.id),
+                      fallback: e.display_name.substring(0, 1),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   Widget buildAttributes(BuildContext context) {
