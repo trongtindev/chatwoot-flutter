@@ -34,7 +34,7 @@ class ConversationChatView extends StatelessWidget {
 
             if (info != null) {
               return ListTile(
-                contentPadding: EdgeInsets.only(),
+                contentPadding: EdgeInsets.zero,
                 leading: avatar(
                   context,
                   url: info.meta.sender.thumbnail,
@@ -130,15 +130,15 @@ class ConversationChatView extends StatelessWidget {
 
   Widget buildMessages() {
     return Obx(() {
-      var messages = c.messages;
+      final messages = c.messages.value;
 
       return ListView.builder(
         controller: c.scrollController,
         reverse: true,
-        padding: EdgeInsets.only(left: 8, right: 8),
+        padding: EdgeInsets.only(left: 8, right: 8, top: 8),
         itemCount: messages.length,
         itemBuilder: (_, i) {
-          var item = messages[i];
+          final item = messages[i];
 
           // TODO: make radius
           var topLeft = 8.0;

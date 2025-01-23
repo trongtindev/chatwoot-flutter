@@ -2,7 +2,7 @@ import '/imports.dart';
 import 'package:intl/intl.dart';
 
 class ConversationMeta {
-  final SenderInfo sender;
+  final UserInfo sender;
   final InboxChannelType? channel;
   final UserInfo? assignee;
   final TeamInfo? team;
@@ -25,7 +25,7 @@ class ConversationMeta {
         : null;
 
     return ConversationMeta(
-      sender: SenderInfo.fromJson(json['sender']),
+      sender: UserInfo.fromJson(json['sender']),
       channel: channel,
       assignee: assignee,
       team: team,

@@ -49,23 +49,11 @@ class LabelsView extends GetView<LabelsController> {
 
   Widget buildItem(LabelInfo info) {
     return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: info.color,
+      ),
       title: Text(info.title),
       subtitle: Text(info.description),
-      trailing: Wrap(
-        spacing: 4,
-        children: [
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: info.color,
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          Icon(Icons.chevron_right_outlined),
-        ],
-      ),
     );
   }
 }

@@ -174,7 +174,7 @@ class SettingsView extends GetView<SettingsController> {
                     title: Padding(
                       padding: const EdgeInsets.only(left: 8, right: 8),
                       child: Text(
-                        profile.name,
+                        profile.display_name,
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
@@ -225,7 +225,7 @@ class SettingsView extends GetView<SettingsController> {
                                 trailingIcon = Icons.open_in_new;
                               }
 
-                              return ListTile(
+                              return CustomListTile(
                                 leading: Icon(item.iconData),
                                 title: Text(item.title),
                                 trailing: Icon(trailingIcon),

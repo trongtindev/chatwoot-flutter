@@ -54,7 +54,7 @@ class CannedResponsesView extends StatelessWidget {
   Widget buildItem(BuildContext context, CannedResponseInfo info) {
     final isAdmin = auth.profile.value!.role == UserRole.administrator;
 
-    return ListTile(
+    return CustomListTile(
       title: Text(info.short_code),
       subtitle: Text(
         info.content,

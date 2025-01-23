@@ -30,7 +30,7 @@ class ConversationItem extends StatelessWidget {
       }
     })();
 
-    return ListTile(
+    return CustomListTile(
       isThreeLine: info.labels.isNotEmpty && !compact,
       leading: compact
           ? null
@@ -50,9 +50,6 @@ class ConversationItem extends StatelessWidget {
               info.meta.sender.name,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-              style: TextStyle(
-                fontSize: Get.textTheme.bodyLarge!.fontSize,
-              ),
             ),
           ),
           Text(
@@ -77,8 +74,14 @@ class ConversationItem extends StatelessWidget {
                 ),
               buildLastMessage(context, info),
               if (info.unread_count > 0)
-                Badge(
-                  label: Text('${info.unread_count}'),
+                Badge(label: Text('${info.unread_count}')),
+              if (info.last_non_activity_message != null &&
+                  info.last_non_activity_message?.sender?.id !=
+                      info.meta.sender.id)
+                avatar(
+                  context,
+                  size: 18,
+                  url: info.last_non_activity_message?.sender?.thumbnail,
                 ),
             ],
           ),
@@ -89,35 +92,24 @@ class ConversationItem extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: SizedBox(
-                  height: 32,
+                  height: 34,
                   child: ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     itemCount: info.labels.length,
                     itemBuilder: (_, i) {
-                      final item = info.labels[i];
+                      final title = info.labels[i];
                       final label =
-                          items.firstWhereOrNull((e) => e.title == item);
-                      return Chip(
-                        label: Row(
-                          spacing: 4,
-                          children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                color: label?.color ??
-                                    context
-                                        .theme.colorScheme.surfaceContainerHigh,
-                                border: Border.all(),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                            Text(item),
-                          ],
+                          items.firstWhereOrNull((e) => e.title == title);
+
+                      return Padding(
+                        padding: EdgeInsets.only(left: i > 0 ? 8 : 0),
+                        child: buildLabelItem(
+                          context,
+                          info.labels[i],
+                          info: label,
                         ),
-                        padding: EdgeInsets.zero,
                       );
                     },
                   ),
@@ -164,6 +156,28 @@ class ConversationItem extends StatelessWidget {
           color: context.theme.colorScheme.outline,
         ),
       ),
+    );
+  }
+
+  Widget buildLabelItem(BuildContext context, String title, {LabelInfo? info}) {
+    return Chip(
+      label: Row(
+        spacing: 4,
+        children: [
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color:
+                  info?.color ?? context.theme.colorScheme.surfaceContainerHigh,
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          Text(title),
+        ],
+      ),
+      padding: EdgeInsets.zero,
     );
   }
 }

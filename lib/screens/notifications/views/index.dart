@@ -105,27 +105,40 @@ class NotificationsView extends GetView<NotificationsController> {
     BuildContext context, {
     required NotificationInfo info,
   }) {
-    var created_at = formatTimeago(info.created_at);
+    final created_at = formatTimeago(info.created_at);
 
     return ListTile(
+      contentPadding: EdgeInsets.only(left: 16, right: 16),
       leading: avatar(
         context,
         url: info.primary_actor.meta.sender.thumbnail,
         fallback: info.primary_actor.meta.sender.name.substring(0, 1),
       ),
-      title: Text(
-        info.push_message_title,
-        style: TextStyle(
-          fontSize: Get.textTheme.bodyLarge!.fontSize,
-        ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              info.primary_actor.meta.sender.name,
+              style: TextStyle(
+                  // fontSize: context.textTheme.titleMedium!.fontSize,
+                  ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            created_at,
+            style: TextStyle(
+              fontSize: Get.textTheme.labelSmall!.fontSize,
+            ),
+          ),
+        ],
       ),
       subtitle: Text(
-        '${info.primary_actor.meta.sender.name} · $created_at',
-        style: TextStyle(
-          fontSize: Get.textTheme.labelSmall!.fontSize,
-        ),
+        info.notification_type.content,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
-      trailing: Icon(Icons.chevron_right),
       tileColor: info.read_at == null
           ? context.theme.colorScheme.primaryContainer
           : null,

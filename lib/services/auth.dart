@@ -2,7 +2,6 @@ import '/imports.dart';
 
 class AuthService extends GetxService {
   final _logger = Logger();
-  final events = EventEmitter();
 
   final profile = PersistentRxCustom<ProfileInfo?>(
     null,
@@ -18,6 +17,22 @@ class AuthService extends GetxService {
   Rx<bool> isSignedIn = false.obs;
   Rx<bool> isAuthorized = false.obs;
 
+  ApiService? _api;
+  ApiService get _getApi {
+    _api ??= Get.find<ApiService>();
+    if (_api == null) throw Exception('ApiService not found!');
+    return _api!;
+  }
+
+  NotificationService? _notification;
+  NotificationService get _getNotification {
+    _notification ??= Get.find<NotificationService>();
+    if (_notification == null) {
+      throw Exception('NotificationService not found!');
+    }
+    return _notification!;
+  }
+
   Future<AuthService> init() async {
     profile.listen((data) {
       if (kDebugMode) print(profile);
@@ -30,6 +45,18 @@ class AuthService extends GetxService {
   }
 
   Future<void> logout() async {
-    profile.value = null;
+    _logger.i('logout');
+
+    if (!isNullOrEmpty(_getNotification.token.value)) {
+      _logger.d('deleteNotificationSubscription');
+      _getApi.deleteNotificationSubscription(
+        push_token: _getNotification.token.value!,
+      );
+    }
+
+    Future.delayed(Duration(milliseconds: 250), () {
+      _logger.d('reset profile');
+      profile.value = null;
+    });
   }
 }

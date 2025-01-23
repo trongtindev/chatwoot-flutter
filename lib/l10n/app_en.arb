@@ -158,6 +158,7 @@
   "change_password_confirm": "Confirm new password",
   "change_password_confirm_hint": "Please re-enter your new password",
   "change_password_mismatch": "Confirm password should match the password",
+  "change_password_successful": "change_password_successful",
   "labels": "Labels",
   "labels_description": "Labels help you categorize and prioritize conversations and leads. You can assign a label to a conversation or contact using the side panel.",
   "labels_add": "Add label",
@@ -225,6 +226,11 @@
   "notification_new_message_push": "You are mentioned in a conversation",
   "notification_mention_push": "A new message is created in an assigned conversation",
   "notification_participating_new_message_push": "A new message is created in a participating conversation",
+  "notification_content_conversation_creation": "New conversation created",
+  "notification_content_conversation_assignment": "A conversation has been assigned to you",
+  "notification_content_assigned_conversation_new_message": "New message in an assigned conversation",
+  "notification_content_conversation_mention": "You have been mentioned in a conversation",
+  "notification_content_participating_conversation_new_message": "New message in a conversation you are participating in",
   "cancel": "Cancel",
   "delete": "Delete",
   "oldest": "Oldest",
@@ -299,5 +305,8 @@
   "assignee": "Assignee",
   "actions": "Actions",
   "location": "Location",
-  "phone": "Phone"
+  "phone": "Phone",
+  "call": "Call",
+  "message": "Message",
+  "profile_update_successful": "profile_update_successful"
 }

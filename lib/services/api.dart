@@ -614,6 +614,22 @@ class ApiService extends GetxService {
     }
   }
 
+  Future<Result<bool>> deleteNotificationSubscription({
+    required String push_token,
+  }) async {
+    try {
+      await _http.delete(
+        '/notification_subscriptions',
+        data: {'push_token': push_token},
+      );
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
   Future<CachedRequest?> getCache({
     required String url,
   }) async {
@@ -1054,7 +1070,6 @@ class ApiService extends GetxService {
   /// List Agents in Account
   Future<Result<List<UserInfo>>> listAgents({
     int? account_id,
-    required int conversation_id,
   }) async {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
@@ -1156,7 +1171,7 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<Result<List<TeamInfo>>> getTeams({
+  Future<Result<List<TeamInfo>>> listTeams({
     int? account_id,
     Function(List<TeamInfo> data)? onCacheHit,
   }) async {

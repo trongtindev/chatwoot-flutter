@@ -148,3 +148,56 @@ Widget errorState(
     description: error.toString(),
   );
 }
+
+class CustomListTile extends ListTile {
+  const CustomListTile({
+    super.key,
+    super.title,
+    super.subtitle,
+    super.isThreeLine,
+    super.leading,
+    super.tileColor,
+    super.onTap,
+    super.trailing,
+  }) : super(
+          contentPadding: const EdgeInsets.only(left: 16, right: 16),
+        );
+}
+
+class CustomRadioListTile<T> extends ListTile {
+  final T value;
+  final T groupValue;
+  final bool selected;
+  final Function(T next) onChanged;
+
+  const CustomRadioListTile({
+    super.key,
+    super.title,
+    super.subtitle,
+    super.isThreeLine,
+    super.leading,
+    super.tileColor,
+    super.onTap,
+    required this.value,
+    required this.groupValue,
+    required this.selected,
+    required this.onChanged,
+  }) : super(
+          contentPadding: const EdgeInsets.only(left: 16, right: 16),
+        );
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomListTile(
+      leading: super.leading,
+      title: super.title,
+      subtitle: super.subtitle,
+      trailing: Radio(
+        value: value,
+        groupValue: groupValue,
+        onChanged: (_) => onChanged(value),
+      ),
+      onTap: () => onChanged(value),
+    );
+  }
+}

@@ -52,7 +52,6 @@ export 'models/assistant.dart';
 export 'models/attribute.dart';
 export 'models/cache.dart';
 export 'models/canned_response.dart';
-export 'models/common.dart';
 export 'models/contact.dart';
 export 'models/conversation.dart';
 export 'models/file.dart';

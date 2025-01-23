@@ -1,7 +1,7 @@
-import '../controllers/index.dart';
 import '/imports.dart';
 
 class AgentsView extends GetView<AgentsController> {
+  final realtime = Get.find<RealtimeService>();
   late final AgentsController c;
   AgentsView({super.key}) : c = Get.put(AgentsController());
 
@@ -27,22 +27,32 @@ class AgentsView extends GetView<AgentsController> {
               ),
             ),
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, int index) {
-                return ListTile(
-                  leading: Container(
-                      padding: EdgeInsets.all(8),
-                      width: 100,
-                      child: Placeholder()),
-                  title: Text('Place ${index + 1}'),
-                );
-              },
-              childCount: 20,
-            ),
-          ),
+          Obx(() {
+            final items = c.items.value;
+
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => buildItem(context, items[i]),
+                childCount: items.length,
+              ),
+            );
+          }),
         ],
       ),
+    );
+  }
+
+  Widget buildItem(BuildContext context, UserInfo info) {
+    return CustomListTile(
+      leading: Obx(() {
+        return avatar(
+          context,
+          url: info.thumbnail,
+          isOnline: realtime.online.value.contains(info.id),
+          fallback: info.name.substring(0, 1),
+        );
+      }),
+      title: Text(info.name),
     );
   }
 }

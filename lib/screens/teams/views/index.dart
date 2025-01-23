@@ -1,7 +1,8 @@
 import '/imports.dart';
 
 class TeamsView extends GetView<TeamsController> {
-  const TeamsView({super.key});
+  final realtime = Get.find<RealtimeService>();
+  TeamsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,22 +26,25 @@ class TeamsView extends GetView<TeamsController> {
               ),
             ),
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (_, int index) {
-                return ListTile(
-                  leading: Container(
-                      padding: EdgeInsets.all(8),
-                      width: 100,
-                      child: Placeholder()),
-                  title: Text('Place ${index + 1}'),
-                );
-              },
-              childCount: 20,
-            ),
-          ),
+          Obx(() {
+            final items = controller.items.value;
+
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => buildItem(context, items[i]),
+                childCount: items.length,
+              ),
+            );
+          }),
         ],
       ),
+    );
+  }
+
+  Widget buildItem(BuildContext context, TeamInfo info) {
+    return ListTile(
+      leading: CircleAvatar(),
+      title: Text(info.name),
     );
   }
 }

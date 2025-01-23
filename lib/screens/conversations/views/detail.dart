@@ -3,12 +3,12 @@ import '/screens/conversations/controllers/detail.dart';
 import '/imports.dart';
 
 class ConversationDetailView extends StatelessWidget {
+  final labels = Get.find<LabelsController>();
+  final realtime = Get.find<RealtimeService>();
+
   final int id;
   final ConversationDetailController c;
   final ConversationChatController base;
-
-  final labels = Get.find<LabelsController>();
-  final realtime = Get.find<RealtimeService>();
 
   ConversationDetailView({super.key, required this.id})
       : c = Get.put(ConversationDetailController(id: id), tag: '$id'),

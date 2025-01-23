@@ -6,6 +6,7 @@ class ContactsController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
   final _auth = Get.find<AuthService>();
+  final _realtime = Get.find<RealtimeService>();
 
   final items = RxList<ContactInfo>();
   final loading = true.obs;
@@ -16,17 +17,39 @@ class ContactsController extends GetxController {
   final isLoadMore = false.obs;
   final isNoMore = false.obs;
 
+  EventListener<ContactInfo>? _onCreatedistener;
+  EventListener<ContactInfo>? _onUpdatedistener;
+
   @override
   void onReady() {
     super.onReady();
 
+    _onCreatedistener = _realtime.events.on(
+      RealtimeEventId.contactCreated.name,
+      _onCreated,
+    );
+
+    _onUpdatedistener = _realtime.events.on(
+      RealtimeEventId.contactUpdated.name,
+      _onUpdated,
+    );
+
     sortBy.listen((_) => getContacts());
     orderBy.listen((_) => getContacts());
+
     _auth.isSignedIn.listen((next) {
       if (!next) return;
       getContacts();
     });
     if (_auth.isSignedIn.value) getContacts();
+  }
+
+  @override
+  void onClose() {
+    _onCreatedistener?.cancel();
+    _onUpdatedistener?.cancel();
+
+    super.onClose();
   }
 
   Future<ContactsController> init() async {
@@ -101,5 +124,23 @@ class ContactsController extends GetxController {
     isLoadMore.value = true;
     await getContacts(append: true);
     isLoadMore.value = false;
+  }
+
+  void _onCreated(ContactInfo info) {
+    final index = items.value.indexWhere((e) => e.id == info.id);
+    if (index >= 0) {
+      _onUpdated(info);
+      return;
+    }
+
+    items.insert(0, info);
+  }
+
+  void _onUpdated(ContactInfo info) {
+    final index = items.value.indexWhere((e) => e.id == info.id);
+    if (index < 0) return;
+
+    items.value[index] = info;
+    items.refresh();
   }
 }

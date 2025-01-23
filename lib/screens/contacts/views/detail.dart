@@ -22,7 +22,8 @@ class ContactDetailView extends StatelessWidget {
       final info = c.info.value;
       if (info == null) {
         return Scaffold(
-          body: CircularProgressIndicator(),
+          appBar: AppBar(),
+          body: Center(child: CircularProgressIndicator()),
         );
       }
 
@@ -54,6 +55,7 @@ class ContactDetailView extends StatelessWidget {
                         url: info.thumbnail,
                         size: 96,
                         isOnline: realtime.online.contains(info.id),
+                        fallback: info.name.substring(0, 1),
                       ),
                     ),
                   ),
@@ -73,6 +75,7 @@ class ContactDetailView extends StatelessWidget {
               return ListView(
                 padding: EdgeInsets.all(4),
                 children: [
+                  buildActions(),
                   buildProfile(info),
                   buildLabels(context),
                   buildConversations(context),
@@ -85,6 +88,50 @@ class ContactDetailView extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget buildActions() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      childAspectRatio: 2 / 1.25,
+      padding: EdgeInsets.all(8),
+      crossAxisCount: 3,
+      children: [
+        buildAction(
+          iconData: Icons.call_outlined,
+          label: t.call,
+        ),
+        buildAction(
+          iconData: Icons.chat_outlined,
+          label: t.message,
+        ),
+        buildAction(
+          iconData: Icons.email_outlined,
+          label: t.email,
+        ),
+      ],
+    );
+  }
+
+  Widget buildAction({
+    required IconData iconData,
+    required String label,
+  }) {
+    return Card(
+      child: InkWell(
+        onTap: () {},
+        child: Column(
+          children: [
+            Expanded(child: Icon(iconData)),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
+              child: Text(label),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget buildProfile(ContactInfo info) {
@@ -278,7 +325,7 @@ class ContactDetailView extends StatelessWidget {
     required String value,
     IconData? iconData,
   }) {
-    return ListTile(
+    return CustomListTile(
       leading: iconData != null ? Icon(iconData) : null,
       title: Text(label),
       subtitle: Text(value),

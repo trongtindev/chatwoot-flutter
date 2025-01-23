@@ -50,8 +50,8 @@ void main() async {
     }
 
     // logger
-    var appDocumentsDir = await getApplicationCacheDirectory();
-    var logPath = p.join(appDocumentsDir.path, 'logs');
+    final appDocumentsDir = await getApplicationCacheDirectory();
+    final logPath = p.join(appDocumentsDir.path, 'logs');
     logger.Logger.level = kDebugMode ? logger.Level.debug : logger.Level.info;
     logger.Logger.defaultPrinter = () {
       return PrettyPrinter();
@@ -67,11 +67,10 @@ void main() async {
     // window
     if (GetPlatform.isDesktop) {
       await windowManager.ensureInitialized();
-      var windowOptions = WindowOptions(
+      final windowOptions = WindowOptions(
         size: const Size(1280, 720),
         minimumSize: const Size(1080, 640),
         center: true,
-        titleBarStyle: TitleBarStyle.hidden,
       );
       windowManager.waitUntilReadyToShow(windowOptions, () async {
         await windowManager.show();

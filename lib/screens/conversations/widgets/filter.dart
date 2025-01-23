@@ -69,7 +69,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
               itemCount: items.length,
               itemBuilder: (_, i) {
                 var item = items[i];
-                return RadioListTile(
+                return CustomRadioListTile(
                   title: Text(item.label),
                   value: item,
                   selected: assigneeType == item,
@@ -134,7 +134,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
               itemCount: items.length,
               itemBuilder: (_, i) {
                 var item = items[i];
-                return ListTile(
+                return CustomListTile(
                   leading: CircleAvatar(
                     backgroundColor: item.color,
                   ),
@@ -175,7 +175,7 @@ class ConversationsFilterView extends GetView<ConversationsController> {
               itemCount: items.length,
               itemBuilder: (_, i) {
                 var item = items[i];
-                return ListTile(
+                return CustomListTile(
                   leading: CircleAvatar(
                     backgroundColor:
                         context.theme.colorScheme.surfaceContainerHigh,

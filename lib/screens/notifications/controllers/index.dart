@@ -1,4 +1,3 @@
-import '/screens/conversations/views/chat.dart';
 import '../widgets/filter.dart';
 import '/imports.dart';
 
@@ -6,7 +5,8 @@ class NotificationsController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
   final _auth = Get.find<AuthService>();
-  final _realtimeService = Get.find<RealtimeService>();
+  final _notification = Get.find<NotificationService>();
+  final _realtime = Get.find<RealtimeService>();
 
   final unread_count = 0.obs;
   final includes = NotificationStatus.values.obs;
@@ -21,22 +21,6 @@ class NotificationsController extends GetxController {
   EventListener<int>? _onDeletedListener;
 
   @override
-  void onInit() {
-    super.onInit();
-
-    includes.listen((_) => getNotifications());
-
-    _realtimeService.events.on(
-      RealtimeEventId.notificationCreated.name,
-      _onCreated,
-    );
-    _realtimeService.events.on(
-      RealtimeEventId.notificationDeleted.name,
-      _onDeleted,
-    );
-  }
-
-  @override
   void onReady() {
     super.onReady();
 
@@ -45,6 +29,17 @@ class NotificationsController extends GetxController {
       getNotifications();
     });
     if (_auth.isSignedIn.value) getNotifications();
+
+    includes.listen((_) => getNotifications());
+
+    _realtime.events.on(
+      RealtimeEventId.notificationCreated.name,
+      _onCreated,
+    );
+    _realtime.events.on(
+      RealtimeEventId.notificationDeleted.name,
+      _onDeleted,
+    );
   }
 
   @override
@@ -128,12 +123,7 @@ class NotificationsController extends GetxController {
       items.refresh();
     }
 
-    if (info.primary_actor_type == NotificationActorType.Conversation) {
-      Get.to(
-        () => ConversationChatView(id: info.primary_actor_id),
-      );
-      return;
-    }
+    _notification.handleNavigation(info);
   }
 
   Future<void> loadMore() async {

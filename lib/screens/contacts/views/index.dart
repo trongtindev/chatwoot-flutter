@@ -94,7 +94,7 @@ class ContactsView extends GetView<ContactsController> {
   }
 
   Widget buildItem(BuildContext context, ContactInfo info) {
-    return ListTile(
+    return CustomListTile(
       leading: avatar(
         context,
         url: info.thumbnail,

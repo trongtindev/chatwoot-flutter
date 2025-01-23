@@ -226,7 +226,7 @@ class ConversationsController extends GetxController {
 
     items[index].last_non_activity_message = info;
     items[index].last_activity_at = info.updated_at ?? info.created_at;
-    if (info.sender?.type != MessageSenderType.user) {
+    if (info.sender?.type != UserType.user) {
       items[index].unread_count += 1;
       unread_count.value += 1;
     }

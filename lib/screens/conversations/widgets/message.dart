@@ -54,27 +54,27 @@ class Message extends StatelessWidget {
   }
 
   Widget buildMessage(BuildContext context, AuthService auth) {
-    var sender = info.sender ??
-        MessageSenderInfo(
+    final sender = info.sender ??
+        UserInfo(
           id: 0,
           name: 'Bot',
-          type: MessageSenderType.agent_bot,
+          type: UserType.agent_bot,
           thumbnail: 'assets/images/bot-avatar.png',
         );
 
-    var isOwner = sender.id == auth.profile.value!.id;
-    var isAgent = !isOwner && sender.type == MessageSenderType.user;
-    var backgroundColor = (() {
+    final isOwner = sender.id == auth.profile.value!.id;
+    final isAgent = !isOwner && sender.type == UserType.user;
+    final backgroundColor = (() {
       if (info.private) return context.theme.colorScheme.tertiaryContainer;
       if (isAgent) return context.theme.colorScheme.secondaryContainer;
       return isOwner
           ? context.theme.colorScheme.primaryContainer
           : context.theme.colorScheme.surfaceContainer;
     })();
-    var alignment = isOwner ? Alignment.centerRight : Alignment.centerLeft;
+    final alignment = isOwner ? Alignment.centerRight : Alignment.centerLeft;
 
-    var created_at = formatTimeago(info.created_at);
-    var statusIcon = (() {
+    final created_at = formatTimeago(info.created_at);
+    final statusIcon = (() {
       if (info.message_type == MessageType.incoming) return null;
       if (info.content_attributes.deleted) {
         return Icon(
@@ -114,6 +114,12 @@ class Message extends StatelessWidget {
             size: 16,
             color: context.theme.colorScheme.primary,
           );
+        default:
+          return Icon(
+            Icons.question_mark_outlined,
+            size: 16,
+            color: context.theme.colorScheme.primary,
+          );
       }
     })();
 
@@ -129,7 +135,7 @@ class Message extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: Obx(() {
-                  var online = realtime.online;
+                  final online = realtime.online;
                   return avatar(
                     context,
                     url: sender.thumbnail,
@@ -168,7 +174,7 @@ class Message extends StatelessWidget {
                             ),
                           if (isOwner == false)
                             Text(
-                              sender.available_name ?? sender.name,
+                              sender.available_name,
                               style: TextStyle(
                                 fontSize: Get.textTheme.labelSmall!.fontSize,
                               ),

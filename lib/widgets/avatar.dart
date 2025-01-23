@@ -13,7 +13,7 @@ Widget avatar(
   isTyping ??= false;
   fallback ??= '?';
 
-  var fallbackWidget = Center(
+  final fallbackWidget = Center(
     child: Text(
       fallback,
       style: TextStyle(

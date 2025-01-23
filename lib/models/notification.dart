@@ -1,7 +1,7 @@
 import '/imports.dart';
 
 class NotificationPrimaryActorMeta {
-  final SenderInfo sender;
+  final UserInfo sender;
 
   const NotificationPrimaryActorMeta({
     required this.sender,
@@ -9,8 +9,14 @@ class NotificationPrimaryActorMeta {
 
   factory NotificationPrimaryActorMeta.fromJson(dynamic json) {
     return NotificationPrimaryActorMeta(
-      sender: SenderInfo.fromJson(json['sender']),
+      sender: UserInfo.fromJson(json['sender']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sender': sender.toJson(),
+    };
   }
 }
 
@@ -25,6 +31,12 @@ class NotificationPrimaryActor {
     return NotificationPrimaryActor(
       meta: NotificationPrimaryActorMeta.fromJson(json['meta']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'meta': meta.toJson(),
+    };
   }
 }
 
@@ -41,7 +53,7 @@ class NotificationInfo {
   final DateTime created_at;
   final DateTime last_activity_at;
   final dynamic snoozed_until; // TODO: unk type
-  final dynamic meta;
+  final dynamic meta; // TODO: unk type
 
   NotificationInfo({
     required this.id,
@@ -82,6 +94,24 @@ class NotificationInfo {
       snoozed_until: json['snoozed_until'],
       meta: json['meta'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'notification_type': notification_type.name,
+      'push_message_title': push_message_title,
+      'primary_actor_type': primary_actor_type.name,
+      'primary_actor_id': primary_actor_id,
+      'primary_actor': primary_actor.toJson(),
+      'read_at': read_at.toString(),
+      'secondary_actor': secondary_actor,
+      'user': user?.toJson(),
+      'created_at': created_at.toString(),
+      'last_activity_at': last_activity_at.toString(),
+      'snoozed_until': snoozed_until,
+      'meta': meta,
+    };
   }
 }
 

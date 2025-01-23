@@ -78,6 +78,13 @@ class PersistentRxCustom<T> extends Rx<T> {
         prefs.remove(key);
       }
     }
-    ever(this, (next) => prefs.setString(key, encode(next)!));
+    ever(this, (next) {
+      final data = encode(next);
+      if (isNullOrEmpty(data)) {
+        prefs.remove(key);
+        return;
+      }
+      prefs.setString(key, encode(next)!);
+    });
   }
 }

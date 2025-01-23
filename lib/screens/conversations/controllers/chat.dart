@@ -70,7 +70,7 @@ class ConversationChatController extends GetxController {
 
   Future<void> getConversation() async {
     try {
-      var result = await _api.getConversation(
+      final result = await _api.getConversation(
         account_id: _auth.profile.value!.account_id,
         conversation_id: id,
         onCacheHit: (data) => info.value = data,
@@ -90,7 +90,7 @@ class ConversationChatController extends GetxController {
     try {
       loading.value = true;
 
-      var result = await _api.listMessages(
+      final result = await _api.listMessages(
         account_id: _auth.profile.value!.account_id,
         conversation_id: id,
         before: before,
@@ -99,7 +99,7 @@ class ConversationChatController extends GetxController {
           messages.value = data.payload.reversed.toList();
         },
       );
-      var data = result.getOrThrow();
+      final data = result.getOrThrow();
 
       if (before != null) {
         messages.addAll(data.payload.reversed);
@@ -111,7 +111,6 @@ class ConversationChatController extends GetxController {
           data.payload.isEmpty || data.payload.length < env.PAGE_SIZE;
 
       _logger.d('found ${data.payload.length} items');
-      if (kDebugMode) print(messages.map((e) => e.id));
     } on ApiError catch (reason) {
       _logger.w(reason);
       error.value = reason.errors.join(';');
