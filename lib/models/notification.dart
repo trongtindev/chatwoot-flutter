@@ -60,27 +60,25 @@ class NotificationInfo {
   });
 
   factory NotificationInfo.fromJson(dynamic json) {
-    final read_at =
-        json['read_at'] != null ? DateTime.parse(json['read_at']) : null;
     final primary_actor =
         NotificationPrimaryActor.fromJson(json['primary_actor']);
+    final notification_type =
+        NotificationType.fromName(json['notification_type']);
+    final primary_actor_type =
+        NotificationActorType.fromName(json['primary_actor_type']);
 
     return NotificationInfo(
       id: json['id'],
-      notification_type:
-          NotificationType.values.byName(json['notification_type']),
+      notification_type: notification_type,
       push_message_title: json['push_message_title'],
-      primary_actor_type:
-          NotificationActorType.values.byName(json['primary_actor_type']),
+      primary_actor_type: primary_actor_type,
       primary_actor_id: json['primary_actor_id'],
       primary_actor: primary_actor,
-      read_at: read_at, // 1737081406
+      read_at: toDateTime(json['read_at']),
       secondary_actor: json['secondary_actor'],
       user: json['user'] != null ? UserInfo.fromJson(json['user']) : null,
-      created_at: DateTime.fromMillisecondsSinceEpoch(
-          json['created_at'] * 1000), // 1737081406
-      last_activity_at: DateTime.fromMillisecondsSinceEpoch(
-          json['last_activity_at'] * 1000), // 1737081406
+      created_at: toDateTime(json['created_at'])!,
+      last_activity_at: toDateTime(json['last_activity_at'])!,
       snoozed_until: json['snoozed_until'],
       meta: json['meta'],
     );

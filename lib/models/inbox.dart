@@ -78,13 +78,16 @@ class InboxInfo {
   });
 
   factory InboxInfo.fromJson(dynamic json) {
+    final channel_type = InboxChannelType.values
+            .firstWhereOrNull((e) => e.value == json['channel_type']) ??
+        InboxChannelType.undefined;
+
     return InboxInfo(
       id: json['id'],
       avatar_url: json['avatar_url'],
       channel_id: json['channel_id'],
       name: json['name'],
-      channel_type: InboxChannelType.values
-          .firstWhere((e) => e.value == json['channel_type']),
+      channel_type: channel_type,
       greeting_enabled: json['greeting_enabled'],
       greeting_message: json['greeting_message'],
       working_hours_enabled: json['working_hours_enabled'],

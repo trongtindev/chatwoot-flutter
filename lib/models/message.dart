@@ -1,41 +1,5 @@
 import '/imports.dart';
 
-class MessageSenderInfo {
-  final int id;
-  final String name;
-  final String? available_name;
-  final String? avatar_url;
-  final MessageSenderType type;
-  final AvailabilityStatus? availability_status;
-  final String thumbnail;
-
-  const MessageSenderInfo({
-    required this.id,
-    required this.name,
-    this.available_name,
-    this.avatar_url,
-    required this.type,
-    this.availability_status,
-    required this.thumbnail,
-  });
-
-  factory MessageSenderInfo.fromJson(Map<String, dynamic> json) {
-    var availability_status = json['availability_status'] != null
-        ? AvailabilityStatus.values.byName(json['availability_status'])
-        : null;
-
-    return MessageSenderInfo(
-      id: json['id'],
-      name: json['name'],
-      available_name: json['available_name'],
-      avatar_url: json['avatar_url'],
-      type: MessageSenderType.values.byName(json['type']),
-      availability_status: availability_status,
-      thumbnail: json['thumbnail'],
-    );
-  }
-}
-
 class MessageAttachmentInfo {
   final int id;
   final int message_id;
@@ -67,7 +31,7 @@ class MessageAttachmentInfo {
     return MessageAttachmentInfo(
       id: json['id'],
       message_id: json['message_id'],
-      file_type: AttachmentType.values.byName(json['file_type']),
+      file_type: AttachmentType.fromName(json['file_type']),
       account_id: json['account_id'],
       extension: json['extension'],
       data_url: json['data_url'],
@@ -115,14 +79,14 @@ class MessageInfo {
   final String? source_id;
   final MessageContentType content_type;
   final MessageContentAttributes content_attributes;
-  final MessageSenderType sender_type;
+  final UserType sender_type;
   final int? sender_id;
   final dynamic external_source_ids; // TODO: unk type
   final ConversationAttribute additional_attributes;
   final String? processed_message_content;
   final dynamic sentiment; // TODO: unk type
   final dynamic conversation; // TODO: unk type
-  final MessageSenderInfo? sender;
+  final UserInfo? sender;
   final List<MessageAttachmentInfo> attachments;
 
   const MessageInfo({
@@ -152,15 +116,10 @@ class MessageInfo {
   });
 
   factory MessageInfo.fromJson(dynamic json) {
-    var sender_type = json['sender_type'] == null
-        ? MessageSenderType.none
-        : MessageSenderType.values
-            .byName(json['sender_type'].toString().toLowerCase());
-    var sender = json['sender'] != null
-        ? MessageSenderInfo.fromJson(json['sender'])
-        : null;
-    List<dynamic> attachments = json['attachments'] ?? [];
-    var additional_attributes =
+    final sender =
+        json['sender'] != null ? UserInfo.fromJson(json['sender']) : null;
+    final List<dynamic> attachments = json['attachments'] ?? [];
+    final additional_attributes =
         ConversationAttribute.fromJson(json['additional_attributes'] ?? {});
 
     return MessageInfo(
@@ -174,12 +133,12 @@ class MessageInfo {
       created_at: toDateTime(json['created_at'])!,
       updated_at: toDateTime(json['updated_at']),
       private: json['private'],
-      status: MessageStatus.values.byName(json['status']),
+      status: MessageStatus.fromName(json['status']),
       source_id: json['source_id'],
-      content_type: MessageContentType.values.byName(json['content_type']),
+      content_type: MessageContentType.fromName(json['content_type']),
       content_attributes:
           MessageContentAttributes.fromJson(json['content_attributes']),
-      sender_type: sender_type,
+      sender_type: UserType.fromName(json['sender_type']),
       sender_id: json['sender_id'],
       external_source_ids: json['external_source_ids'],
       additional_attributes: additional_attributes,

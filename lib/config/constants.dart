@@ -1,13 +1,56 @@
 import '/imports.dart';
 import 'package:flutter/material.dart' as material;
 
-enum AccountStatus { active }
+enum AccountStatus {
+  active,
+  undefined;
 
-enum UserRole { administrator, agent }
+  static AccountStatus fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return AccountStatus.undefined;
+    return AccountStatus.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        AccountStatus.undefined;
+  }
+}
 
-enum ProfileType { SuperAdmin }
+enum UserRole {
+  administrator,
+  agent,
+  undefined;
 
-enum AvailabilityStatus { online, busy, offline }
+  static UserRole fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return UserRole.undefined;
+    return UserRole.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        UserRole.undefined;
+  }
+}
+
+enum ProfileType {
+  SuperAdmin,
+  undefined;
+
+  static ProfileType fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return ProfileType.undefined;
+    return ProfileType.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        ProfileType.undefined;
+  }
+}
+
+enum AvailabilityStatus {
+  online,
+  busy,
+  offline,
+  undefined;
+
+  static AvailabilityStatus fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return AvailabilityStatus.undefined;
+    return AvailabilityStatus.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        AvailabilityStatus.undefined;
+  }
+}
 
 enum ConversationStatus implements Comparable<ConversationStatus> {
   open,
@@ -88,6 +131,14 @@ enum ConversationPermission {
   conversation_manage,
   conversation_unassigned_manage,
   conversation_participating_manage,
+  undefined;
+
+  static ConversationPermission fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return ConversationPermission.undefined;
+    return ConversationPermission.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        ConversationPermission.undefined;
+  }
 }
 
 enum ConversationSortType implements Comparable<ConversationSortType> {
@@ -151,11 +202,48 @@ enum AssigneeType implements Comparable<AssigneeType> {
 
 enum MessageType { incoming, outgoing, activity, template }
 
-enum MessageStatus { failed, sent, progress, delivered, read }
+enum MessageStatus {
+  failed,
+  sent,
+  progress,
+  delivered,
+  read,
+  undefined;
 
-enum MessageContentType { text, input_email }
+  static MessageStatus fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return MessageStatus.undefined;
+    return MessageStatus.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        MessageStatus.undefined;
+  }
+}
 
-enum MessageSenderType { none, contact, user, agent_bot }
+enum MessageContentType {
+  text,
+  input_email,
+  undefined;
+
+  static MessageContentType fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return MessageContentType.undefined;
+    return MessageContentType.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        MessageContentType.undefined;
+  }
+}
+
+enum UserType {
+  contact,
+  user,
+  agent_bot,
+  undefined;
+
+  static UserType fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return UserType.undefined;
+    return UserType.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        UserType.undefined;
+  }
+}
 
 enum MessageVariant {
   date,
@@ -167,7 +255,15 @@ enum MessageVariant {
   error,
   template,
   email,
-  unsupported
+  unsupported,
+  undefined;
+
+  static MessageVariant fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return MessageVariant.undefined;
+    return MessageVariant.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        MessageVariant.undefined;
+  }
 }
 
 enum Language implements Comparable<Language> {
@@ -198,7 +294,8 @@ enum InboxChannelType implements Comparable<InboxChannelType> {
   email(value: 'Channel::WebWidget', iconName: 'email.png'),
   telegram(value: 'Channel::Telegram', iconName: 'telegram.png'),
   line(value: 'Channel::Line', iconName: 'line.png'),
-  sms(value: 'Channel::Sms', iconName: 'sms.png');
+  sms(value: 'Channel::Sms', iconName: 'sms.png'),
+  undefined(value: '', iconData: Icons.question_mark_outlined);
 
   final String value;
   final String? iconPath;
@@ -221,9 +318,16 @@ enum InboxChannelType implements Comparable<InboxChannelType> {
 
   @override
   int compareTo(InboxChannelType other) => index - other.index;
+
+  static InboxChannelType fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return InboxChannelType.undefined;
+    return InboxChannelType.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        InboxChannelType.undefined;
+  }
 }
 
-enum NotificationType {
+enum NotificationType implements Comparable<NotificationType> {
   conversation_creation,
   conversation_assignment,
   assigned_conversation_new_message,
@@ -231,12 +335,61 @@ enum NotificationType {
   participating_conversation_new_message,
   sla_missed_first_response,
   sla_missed_next_response,
-  sla_missed_resolution
+  sla_missed_resolution,
+  undefined;
+
+  String get content {
+    switch (this) {
+      case NotificationType.conversation_creation:
+        return t.notification_content_conversation_creation;
+      case NotificationType.conversation_assignment:
+        return t.notification_content_conversation_assignment;
+      case NotificationType.assigned_conversation_new_message:
+        return t.notification_content_assigned_conversation_new_message;
+      case NotificationType.conversation_mention:
+        return t.notification_content_conversation_mention;
+      case NotificationType.participating_conversation_new_message:
+        return t.notification_content_participating_conversation_new_message;
+      default:
+        return 'unhandled $this';
+    }
+  }
+
+  @override
+  int compareTo(NotificationType other) => index - other.index;
+
+  static NotificationType fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return NotificationType.undefined;
+    return NotificationType.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        NotificationType.undefined;
+  }
 }
 
-enum NotificationActorType { Conversation }
+enum NotificationActorType {
+  conversation,
+  undefined;
 
-enum NotificationStatus { snoozed, read }
+  static NotificationActorType fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return NotificationActorType.undefined;
+    return NotificationActorType.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        NotificationActorType.undefined;
+  }
+}
+
+enum NotificationStatus {
+  snoozed,
+  read,
+  undefined;
+
+  static NotificationStatus fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return NotificationStatus.undefined;
+    return NotificationStatus.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        NotificationStatus.undefined;
+  }
+}
 
 enum AttachmentType implements Comparable<AttachmentType> {
   image,
@@ -248,7 +401,8 @@ enum AttachmentType implements Comparable<AttachmentType> {
   share,
   story_mention,
   contact,
-  ig_reel;
+  ig_reel,
+  undefined;
 
   String get label {
     switch (this) {
@@ -269,6 +423,13 @@ enum AttachmentType implements Comparable<AttachmentType> {
 
   @override
   int compareTo(AttachmentType other) => index - other.index;
+
+  static AttachmentType fromName(dynamic name) {
+    if (isNullOrEmpty(name)) return AttachmentType.undefined;
+    return AttachmentType.values
+            .firstWhereOrNull((e) => e.name == name.toString().toLowerCase()) ??
+        AttachmentType.undefined;
+  }
 }
 
 enum AttributeModel implements Comparable<AttributeModel> {

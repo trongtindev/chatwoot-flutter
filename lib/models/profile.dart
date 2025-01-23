@@ -56,9 +56,7 @@ class ProfileInfo {
   });
 
   factory ProfileInfo.fromJson(dynamic json) {
-    var type =
-        json['type'] != null ? ProfileType.values.byName(json['type']) : null;
-    List<dynamic> accounts = json['accounts'];
+    final List<dynamic> accounts = json['accounts'];
 
     return ProfileInfo(
       access_token: json['access_token'],
@@ -74,9 +72,9 @@ class ProfileInfo {
       name: json['name'],
       provider: json['provider'],
       pubsub_token: json['pubsub_token'],
-      role: UserRole.values.byName(json['role']),
+      role: UserRole.fromName(json['role']),
       uid: json['uid'],
-      type: type,
+      type: ProfileType.fromName(json['type']),
       accounts: accounts.map(AccountInfo.fromJson).toList(),
     );
   }

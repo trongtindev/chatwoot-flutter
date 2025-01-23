@@ -30,13 +30,12 @@ class AccountInfo {
     return AccountInfo(
       id: json['id'],
       name: json['name'],
-      status: AccountStatus.values.byName(json['status']),
-      role: UserRole.values.byName(json['role']),
-      permissions:
-          permissions.map((e) => UserRole.values.byName(e.toString())).toList(),
+      status: AccountStatus.fromName(json['status']),
+      role: UserRole.fromName(json['role']),
+      permissions: permissions.map(UserRole.fromName).toList(),
       availability: json['availability'],
       availability_status:
-          AvailabilityStatus.values.byName(json['availability_status']),
+          AvailabilityStatus.fromName(json['availability_status']),
       auto_offline: json['auto_offline'],
       custom_role_id: json['custom_role_id'],
       custom_role: json['custom_role'],
