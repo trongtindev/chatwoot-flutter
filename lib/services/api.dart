@@ -120,6 +120,8 @@ class ApiService extends GetxService {
           return handler.next(response);
         },
         onError: (error, handler) {
+          _logger.w(
+              '[${error.requestOptions.method}] ${error.requestOptions.uri}');
           _logger.w(error, stackTrace: error.stackTrace);
           return handler.next(error);
         },
@@ -290,13 +292,13 @@ class ApiService extends GetxService {
 
   Future<Result<List<UserInfo>>> getConversationParticipants({
     int? account_id,
-    required int conversation_id,
+    required int id,
     Function(List<UserInfo> data)? onCacheHit,
+    CancelToken? cancelToken,
   }) async {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
-      final path =
-          '/accounts/$account_id/conversations/$conversation_id/participants';
+      final path = '/accounts/$account_id/conversations/$id/participants';
 
       // if onCacheHit defined
       if (onCacheHit != null) {
@@ -308,7 +310,7 @@ class ApiService extends GetxService {
         }
       }
 
-      final result = await _http.get(path);
+      final result = await _http.get(path, cancelToken: cancelToken);
       List<dynamic> items = result.data;
 
       // if onCacheHit defined
@@ -333,6 +335,26 @@ class ApiService extends GetxService {
           '/accounts/$account_id/conversations/$conversation_id/labels';
 
       await _http.post(path, data: {'labels': labels});
+
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> updateConversationAssignments({
+    int? account_id,
+    required int conversation_id,
+    required int assignee_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path =
+          '/accounts/$account_id/conversations/$conversation_id/assignments';
+
+      await _http.post(path, data: {'assignee_id': assignee_id});
 
       return true.toSuccess();
     } on DioException catch (error) {
@@ -421,16 +443,23 @@ class ApiService extends GetxService {
 
   Future<Result<List<UserInfo>>> listAssignableAgents({
     int? account_id,
-    required int conversation_id,
+    required List<int> inbox_ids,
+    CancelToken? cancelToken,
   }) async {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
-      final path =
-          '/accounts/$account_id/conversations/$conversation_id/assignable_agents';
+      final path = '/accounts/$account_id/assignable_agents';
 
-      final result = await _http.get(path);
+      final result = await _http.get(
+        path,
+        queryParameters: {
+          // TODO: make list
+          'inbox_ids[]': inbox_ids.first,
+        },
+        cancelToken: cancelToken,
+      );
+
       List<dynamic> items = result.data['payload'];
-
       return items.map(UserInfo.fromJson).toList().toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
@@ -842,16 +871,20 @@ class ApiService extends GetxService {
     int? account_id,
     required List<int> conversation_ids,
     required int macro_id,
+    CancelToken? cancelToken,
   }) async {
     try {
       account_id ??= _getAuth.profile.value!.account_id;
 
-      await _http.post(
+      final result = await _http.post(
         '/accounts/$account_id/macros/$macro_id/execute',
         data: {
           'conversation_ids': conversation_ids,
         },
+        cancelToken: cancelToken,
       );
+      if (kDebugMode) print(result.data);
+
       return true.toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
