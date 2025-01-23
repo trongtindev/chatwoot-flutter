@@ -1,3 +1,4 @@
+import '../widgets/picker.dart';
 import '/imports.dart';
 
 class AgentsController extends GetxController {
@@ -30,5 +31,20 @@ class AgentsController extends GetxController {
     } catch (error) {
       errorHandler(error);
     }
+  }
+
+  Future<UserInfo?> showPicker({
+    int? initial,
+    required List<int> inbox_ids,
+    required int conversation_id,
+  }) async {
+    final result = await Get.bottomSheet<UserInfo?>(
+      AgentsPicker(
+        initial: initial,
+        inbox_ids: inbox_ids,
+        conversation_id: conversation_id,
+      ),
+    );
+    return result;
   }
 }

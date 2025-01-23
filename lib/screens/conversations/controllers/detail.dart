@@ -6,7 +6,9 @@ class ConversationDetailController extends GetxController {
   final _labels = Get.find<LabelsController>();
   final _api = Get.find<ApiService>();
   final _macros = Get.find<MacrosController>();
+  final _agents = Get.find<AgentsController>();
 
+  final assignable_agents = RxList<UserInfo>();
   final participants = RxList<UserInfo>();
   final List<CancelToken> _cancelTokens = [];
   final executingMacroId = Rxn<int>();
@@ -46,6 +48,7 @@ class ConversationDetailController extends GetxController {
     participants.value = result.getOrThrow();
   }
 
+  // TODO: make this
   Future<void> removeLabel(LabelInfo info) async {}
 
   Future<void> showLabelPicker() async {
@@ -57,7 +60,19 @@ class ConversationDetailController extends GetxController {
     );
   }
 
-  Future<void> showAgentAssign() async {}
+  Future<void> showAgentAssign() async {
+    final item = await _agents.showPicker(
+      initial: c.info.value!.meta.assignee?.id,
+      conversation_id: conversation_id,
+      inbox_ids: [c.info.value!.inbox_id],
+    );
+    if (kDebugMode) print(item);
+    if (item == null) return;
+    _api.updateConversationAssignments(
+      conversation_id: c.conversation_id,
+      assignee_id: item.id,
+    );
+  }
 
   Future<void> showTeamAssign() async {}
 
