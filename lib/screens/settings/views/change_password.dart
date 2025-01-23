@@ -51,11 +51,12 @@ class SettingsChangePasswordView
                           }
                           return null;
                         },
+                        obscureText: true,
                       ),
                       Padding(padding: EdgeInsets.only(top: 8)),
                       TextFormField(
                         enabled: !isLoading,
-                        controller: controller.new_password,
+                        controller: controller.password,
                         keyboardType: TextInputType.visiblePassword,
                         decoration: InputDecoration(
                           label: Text(t.change_password_new),
@@ -68,11 +69,12 @@ class SettingsChangePasswordView
                           }
                           return null;
                         },
+                        obscureText: true,
                       ),
                       Padding(padding: EdgeInsets.only(top: 8)),
                       TextFormField(
                         enabled: !isLoading,
-                        controller: controller.confirm_password,
+                        controller: controller.password_confirmation,
                         keyboardType: TextInputType.visiblePassword,
                         decoration: InputDecoration(
                           label: Text(t.change_password_confirm),
@@ -85,6 +87,7 @@ class SettingsChangePasswordView
                           }
                           return null;
                         },
+                        obscureText: true,
                       ),
                     ],
                   ),
