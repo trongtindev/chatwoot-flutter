@@ -8,7 +8,7 @@ class ConversationChatController extends GetxController {
   final _realtime = Get.find<RealtimeService>();
 
   final scrollController = ScrollController();
-  final int id;
+  final int conversation_id;
   final loading = false.obs;
   final isNoMore = false.obs;
   final info = Rxn<ConversationInfo>();
@@ -16,7 +16,7 @@ class ConversationChatController extends GetxController {
   late RxList<MessageInfo> messages;
 
   ConversationChatController({
-    required this.id,
+    required this.conversation_id,
     MessageInfo? initial_message,
   }) : messages = RxList<MessageInfo>(
             initial_message != null ? [initial_message] : []);
@@ -28,7 +28,7 @@ class ConversationChatController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _logger.i('onInit(conversation_id:$id)');
+    _logger.i('onInit(conversation_id:$conversation_id)');
 
     scrollController.addListener(_onScroll);
 
@@ -53,7 +53,7 @@ class ConversationChatController extends GetxController {
     super.onReady();
 
     getConversation().then((_) {
-      _api.markMessageRead(conversation_id: id);
+      _api.markMessageRead(conversation_id: conversation_id);
     });
     getMessages();
   }
@@ -72,7 +72,7 @@ class ConversationChatController extends GetxController {
     try {
       final result = await _api.getConversation(
         account_id: _auth.profile.value!.account_id,
-        conversation_id: id,
+        conversation_id: conversation_id,
         onCacheHit: (data) => info.value = data,
       );
 
@@ -92,7 +92,7 @@ class ConversationChatController extends GetxController {
 
       final result = await _api.listMessages(
         account_id: _auth.profile.value!.account_id,
-        conversation_id: id,
+        conversation_id: conversation_id,
         before: before,
         onCacheHit: (data) {
           if (before != null) return;
@@ -189,6 +189,9 @@ class ConversationChatController extends GetxController {
     info.value!.status = status;
     info.refresh();
 
-    _api.changeConversationStatus(conversation_id: id, status: status);
+    _api.changeConversationStatus(
+      conversation_id: conversation_id,
+      status: status,
+    );
   }
 }

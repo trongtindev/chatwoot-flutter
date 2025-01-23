@@ -136,7 +136,7 @@ class NotificationService extends GetxService {
     switch (info.primary_actor_type) {
       case NotificationActorType.conversation:
         Get.to(
-          () => ConversationChatView(id: info.primary_actor_id),
+          () => ConversationChatView(conversation_id: info.primary_actor_id),
         );
         break;
 

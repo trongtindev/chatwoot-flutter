@@ -64,7 +64,8 @@ class ProfileInfo {
       available_name: json['available_name'],
       avatar_url: json['avatar_url'],
       confirmed: json['confirmed'],
-      display_name: json['display_name'] ?? json['name'],
+      display_name:
+          json['display_name'] ?? json['available_name'] ?? json['name'],
       message_signature: json['message_signature'],
       email: json['email'],
       id: json['id'],

@@ -8,18 +8,18 @@ class ConversationChatView extends StatelessWidget {
   final realtimeService = Get.find<RealtimeService>();
 
   final ConversationChatController c;
-  final int id;
+  final int conversation_id;
 
   ConversationChatView({
     super.key,
-    required this.id,
+    required this.conversation_id,
     MessageInfo? initial_message,
   }) : c = Get.put(
           ConversationChatController(
-            id: id,
+            conversation_id: conversation_id,
             initial_message: initial_message,
           ),
-          tag: id.toString(),
+          tag: '$conversation_id',
         );
 
   @override
@@ -79,7 +79,11 @@ class ConversationChatView extends StatelessWidget {
               icon: Icon(Icons.menu_outlined),
               onPressed: info == null
                   ? null
-                  : () => Get.to(() => ConversationDetailView(id: id)),
+                  : () => Get.to(
+                        () => ConversationDetailView(
+                          conversation_id: conversation_id,
+                        ),
+                      ),
             ),
             Padding(padding: EdgeInsets.only(right: 8)),
           ],
@@ -96,7 +100,7 @@ class ConversationChatView extends StatelessWidget {
                     return buildMessages();
                   }),
                 ),
-                ConversationInput(id: c.id),
+                ConversationInput(id: c.conversation_id),
               ],
             ),
             Obx(() {

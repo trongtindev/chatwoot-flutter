@@ -72,7 +72,6 @@ class ConversationsFilterView extends GetView<ConversationsController> {
                 return CustomRadioListTile(
                   title: Text(item.label),
                   value: item,
-                  selected: assigneeType == item,
                   groupValue: assigneeType,
                   onChanged: (next) => controller.assignee_type.value = item,
                 );

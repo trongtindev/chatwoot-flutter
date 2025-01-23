@@ -175,7 +175,7 @@ class ConversationsController extends GetxController {
 
     Get.to(
       () => ConversationChatView(
-        id: info.id,
+        conversation_id: info.id,
         initial_message: info.last_non_activity_message,
       ),
     );

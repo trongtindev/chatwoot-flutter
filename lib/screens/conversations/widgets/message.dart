@@ -174,7 +174,7 @@ class Message extends StatelessWidget {
                             ),
                           if (isOwner == false)
                             Text(
-                              sender.available_name,
+                              sender.display_name,
                               style: TextStyle(
                                 fontSize: Get.textTheme.labelSmall!.fontSize,
                               ),

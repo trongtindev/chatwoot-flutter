@@ -139,6 +139,14 @@
   "canned_responses_description": "Canned Responses are pre-written reply templates that help you quickly respond to a conversation. Agents can type the '/' character followed by the shortcode to insert a canned response during a conversation.",
   "canned_response_add": "Add canned response",
   "macros": "Macros",
+  "macro_execute_confirm_message": "Are you sure you want to execute macro {name}?",
+  "@macro_execute_confirm_message": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "automation": "Automation",
   "inboxes": "Inboxes",
   "inboxes_title": "Inboxes",
@@ -148,6 +156,8 @@
   "agents": "Agents",
   "agents_title": "Agents",
   "agents_description": "An agent is a member of your customer support team who can view and respond to user messages. The list below shows all the agents in your account.",
+  "agents_search": "Search agents",
+  "agents_search_hint": "Type something",
   "account": "Account",
   "change_password": "Change password",
   "change_password_invalid": "Please enter a password of length 6 or more",

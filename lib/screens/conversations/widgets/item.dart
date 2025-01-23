@@ -65,6 +65,7 @@ class ConversationItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            spacing: 4,
             children: [
               if (typeIcon != null)
                 Icon(

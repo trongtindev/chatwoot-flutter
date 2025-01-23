@@ -159,6 +159,7 @@ class CustomListTile extends ListTile {
     super.tileColor,
     super.onTap,
     super.trailing,
+    super.enabled,
   }) : super(
           contentPadding: const EdgeInsets.only(left: 16, right: 16),
         );
@@ -167,7 +168,6 @@ class CustomListTile extends ListTile {
 class CustomRadioListTile<T> extends ListTile {
   final T value;
   final T groupValue;
-  final bool selected;
   final Function(T next) onChanged;
 
   const CustomRadioListTile({
@@ -180,8 +180,8 @@ class CustomRadioListTile<T> extends ListTile {
     super.onTap,
     required this.value,
     required this.groupValue,
-    required this.selected,
     required this.onChanged,
+    super.enabled,
   }) : super(
           contentPadding: const EdgeInsets.only(left: 16, right: 16),
         );

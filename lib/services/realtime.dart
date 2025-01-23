@@ -188,6 +188,8 @@ class RealtimeService extends GetxService {
           _onConversationRead(parse);
           break;
 
+        // case 'assignee.changed':
+        // case 'team.changed':
         case 'conversation.updated':
           var parse = ConversationInfo.fromJson(payload['data']);
           _onConversationUpdated(parse);
@@ -218,8 +220,6 @@ class RealtimeService extends GetxService {
         // case 'contact.deleted':
         //   break;
         // case 'first.reply.created':
-        //   break;
-        // case 'team.changed':
         //   break;
         // case 'account.cache_invalidated':
         //   break;

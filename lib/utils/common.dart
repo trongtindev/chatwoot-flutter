@@ -95,3 +95,9 @@ Future<bool> confirmDelete({required String name}) async {
   logger.d('result: $result');
   return result ?? false;
 }
+
+void showSnackBar(String content) {
+  ScaffoldMessenger.of(Get.context!).showSnackBar(
+    SnackBar(content: Text(content)),
+  );
+}

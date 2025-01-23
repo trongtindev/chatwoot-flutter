@@ -4,7 +4,7 @@ class UserInfo {
   final int id;
   final int? account_id;
   final String name;
-  final String available_name;
+  final String display_name;
   final AvailabilityStatus availability_status;
   final bool? auto_offline;
   final bool? confirmed;
@@ -16,14 +16,14 @@ class UserInfo {
     required this.id,
     this.account_id,
     required this.name,
-    String? available_name,
+    String? display_name,
     AvailabilityStatus? availability_status,
     required this.thumbnail,
     this.auto_offline,
     this.confirmed,
     this.custom_role_id,
     required this.type,
-  })  : available_name = available_name ?? name,
+  })  : display_name = display_name ?? name,
         availability_status =
             availability_status ?? AvailabilityStatus.undefined;
 
@@ -32,7 +32,8 @@ class UserInfo {
       id: json['id'],
       account_id: json['account_id'],
       name: json['name'],
-      available_name: json['available_name'] ?? json['name'],
+      display_name:
+          json['display_name'] ?? json['available_name'] ?? json['name'],
       availability_status:
           AvailabilityStatus.fromName(json['availability_status']),
       thumbnail: json['avatar_url'] ?? json['thumbnail'],
@@ -47,7 +48,7 @@ class UserInfo {
     return {
       'id': id,
       'account_id': account_id,
-      'available_name': available_name,
+      'display_name': display_name,
       'availability_status': availability_status.name,
       'thumbnail': thumbnail,
       'auto_offline': auto_offline,
