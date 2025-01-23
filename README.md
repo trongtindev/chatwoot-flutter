@@ -1,16 +1,26 @@
-<p align="center">
-    <img src=".github/screenshots/conversations.png" width="160"/>
-    <img src=".github/screenshots/conversation_chat.png" width="160"/>
-    <img src=".github/screenshots/notifications.png" width="160"/>
-    <img src=".github/screenshots/contacts.png" width="160"/>
-    <img src=".github/screenshots/settings.png" width="160"/>
-    <img src=".github/screenshots/appearance.png" width="160"/>
-</p>
----
-
 # chatwoot
 
 Cross-Platform app for chatwoot! Built with Flutter.
+
+<p align="center">
+    <img src=".github/screenshots/Screenshot_1737610865.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610873.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610884.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610892.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610898.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610901.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610903.png" width="118"/>
+</p>
+
+<p align="center">
+    <img src=".github/screenshots/Screenshot_1737610913.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610920.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610926.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610929.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610932.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610934.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610936.png" width="118"/>
+</p>
 
 ## Support
 
