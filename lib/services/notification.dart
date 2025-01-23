@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '/screens/conversations/controllers/chat.dart';
+import '/screens/conversations/views/chat.dart';
 import '/imports.dart';
 
 enum NotificationEventId { onMessage, onMessageOpenedApp }
@@ -20,6 +22,9 @@ class NotificationService extends GetxService {
   StreamSubscription<String>? _tokenRefreshSubscription;
   StreamSubscription<RemoteMessage>? _onMessageSubscription;
   StreamSubscription<RemoteMessage>? _onMessageOpenedAppSubscription;
+  EventListener<ConversationInfo>? _conversationReadListener;
+  EventListener<NotificationInfo>? _notificationCreatedListener;
+  EventListener<int>? _notificationDeletedListener;
 
   ApiService? _api;
   ApiService get _getApi {
@@ -35,23 +40,45 @@ class NotificationService extends GetxService {
     return _auth!;
   }
 
+  RealtimeService? _realtime;
+  RealtimeService get _getRealtime {
+    _realtime ??= Get.find<RealtimeService>();
+    if (_realtime == null) throw Exception('RealtimeService not found!');
+    return _realtime!;
+  }
+
   RemoteMessage? get getRemoteMessage => _initialMessage;
 
   @override
   void onReady() {
     super.onReady();
 
-    _getAuth.profile.listen((next) {
-      if (next == null) {
+    _getAuth.isSignedIn.listen((next) {
+      if (!next) {
         token.value = null;
         return;
       }
-      requestPermission();
+      _ensurePermission();
     });
+
+    _conversationReadListener = _getRealtime.events.on(
+      RealtimeEventId.conversationRead.name,
+      _onConversationRead,
+    );
+
+    _notificationCreatedListener = _getRealtime.events.on(
+      RealtimeEventId.notificationCreated.name,
+      _onNotificationCreated,
+    );
+
+    _notificationDeletedListener = _getRealtime.events.on(
+      RealtimeEventId.notificationDeleted.name,
+      _onNotificationDeleted,
+    );
 
     _enabledChangeSubscription = enabled.listen((next) {
       _logger.i('enabled changed => $next');
-      if (next) requestPermission();
+      if (next) _ensurePermission();
     });
 
     _tokenChangeSubscription = token.listen((next) {
@@ -79,31 +106,126 @@ class NotificationService extends GetxService {
     _tokenRefreshSubscription?.cancel();
     _onMessageSubscription?.cancel();
     _onMessageOpenedAppSubscription?.cancel();
+    _conversationReadListener?.cancel();
+    _notificationCreatedListener?.cancel();
+    _notificationDeletedListener?.cancel();
 
     super.onClose();
   }
 
   Future<NotificationService> init() async {
-    await requestPermission();
-    _logger.i('getInitialMessage()');
+    await _ensurePermission();
+
+    await _notificationsPlugin.initialize(
+      InitializationSettings(
+        android: AndroidInitializationSettings('ic_launcher'),
+        iOS: DarwinInitializationSettings(),
+      ),
+      onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
+    );
+
     _initialMessage = await _firebaseMessaging.getInitialMessage();
+    if (_initialMessage != null) {
+      _logger.i('getInitialMessage: ${jsonEncode(_initialMessage!.toMap())}');
+    }
+
     return this;
   }
 
-  void _onMessage(RemoteMessage message) {
+  Future<void> handleNavigation(NotificationInfo info) async {
+    switch (info.primary_actor_type) {
+      case NotificationActorType.conversation:
+        Get.to(
+          () => ConversationChatView(id: info.primary_actor_id),
+        );
+        break;
+
+      default:
+        _logger.w('unhandled primary_actor_type ${info.primary_actor_id}');
+        return;
+    }
+  }
+
+  Future<void> showPushNotification(NotificationInfo info) async {
+    await _notificationsPlugin.show(
+      info.id,
+      info.push_message_title,
+      info.notification_type.name,
+      NotificationDetails(),
+      payload: jsonEncode(info.toJson()),
+    );
+  }
+
+  Future<void> _onMessage(RemoteMessage message) async {
     _logger.i(jsonEncode(message.toMap()));
     events.emit(NotificationEventId.onMessage.name, message);
+
+    // TODO: message.data not tested
+    try {
+      final info = NotificationInfo.fromJson(message.data);
+
+      // if conversation opened
+      if (isConversationChatOpened(info.id)) return;
+
+      // show push notifications
+      await showPushNotification(info);
+    } on Error catch (error) {
+      _logger.e(error, stackTrace: error.stackTrace);
+      _logger.e('failed to parse message.data');
+      _logger.e(message.data);
+    }
   }
 
-  void _onMessageOpenedApp(RemoteMessage message) {
+  Future<void> _onMessageOpenedApp(RemoteMessage message) async {
     _logger.i(jsonEncode(message.toMap()));
     events.emit(NotificationEventId.onMessageOpenedApp.name, message);
+
+    // TODO: message.data not tested
+    try {
+      final info = NotificationInfo.fromJson(message.data);
+      await handleNavigation(info);
+    } on Error catch (error) {
+      _logger.e(error, stackTrace: error.stackTrace);
+      _logger.e('failed to parse message.data');
+      _logger.e(message.data);
+    }
   }
 
-  Future<void> requestPermission() async {
+  Future<void> _onDidReceiveNotificationResponse(
+      NotificationResponse response) async {
+    try {
+      final data = jsonDecode(response.payload!);
+      final info = NotificationInfo.fromJson(data);
+      await handleNavigation(info);
+    } on Error catch (error) {
+      _logger.e(error, stackTrace: error.stackTrace);
+      _logger.e('failed to parse response.payload');
+      _logger.e(response.payload);
+    }
+  }
+
+  bool isConversationChatOpened(int conversation_id) {
+    return Get.isRegistered<ConversationChatController>(
+      tag: '$conversation_id',
+    );
+  }
+
+  Future<void> _onConversationRead(ConversationInfo info) async {
+    await _notificationsPlugin.cancel(info.id);
+  }
+
+  Future<void> _onNotificationCreated(NotificationInfo info) async {
+    await showPushNotification(info);
+  }
+
+  Future<void> _onNotificationDeleted(int id) async {
+    await _notificationsPlugin.cancel(id);
+  }
+
+  Future<void> _ensurePermission() async {
     _logger.d('requestPermission');
 
-    var notificationSettings =
+    final notificationSettings =
         await _firebaseMessaging.requestPermission(provisional: true);
     authorizationStatus.value = notificationSettings.authorizationStatus;
     if (authorizationStatus.value == AuthorizationStatus.denied) {
@@ -112,8 +234,10 @@ class NotificationService extends GetxService {
     }
     _logger.d('permission:${authorizationStatus.value}');
 
-    var getToken = await _firebaseMessaging.getToken();
-    if (getToken != token.value) token.value = getToken;
+    final getToken = await _firebaseMessaging.getToken();
+    if (isNullOrEmpty(token.value) || getToken != token.value) {
+      token.value = getToken;
+    }
     _logger.d('token:${token.value}');
   }
 
