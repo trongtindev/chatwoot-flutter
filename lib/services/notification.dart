@@ -118,7 +118,7 @@ class NotificationService extends GetxService {
 
     await _notificationsPlugin.initialize(
       InitializationSettings(
-        android: AndroidInitializationSettings('ic_launcher'),
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(),
       ),
       onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,

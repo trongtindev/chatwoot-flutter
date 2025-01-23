@@ -3,23 +3,23 @@
 Cross-Platform app for chatwoot! Built with Flutter.
 
 <p align="center">
-    <img src=".github/screenshots/Screenshot_1737610865.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610873.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610884.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610892.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610898.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610901.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610903.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610865.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610873.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610884.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610892.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610898.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610901.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610903.png" style="width:13%" />
 </p>
 
 <p align="center">
-    <img src=".github/screenshots/Screenshot_1737610913.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610920.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610926.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610929.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610932.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610934.png" width="118"/>
-    <img src=".github/screenshots/Screenshot_1737610936.png" width="118"/>
+    <img src=".github/screenshots/Screenshot_1737610913.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610920.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610926.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610929.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610932.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610934.png" style="width:13%" />
+    <img src=".github/screenshots/Screenshot_1737610936.png" style="width:13%" />
 </p>
 
 ## Support
@@ -35,19 +35,19 @@ Cross-Platform app for chatwoot! Built with Flutter.
 | Feature                      | Status         |
 | ---------------------------- | -------------- |
 | UI - Customize theme         | ✅ Completed   |
-| Settings                     | 💪 In-Progress |
+| Settings (Partially)         | 💪 In-Progress |
 | Conversations                | 💪 In-Progress |
 | Contacts                     | 💪 In-Progress |
 | Notifications                | 💪 In-Progress |
 | Push Notifications           | 💪 In-Progress |
 | Reports                      | 🕛 Planned     |
-| Teams (Partially)            | 🕛 Planned     |
+| Teams (Partially)            | 💪 In-Progress |
 | Accounts (Partially)         | 🕛 Planned     |
 | Inboxes (Partially)          | 💪 In-Progress |
-| Labels                       | 💪 In-Progress |
-| Automation                   | 🕛 Planned     |
+| Labels (Partially)           | 💪 In-Progress |
+| Automation (Partially)       | 🕛 Planned     |
 | Macros (Partially)           | 💪 In-Progress |
-| Agents                       | 🕛 Planned     |
+| Agents (Partially)           | 💪 In-Progress |
 | Canned Response              | 💪 In-Progress |
 | Integrations (Partially)     | 🕛 Planned     |
 | Audit Logs                   | 🕛 Planned     |
