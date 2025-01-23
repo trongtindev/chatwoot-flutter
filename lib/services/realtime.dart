@@ -47,21 +47,25 @@ class RealtimeService extends GetxService {
   void onReady() {
     super.onReady();
 
+    _getAuth.profile.listen((next) {
+      if (next == null) return;
+      connect();
+    });
+
     _getAuth.isSignedIn.listen((next) {
       if (next) {
         connect();
         return;
       }
-      _subscription?.cancel();
-      _actionCable?.disconnect();
+      disconnect();
     });
+
     if (_getAuth.isSignedIn.value) connect();
   }
 
   @override
   void onClose() {
-    _subscription?.cancel();
-    _actionCable?.disconnect();
+    disconnect();
 
     super.onClose();
   }
@@ -81,7 +85,6 @@ class RealtimeService extends GetxService {
         return;
       }
 
-      _actionCable?.disconnect();
       _actionCable = ActionCable.connect(
         url,
         onConnected: () {
@@ -128,6 +131,11 @@ class RealtimeService extends GetxService {
     }
   }
 
+  Future<void> disconnect() async {
+    _subscription?.cancel();
+    _actionCable?.disconnect();
+  }
+
   // void _perform() {
   //   _logger.d('update_presence()');
   //   _actionCable!.performAction(CHANNEL_NAME, action: 'update_presence');
@@ -170,6 +178,11 @@ class RealtimeService extends GetxService {
           _onTypingOff(parse);
           break;
 
+        case 'conversation.created':
+          var parse = ConversationInfo.fromJson(payload['data']);
+          _onConversationCreated(parse);
+          break;
+
         case 'conversation.read':
           var parse = ConversationInfo.fromJson(payload['data']);
           _onConversationRead(parse);
@@ -207,6 +220,8 @@ class RealtimeService extends GetxService {
         // case 'first.reply.created':
         //   break;
         // case 'team.changed':
+        //   break;
+        // case 'account.cache_invalidated':
         //   break;
 
         default:
@@ -261,6 +276,11 @@ class RealtimeService extends GetxService {
     _logger.d('${data.user.name}#${data.conversation.id}');
     if (!typingUsers.contains(data.user.id)) return;
     typingUsers.remove(data.user.id);
+  }
+
+  Future<void> _onConversationCreated(ConversationInfo info) async {
+    _logger.d('${info.meta.sender.name}#${info.id}');
+    events.emit(RealtimeEventId.conversationCreated.name, info);
   }
 
   Future<void> _onConversationRead(ConversationInfo info) async {
