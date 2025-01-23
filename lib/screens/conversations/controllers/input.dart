@@ -7,6 +7,7 @@ import '/imports.dart';
 class ConversationInputController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
+  final _cannedResponses = Get.find<CannedResponsesController>();
 
   final int id;
   final isEmpty = true.obs;
@@ -23,6 +24,7 @@ class ConversationInputController extends GetxController {
   final amplitudes = RxList<double>();
   final recorderPath = Rxn<String>();
   final recorderDuration = Duration.zero.obs;
+  final cannedResponses = RxList();
 
   AudioRecorder? _recorder;
   Timer? _fetchAmplitudeTimer;
@@ -34,12 +36,12 @@ class ConversationInputController extends GetxController {
     super.onInit();
 
     focusNode.addListener(_onfocusNode);
-    message.addListener(_onChanged);
+    message.addListener(_onMessageChanged);
   }
 
   @override
   void onClose() {
-    message.removeListener(_onChanged);
+    message.removeListener(_onMessageChanged);
     focusNode.dispose();
     _recorder?.cancel();
     _fetchAmplitudeTimer?.cancel();
@@ -55,11 +57,19 @@ class ConversationInputController extends GetxController {
     }
   }
 
-  void _onChanged() {
+  void _onMessageChanged() {
     isEmpty.value = message.text.isEmpty;
     if (isEmpty.value == false) {
       showMore.value = false;
       showRecorder.value = false;
+    }
+
+    if (message.text.isNotEmpty && message.text.startsWith('/')) {
+      cannedResponses.value = _cannedResponses.items
+          .where((e) => e.short_code.startsWith(message.text))
+          .toList();
+    } else if (cannedResponses.value.isNotEmpty) {
+      cannedResponses.value = [];
     }
   }
 

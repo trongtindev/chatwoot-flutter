@@ -58,6 +58,7 @@ class ConversationInput extends StatelessWidget {
       ),
       child: Column(
         children: [
+          buildCannedResponses(context),
           buildAttachments(),
           Obx(() {
             final isEmpty = c.isEmpty.value;
@@ -251,8 +252,9 @@ class ConversationInput extends StatelessWidget {
 
   Widget buildAttachments() {
     return Obx(() {
-      var files = c.files;
+      final files = c.files.value;
       if (files.isEmpty) return Container();
+
       return SizedBox(
         height: 100,
         child: ListView.builder(
@@ -279,7 +281,9 @@ class ConversationInput extends StatelessWidget {
             children: [
               Expanded(
                 child: Builder(builder: (_) {
-                  var isImage = ['jpg', 'png', 'jpeg'].contains(file.extension);
+                  final isImage =
+                      ['jpg', 'png', 'jpeg'].contains(file.extension);
+
                   if (isImage) {
                     return Image.file(
                       File(file.path),
@@ -287,6 +291,7 @@ class ConversationInput extends StatelessWidget {
                       height: double.infinity,
                     );
                   }
+
                   return Center(
                     child: Icon(Icons.file_present_outlined),
                   );
@@ -302,6 +307,50 @@ class ConversationInput extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildCannedResponses(BuildContext context) {
+    return Obx(() {
+      final items = c.cannedResponses.value;
+      if (items.isEmpty) return Container();
+
+      return ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: 250,
+        ),
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: items.length,
+          itemBuilder: (_, i) => buildCannedResponse(items[i]),
+        ),
+      );
+    });
+  }
+
+  Widget buildCannedResponse(CannedResponseInfo info) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          spacing: 4,
+          children: [
+            Expanded(
+              child: Text(
+                info.content.replaceAll('\n', ' '),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Text(
+              info.short_code,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
