@@ -26,7 +26,6 @@ Cross-Platform app for chatwoot! Built with Flutter.
 
 | Platform | Status         |
 | -------- | -------------- |
-| Web      | 🕛 Planned     |
 | Mobile   | 💪 In-Progress |
 | Desktop  | 🕛 Planned     |
 
