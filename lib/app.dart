@@ -14,14 +14,12 @@ class App extends StatefulWidget {
 
 class AppState extends State<App> {
   final theme = Get.put(ThemeService());
+  final settings = Get.put(SettingsService());
 
   @override
   void initState() {
     super.initState();
-    theme.color.listen((next) {
-      if (kDebugMode) print('color:$next');
-      setState(() {});
-    });
+
     init();
   }
 
@@ -54,21 +52,14 @@ class AppState extends State<App> {
 
   @override
   Widget build(context) {
-    final darkTheme = ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: theme.color.value,
-        brightness: Brightness.dark,
-        contrastLevel: theme.contrast.value,
-      ),
+    final seedColor = theme.color.value;
+    final darkTheme = getThemeData(
+      seedColor: seedColor,
+      brightness: Brightness.dark,
     );
-    final lightTheme = ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: theme.color.value,
-        brightness: Brightness.light,
-        contrastLevel: theme.contrast.value,
-      ),
+    final lightTheme = getThemeData(
+      seedColor: seedColor,
+      brightness: Brightness.light,
     );
 
     return GetMaterialApp(
@@ -79,8 +70,8 @@ class AppState extends State<App> {
         textTheme: GoogleFonts.robotoTextTheme(darkTheme.textTheme),
       ),
       themeMode: theme.activeMode.value.buitin,
-      locale: Locale('en'),
-      fallbackLocale: Locale('en'),
+      locale: settings.language.value.locale,
+      fallbackLocale: Language.en.locale,
       defaultTransition:
           GetPlatform.isDesktop ? Transition.downToUp : Transition.rightToLeft,
       debugShowCheckedModeBanner: false,

@@ -90,6 +90,7 @@ export 'utils/permision.dart';
 export 'utils/persistent_rx.dart';
 export 'utils/random.dart';
 export 'utils/regex.dart';
+export 'utils/theme.dart';
 export 'utils/time.dart';
 
 export 'widgets/audio.dart';

@@ -38,7 +38,7 @@ class SettingsProfileController extends GetxController {
         email: email.text,
       );
       _auth.profile.value = result.getOrThrow();
-      Get.snackbar(t.successful, t.profile_update_successful);
+      showSnackBar(t.successful);
     } catch (error) {
       if (error is! ApiError) _logger.e(error);
       errorHandler(error);

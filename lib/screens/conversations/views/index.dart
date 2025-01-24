@@ -37,7 +37,12 @@ class ConversationsView extends GetView<ConversationsController> {
               if (controller.loading.value && controller.items.isEmpty) {
                 return buildPlaceholder();
               } else if (controller.error.isNotEmpty) {
-                return buildError(context);
+                return errorState(
+                  context,
+                  title: t.error,
+                  error: controller.error.value,
+                  onRetry: controller.getConversations,
+                );
               } else if (controller.items.isEmpty) {
                 return emptyState(
                   context,
@@ -85,14 +90,6 @@ class ConversationsView extends GetView<ConversationsController> {
   Widget buildPlaceholder() {
     return Center(
       child: CircularProgressIndicator(),
-    );
-  }
-
-  Widget buildError(BuildContext context) {
-    return error(
-      context,
-      message: controller.error.value,
-      onRetry: controller.getConversations,
     );
   }
 }

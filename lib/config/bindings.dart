@@ -7,7 +7,6 @@ class BindingsConfig {
   Future<void> dependencies() async {
     // global services
     await Get.putAsync(() => DbService().init());
-    await Get.putAsync(() => SettingsService().init());
     await Get.putAsync(() => ApiService().init());
     await Get.putAsync(() => AuthService().init());
     await Get.putAsync(() => AnalyticsService().init());

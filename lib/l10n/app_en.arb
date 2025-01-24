@@ -139,6 +139,7 @@
   "canned_responses_description": "Canned Responses are pre-written reply templates that help you quickly respond to a conversation. Agents can type the '/' character followed by the shortcode to insert a canned response during a conversation.",
   "canned_response_add": "Add canned response",
   "macros": "Macros",
+  "macros_add": "Add macro",
   "macro_execute_confirm_message": "Are you sure you want to execute macro {name}?",
   "@macro_execute_confirm_message": {
     "placeholders": {
@@ -156,6 +157,7 @@
   "agents": "Agents",
   "agents_title": "Agents",
   "agents_description": "An agent is a member of your customer support team who can view and respond to user messages. The list below shows all the agents in your account.",
+  "agents_add": "Add agent",
   "agents_search": "Search agents",
   "agents_search_hint": "Type something",
   "account": "Account",
@@ -189,6 +191,7 @@
   "teams": "Teams",
   "teams_title": "Teams",
   "teams_description": "Teams allow you to organize agents into groups based on their responsibilities. An agent can belong to multiple teams. When working collaboratively, you can assign conversations to specific teams.",
+  "teams_add": "Add team",
   "permission_denied": "Permission denied",
   "permission_denied_message": "permission_denied_message {name}.",
   "@permission_denied_message": {
@@ -318,5 +321,5 @@
   "phone": "Phone",
   "call": "Call",
   "message": "Message",
-  "profile_update_successful": "profile_update_successful"
+  "mark_auto_offline": "Mark offline automatically"
 }

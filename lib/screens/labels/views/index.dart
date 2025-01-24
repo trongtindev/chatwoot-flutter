@@ -1,7 +1,9 @@
 import '/imports.dart';
 
 class LabelsView extends GetView<LabelsController> {
-  const LabelsView({super.key});
+  final auth = Get.find<AuthService>();
+
+  LabelsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class LabelsView extends GetView<LabelsController> {
             return SliverList(
               delegate: SliverChildBuilderDelegate(
                 (_, i) {
-                  return buildItem(items[i]);
+                  return buildItem(context, items[i]);
                 },
                 childCount: items.length,
               ),
@@ -47,13 +49,33 @@ class LabelsView extends GetView<LabelsController> {
     );
   }
 
-  Widget buildItem(LabelInfo info) {
+  Widget buildItem(BuildContext context, LabelInfo info) {
+    final isAdmin = auth.profile.value!.role == UserRole.administrator;
+
     return ListTile(
+      contentPadding: EdgeInsets.only(left: 16, right: 8),
       leading: CircleAvatar(
         backgroundColor: info.color,
       ),
       title: Text(info.title),
       subtitle: Text(info.description),
+      trailing: Wrap(
+        children: [
+          if (isAdmin)
+            IconButton.filledTonal(
+              onPressed: () => {},
+              icon: Icon(Icons.edit_outlined),
+            ),
+          if (isAdmin)
+            IconButton.filledTonal(
+              onPressed: () => controller.delete(info),
+              icon: Icon(
+                Icons.delete_outline,
+                color: context.theme.colorScheme.error,
+              ),
+            )
+        ],
+      ),
     );
   }
 }

@@ -32,9 +32,18 @@ class ThemeService extends GetxService {
   @override
   void onReady() {
     super.onReady();
-    logger.t('onReady()');
 
     mode.listen((next) => update());
+
+    color.listen((next) {
+      logger.d('color changed:$next');
+      final themeData = getThemeData(
+        seedColor: next,
+        brightness: Get.theme.brightness,
+      );
+      Get.changeTheme(themeData);
+    });
+
     activeMode.listen((next) => Get.changeThemeMode(next.buitin));
 
     _timer = Timer.periodic(Duration(seconds: 1), (e) => update());

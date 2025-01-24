@@ -33,14 +33,19 @@ class AuthService extends GetxService {
     return _notification!;
   }
 
-  Future<AuthService> init() async {
+  @override
+  void onReady() {
+    super.onReady();
+
     profile.listen((data) {
       if (kDebugMode) print(profile);
       isAuthorized.value = data != null;
       isSignedIn.value = profile.value != null;
     });
-    isSignedIn.value = profile.value != null;
+  }
 
+  Future<AuthService> init() async {
+    isSignedIn.value = profile.value != null;
     return this;
   }
 
@@ -56,7 +61,12 @@ class AuthService extends GetxService {
 
     Future.delayed(Duration(milliseconds: 250), () {
       _logger.d('reset profile');
+
+      // reset profile
       profile.value = null;
+
+      // TODO: maybe delete {host} only
+      CookieManager.instance().deleteAllCookies();
     });
   }
 }

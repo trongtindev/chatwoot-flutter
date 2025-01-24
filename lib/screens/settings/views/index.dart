@@ -1,3 +1,4 @@
+import '../widgets/change_language.dart';
 import '/imports.dart';
 import '../../agents/views/index.dart';
 import '../../audit_logs/views/index.dart';
@@ -18,6 +19,7 @@ class SettingTab {
   IconData iconData;
   String? internalUrl;
   String? externalUrl;
+  final void Function()? onTap;
 
   SettingTab({
     required this.title,
@@ -25,6 +27,7 @@ class SettingTab {
     this.page,
     this.internalUrl,
     this.externalUrl,
+    this.onTap,
   });
 }
 
@@ -58,6 +61,7 @@ class SettingsView extends GetView<SettingsController> {
           SettingTab(
             iconData: Icons.work_outline,
             title: t.account,
+            internalUrl: 'settings/general',
           ),
         if (isAdmin)
           SettingTab(
@@ -132,6 +136,7 @@ class SettingsView extends GetView<SettingsController> {
         SettingTab(
           iconData: Icons.translate_outlined,
           title: t.change_language,
+          onTap: () => Get.bottomSheet(ChangeLanguageSheet()),
         ),
       ],
       [
@@ -230,7 +235,9 @@ class SettingsView extends GetView<SettingsController> {
                                 title: Text(item.title),
                                 trailing: Icon(trailingIcon),
                                 onTap: () {
-                                  if (item.page != null) {
+                                  if (item.onTap != null) {
+                                    item.onTap!();
+                                  } else if (item.page != null) {
                                     Get.to(item.page!);
                                   } else if (item.internalUrl != null) {
                                     openInAppBrowser(item.internalUrl!);

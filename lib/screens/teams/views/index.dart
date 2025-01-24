@@ -1,7 +1,9 @@
 import '/imports.dart';
 
 class TeamsView extends GetView<TeamsController> {
+  final auth = Get.find<AuthService>();
   final realtime = Get.find<RealtimeService>();
+
   TeamsView({super.key});
 
   @override
@@ -38,13 +40,37 @@ class TeamsView extends GetView<TeamsController> {
           }),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => openInAppBrowser('settings/teams/new'),
+        label: Text(t.teams_add),
+        icon: Icon(Icons.add_outlined),
+      ),
     );
   }
 
   Widget buildItem(BuildContext context, TeamInfo info) {
-    return ListTile(
-      leading: CircleAvatar(),
+    final isAdmin = auth.profile.value!.role == UserRole.administrator;
+
+    return CustomListTile(
       title: Text(info.name),
+      trailing: Wrap(
+        children: [
+          if (isAdmin)
+            IconButton.filledTonal(
+              onPressed: () =>
+                  openInAppBrowser('settings/teams/${info.id}/edit'),
+              icon: Icon(Icons.settings_outlined),
+            ),
+          if (isAdmin)
+            IconButton.filledTonal(
+              onPressed: () => controller.delete(info),
+              icon: Icon(
+                Icons.delete_outline,
+                color: context.theme.colorScheme.error,
+              ),
+            )
+        ],
+      ),
     );
   }
 }

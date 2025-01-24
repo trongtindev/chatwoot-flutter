@@ -1,7 +1,7 @@
 import '/imports.dart';
 
 class MacrosView extends GetView<MacrosController> {
-  final authService = Get.find<AuthService>();
+  final auth = Get.find<AuthService>();
 
   MacrosView({super.key});
 
@@ -35,14 +35,17 @@ class MacrosView extends GetView<MacrosController> {
 
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (_, i) {
-                      return buildItem(context, items[i]);
-                    },
+                    (_, i) => buildItem(context, items[i]),
                     childCount: items.length,
                   ),
                 );
               }),
             ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () => openInAppBrowser('settings/macros/new'),
+            label: Text(t.macros_add),
+            icon: Icon(Icons.add_outlined),
           ),
         );
       },
@@ -50,7 +53,8 @@ class MacrosView extends GetView<MacrosController> {
   }
 
   Widget buildItem(BuildContext context, MacroInfo info) {
-    final isAdmin = authService.profile.value!.role == UserRole.administrator;
+    final isAdmin = auth.profile.value!.role == UserRole.administrator;
+
     return ListTile(
       contentPadding: EdgeInsets.only(left: 16, right: 8),
       title: Text(info.name),
@@ -58,12 +62,13 @@ class MacrosView extends GetView<MacrosController> {
       trailing: Wrap(
         children: [
           if (isAdmin)
-            IconButton(
-              onPressed: () {},
+            IconButton.filledTonal(
+              onPressed: () =>
+                  openInAppBrowser('settings/macros/${info.id}/edit'),
               icon: Icon(Icons.edit_outlined),
             ),
           if (isAdmin)
-            IconButton(
+            IconButton.filledTonal(
               onPressed: () => controller.delete(info),
               icon: Icon(
                 Icons.delete_outline,

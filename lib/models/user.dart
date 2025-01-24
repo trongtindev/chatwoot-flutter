@@ -11,6 +11,7 @@ class UserInfo {
   final String thumbnail;
   final dynamic custom_role_id; // TODO: unk type
   final UserType type;
+  final UserRole role;
 
   const UserInfo({
     required this.id,
@@ -23,9 +24,11 @@ class UserInfo {
     this.confirmed,
     this.custom_role_id,
     required this.type,
+    UserRole? role,
   })  : display_name = display_name ?? name,
         availability_status =
-            availability_status ?? AvailabilityStatus.undefined;
+            availability_status ?? AvailabilityStatus.undefined,
+        role = role ?? UserRole.undefined;
 
   factory UserInfo.fromJson(dynamic json) {
     return UserInfo(
@@ -41,6 +44,7 @@ class UserInfo {
       confirmed: json['confirmed'],
       custom_role_id: json['custom_role_id'],
       type: UserType.fromName(json['type']),
+      role: UserRole.fromName(json['role']),
     );
   }
 

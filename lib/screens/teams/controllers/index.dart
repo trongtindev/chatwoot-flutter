@@ -31,4 +31,6 @@ class TeamsController extends GetxController {
       errorHandler(error);
     }
   }
+
+  Future<void> delete(TeamInfo info) async {}
 }

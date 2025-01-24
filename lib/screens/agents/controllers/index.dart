@@ -47,4 +47,8 @@ class AgentsController extends GetxController {
     );
     return result;
   }
+
+  Future<void> add() async {}
+
+  Future<void> delete(UserInfo info) async {}
 }

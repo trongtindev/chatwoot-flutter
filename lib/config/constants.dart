@@ -18,6 +18,14 @@ enum UserRole {
   agent,
   undefined;
 
+  // TODO: make this
+  String get label {
+    switch (this) {
+      default:
+        return name;
+    }
+  }
+
   static UserRole fromName(dynamic name) {
     if (isNullOrEmpty(name)) return UserRole.undefined;
     return UserRole.values
@@ -314,6 +322,16 @@ enum InboxChannelType implements Comparable<InboxChannelType> {
       return CircleAvatar(child: Icon(iconData));
     }
     return CircleAvatar(child: Icon(Icons.inbox_outlined));
+  }
+
+  // TODO: make this completed
+  String get label {
+    switch (this) {
+      case InboxChannelType.telegram:
+        return 'Telegram';
+      default:
+        return name;
+    }
   }
 
   @override

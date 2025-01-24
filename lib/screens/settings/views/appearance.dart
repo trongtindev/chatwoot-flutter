@@ -37,14 +37,14 @@ class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
             onTap: controller.changeMode,
           );
         }),
-        Obx(() {
-          return SwitchListTile(
-            value: theme.colours.value,
-            title: Text(t.appearance_colours),
-            subtitle: Text(t.appearance_colours_subtitle),
-            onChanged: (next) => theme.colours.value = next,
-          );
-        }),
+        // Obx(() {
+        //   return SwitchListTile(
+        //     value: theme.colours.value,
+        //     title: Text(t.appearance_colours),
+        //     subtitle: Text(t.appearance_colours_subtitle),
+        //     onChanged: (next) => theme.colours.value = next,
+        //   );
+        // }),
         Obx(() {
           var activeColor = theme.color.value;
           return Column(

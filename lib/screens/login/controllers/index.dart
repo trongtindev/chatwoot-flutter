@@ -19,7 +19,22 @@ class LoginController extends GetxController {
   void onReady() {
     super.onReady();
 
+    email.text = prefs.getString('login:email') ?? '';
+    email.addListener(_onEmailChanged);
+
+    // do logout
     if (logout != null && logout!) _auth.logout();
+  }
+
+  @override
+  void onClose() {
+    email.removeListener(_onEmailChanged);
+
+    super.onClose();
+  }
+
+  void _onEmailChanged() {
+    prefs.setString('login:email', email.text);
   }
 
   void toggleVisiblePassword() {
@@ -32,11 +47,11 @@ class LoginController extends GetxController {
     _logger.i('submit()');
 
     try {
-      final result = await _api.signIn(
+      final response = await _api.signIn(
         email: email.text,
         password: password.text,
       );
-      final profile = result.getOrThrow();
+      final profile = response.getOrThrow();
 
       _logger.i('Logged in to ${profile.name}#${profile.id}');
       _auth.profile.value = profile;

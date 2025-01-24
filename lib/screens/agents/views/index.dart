@@ -1,8 +1,10 @@
 import '/imports.dart';
 
 class AgentsView extends GetView<AgentsController> {
+  final auth = Get.find<AuthService>();
   final realtime = Get.find<RealtimeService>();
   late final AgentsController c;
+
   AgentsView({super.key}) : c = Get.put(AgentsController());
 
   @override
@@ -39,10 +41,17 @@ class AgentsView extends GetView<AgentsController> {
           }),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: controller.add,
+        label: Text(t.agents_add),
+        icon: Icon(Icons.add_outlined),
+      ),
     );
   }
 
   Widget buildItem(BuildContext context, UserInfo info) {
+    final isAdmin = auth.profile.value!.role == UserRole.administrator;
+
     return CustomListTile(
       leading: Obx(() {
         return avatar(
@@ -53,6 +62,24 @@ class AgentsView extends GetView<AgentsController> {
         );
       }),
       title: Text(info.name),
+      subtitle: Text(info.role.label),
+      trailing: Wrap(
+        children: [
+          if (isAdmin)
+            IconButton.filledTonal(
+              onPressed: () {},
+              icon: Icon(Icons.edit_outlined),
+            ),
+          if (isAdmin)
+            IconButton.filledTonal(
+              onPressed: () => controller.delete(info),
+              icon: Icon(
+                Icons.delete_outline,
+                color: context.theme.colorScheme.error,
+              ),
+            )
+        ],
+      ),
     );
   }
 }

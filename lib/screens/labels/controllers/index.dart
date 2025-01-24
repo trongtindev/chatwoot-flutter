@@ -50,4 +50,6 @@ class LabelsController extends GetxController {
     );
     return result ?? [];
   }
+
+  Future<void> delete(LabelInfo info) async {}
 }

@@ -54,22 +54,23 @@ class CannedResponsesView extends StatelessWidget {
   Widget buildItem(BuildContext context, CannedResponseInfo info) {
     final isAdmin = auth.profile.value!.role == UserRole.administrator;
 
-    return CustomListTile(
+    return ListTile(
+      contentPadding: EdgeInsets.only(left: 16, right: 8),
       title: Text(info.short_code),
       subtitle: Text(
-        info.content,
+        info.content.replaceAll('\n', ' '),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: Wrap(
         children: [
           if (isAdmin)
-            IconButton(
+            IconButton.filledTonal(
               onPressed: () {},
               icon: Icon(Icons.edit_outlined),
             ),
           if (isAdmin)
-            IconButton(
+            IconButton.filledTonal(
               onPressed: () {},
               icon: Icon(
                 Icons.delete_outline,

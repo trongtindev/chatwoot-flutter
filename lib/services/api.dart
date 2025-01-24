@@ -1300,4 +1300,56 @@ class ApiService extends GetxService {
       return error.toFailure();
     }
   }
+
+  Future<Result<bool>> updateAutoOffline({
+    int? account_id,
+    required bool auto_offline,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '${baseUrl.value}/api/${version.value}/profile/auto_offline';
+
+      await _http.post(
+        path,
+        data: {
+          'profile': {
+            'account_id': account_id,
+            'auto_offline': auto_offline,
+          }
+        },
+      );
+
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> updateAvailability({
+    int? account_id,
+    required AvailabilityStatus availability,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '${baseUrl.value}/api/${version.value}/profile/availability';
+
+      await _http.post(
+        path,
+        data: {
+          'profile': {
+            'account_id': account_id,
+            'availability': availability.name,
+          }
+        },
+      );
+
+      return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
 }

@@ -41,7 +41,7 @@ class InboxesView extends GetView<InboxesController> {
             ],
           ),
           floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {},
+            onPressed: () => openInAppBrowser('settings/inboxes/new'),
             label: Text(t.inboxes_add),
             icon: Icon(Icons.add_outlined),
           ),
@@ -51,7 +51,7 @@ class InboxesView extends GetView<InboxesController> {
   }
 
   Widget buildItem(BuildContext context, InboxInfo info) {
-    return ListTile(
+    return CustomListTile(
       leading: isNullOrEmpty(info.avatar_url)
           ? info.channel_type.icon
           : avatar(
@@ -60,8 +60,9 @@ class InboxesView extends GetView<InboxesController> {
               fallback: info.name.substring(0, 1),
             ),
       title: Text(info.name),
-      subtitle: Text(info.channel_type.name),
+      subtitle: Text(info.channel_type.label),
       trailing: Icon(Icons.open_in_browser_outlined),
+      onTap: () => openInAppBrowser('settings/inboxes/${info.id}'),
     );
   }
 }
