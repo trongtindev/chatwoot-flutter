@@ -1,54 +1,50 @@
 import '/imports.dart';
 
-class MacrosView extends GetView<MacrosController> {
+class MacrosView extends StatelessWidget {
   final auth = Get.find<AuthService>();
+  final controller = Get.find<MacrosController>();
 
   MacrosView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-      init: MacrosController(),
-      builder: (_) {
-        return Scaffold(
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                pinned: true,
-                expandedHeight: 250.0,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(t.macros_title),
-                  centerTitle: true,
-                  background: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Center(
-                      child: Text(
-                        t.macros_description,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 250.0,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(t.macros_title),
+              centerTitle: true,
+              background: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: Text(
+                    t.macros_description,
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-              Obx(() {
-                final items = controller.items.value;
+            ),
+          ),
+          Obx(() {
+            final items = controller.items.value;
 
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (_, i) => buildItem(context, items[i]),
-                    childCount: items.length,
-                  ),
-                );
-              }),
-            ],
-          ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () => openInAppBrowser('settings/macros/new'),
-            label: Text(t.macros_add),
-            icon: Icon(Icons.add_outlined),
-          ),
-        );
-      },
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (_, i) => buildItem(context, items[i]),
+                childCount: items.length,
+              ),
+            );
+          }),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => openInAppBrowser('settings/macros/new'),
+        label: Text(t.macros_add),
+        icon: Icon(Icons.add_outlined),
+      ),
     );
   }
 

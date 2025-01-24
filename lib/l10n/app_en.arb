@@ -81,6 +81,7 @@
   "contacts_empty_description": "Start adding new contacts by clicking on the button below",
   "contacts_add": "Add contact",
   "settings": "Settings",
+  "settings_notification": "Notification",
   "login_title": "Log in to your account",
   "login_description": "You are connected to {base_url}.",
   "@login_description": {
@@ -233,7 +234,8 @@
   "notification_empty_description": "Once you start receiving notifications, they'll appear here.",
   "notification_no_more": "All notifications loaded",
   "notification_mark_all_read": "Mark all as read",
-  "notification_push": "Push Notifications",
+  "notification_type": "Notification type",
+  "notification_push": "Push Notification",
   "notification_create_push": "A new conversation is created",
   "notification_assignee_push": "A conversation is assigned to you",
   "notification_new_message_push": "You are mentioned in a conversation",

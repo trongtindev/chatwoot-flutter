@@ -2,23 +2,18 @@ import '../controllers/change_password.dart';
 import '/imports.dart';
 
 // TODO: make better UI
-class SettingsChangePasswordView
-    extends GetView<SettingsChangePasswordController> {
-  const SettingsChangePasswordView({super.key});
+class SettingsChangePasswordView extends StatelessWidget {
+  final controller = Get.put(SettingsChangePasswordController());
+  SettingsChangePasswordView({super.key});
 
   @override
   Widget build(context) {
-    return GetBuilder(
-      init: SettingsChangePasswordController(),
-      builder: (controller) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(t.change_password),
-            centerTitle: true,
-          ),
-          body: buildBody(context),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(t.change_password),
+        centerTitle: true,
+      ),
+      body: buildBody(context),
     );
   }
 
@@ -95,15 +90,13 @@ class SettingsChangePasswordView
               ],
             ),
           ),
-          Container(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: primaryButton(
-                block: true,
-                label: t.save_changes,
-                loading: isLoading,
-                onPressed: controller.submit,
-              ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: primaryButton(
+              block: true,
+              label: t.save_changes,
+              loading: isLoading,
+              onPressed: controller.submit,
             ),
           ),
         ],

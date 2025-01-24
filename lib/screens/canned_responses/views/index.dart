@@ -1,10 +1,11 @@
 import '/imports.dart';
 
 class CannedResponsesView extends StatelessWidget {
-  final CannedResponsesController c;
   final auth = Get.find<AuthService>();
 
-  CannedResponsesView({super.key}) : c = Get.find<CannedResponsesController>();
+  final CannedResponsesController controller;
+  CannedResponsesView({super.key})
+      : controller = Get.find<CannedResponsesController>();
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class CannedResponsesView extends StatelessWidget {
             ),
           ),
           Obx(() {
-            final items = c.items.value;
+            final items = controller.items.value;
 
             return SliverList(
               delegate: SliverChildBuilderDelegate(

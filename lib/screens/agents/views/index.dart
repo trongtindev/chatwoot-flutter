@@ -1,11 +1,11 @@
 import '/imports.dart';
 
-class AgentsView extends GetView<AgentsController> {
+class AgentsView extends StatelessWidget {
   final auth = Get.find<AuthService>();
   final realtime = Get.find<RealtimeService>();
-  late final AgentsController c;
 
-  AgentsView({super.key}) : c = Get.put(AgentsController());
+  final AgentsController controller;
+  AgentsView({super.key}) : controller = Get.put(AgentsController());
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class AgentsView extends GetView<AgentsController> {
             ),
           ),
           Obx(() {
-            final items = c.items.value;
+            final items = controller.items.value;
 
             return SliverList(
               delegate: SliverChildBuilderDelegate(

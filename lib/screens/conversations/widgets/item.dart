@@ -40,7 +40,7 @@ class ConversationItem extends StatelessWidget {
                 url: info.meta.sender.thumbnail,
                 fallback: info.meta.sender.name.substring(0, 1),
                 isOnline: realtime.online.contains(info.meta.sender.id),
-                isTyping: realtime.typingUsers.contains(info.meta.sender.id),
+                isTyping: realtime.typing.contains(info.meta.sender.id),
               );
             }),
       title: Row(

@@ -1,5 +1,4 @@
 import '../widgets/filter.dart';
-import '/screens/conversations/views/chat.dart';
 import '/imports.dart';
 
 class ConversationsController extends GetxController {
@@ -173,11 +172,9 @@ class ConversationsController extends GetxController {
       items.refresh();
     }
 
-    Get.to(
-      () => ConversationChatView(
-        conversation_id: info.id,
-        initial_message: info.last_non_activity_message,
-      ),
+    toConversationChat(
+      info.id,
+      last_non_activity_message: info.last_non_activity_message,
     );
   }
 

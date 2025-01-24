@@ -1,9 +1,9 @@
 import '../controllers/index.dart';
 import '/imports.dart';
 
-class AuditLogsView extends GetView<AuditLogsController> {
-  late final AuditLogsController c;
-  AuditLogsView({super.key}) : c = Get.put(AuditLogsController());
+class AuditLogsView extends StatelessWidget {
+  final AuditLogsController controller;
+  AuditLogsView({super.key}) : controller = Get.put(AuditLogsController());
 
   @override
   Widget build(BuildContext context) {

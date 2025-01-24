@@ -34,6 +34,7 @@ export 'package:permission_handler/permission_handler.dart' show Permission;
 export 'package:file_picker/file_picker.dart' show PlatformFile;
 export 'package:flutter_inappwebview/flutter_inappwebview.dart'
     show CookieManager, WebUri, HTTPCookieSameSitePolicy;
+export 'package:url_launcher/url_launcher.dart';
 
 export 'dart:io' show File, Platform;
 export 'dart:async';

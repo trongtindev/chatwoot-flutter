@@ -2,15 +2,14 @@ import '/imports.dart';
 
 class CustomAttributesController extends GetxController
     with GetSingleTickerProviderStateMixin {
-  late TabController tabController;
-
-  CustomAttributesController() {
-    tabController = TabController(length: 2, vsync: this);
-  }
-
   final _logger = Logger();
   final _api = Get.find<ApiService>();
   final _auth = Get.find<AuthService>();
+
+  late TabController tabController;
+  CustomAttributesController() {
+    tabController = TabController(length: 2, vsync: this);
+  }
 
   final items = RxList<CustomAttribute>();
 

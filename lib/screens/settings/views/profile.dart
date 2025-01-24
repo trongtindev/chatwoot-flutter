@@ -2,22 +2,18 @@ import '/imports.dart';
 import '../controllers/profile.dart';
 
 // TODO: make better UI
-class SettingsProfileView extends GetView<SettingsProfileController> {
-  const SettingsProfileView({super.key});
+class SettingsProfileView extends StatelessWidget {
+  final controller = Get.put(SettingsProfileController());
+  SettingsProfileView({super.key});
 
   @override
   Widget build(context) {
-    return GetBuilder(
-      init: SettingsProfileController(),
-      builder: (controller) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(t.profile),
-            centerTitle: true,
-          ),
-          body: buildBody(context),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(t.profile),
+        centerTitle: true,
+      ),
+      body: buildBody(context),
     );
   }
 
@@ -129,19 +125,17 @@ class SettingsProfileView extends GetView<SettingsProfileController> {
               ],
             ),
           ),
-          Container(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Obx(() {
-                final isLoading = controller.isLoading.value;
-                return primaryButton(
-                  block: true,
-                  label: t.save_changes,
-                  loading: isLoading,
-                  onPressed: controller.submit,
-                );
-              }),
-            ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Obx(() {
+              final isLoading = controller.isLoading.value;
+              return primaryButton(
+                block: true,
+                label: t.save_changes,
+                loading: isLoading,
+                onPressed: controller.submit,
+              );
+            }),
           ),
         ],
       );

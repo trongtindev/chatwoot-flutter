@@ -3,6 +3,7 @@ import '/imports.dart';
 
 const CHANNEL_NAME = 'RoomChannel';
 const PRESENCE_INTERVAL = 20000;
+const RECONNECT_INTERVAL = Duration(seconds: 5);
 
 enum RealtimeEventId {
   contactCreated,
@@ -22,7 +23,7 @@ class RealtimeService extends GetxService {
 
   final events = EventEmitter();
   final online = RxList<int>();
-  final typingUsers = RxList<int>();
+  final typing = RxList<int>();
   final connected = false.obs;
 
   // Timer? _updatePresenceTimer;
@@ -111,27 +112,26 @@ class RealtimeService extends GetxService {
         },
         onConnectionLost: () {
           _logger.w('onConnectionLost');
-          connected.value = false;
-          // _updatePresenceTimer?.cancel();
-          Future.delayed(Duration(seconds: 5), () => connect());
+          disconnect(); // ensure disconnected
+          Future.delayed(RECONNECT_INTERVAL, () => connect());
         },
         onCannotConnect: () {
           _logger.w('onCannotConnect');
-          connected.value = false;
-          // _updatePresenceTimer?.cancel();
-          Future.delayed(Duration(seconds: 5), () => connect());
+          disconnect(); // ensure disconnected
+          Future.delayed(RECONNECT_INTERVAL, () => connect());
         },
       );
 
       _logger.i('successful');
-    } catch (error) {
-      _logger.i(error);
-
-      Timer.periodic(Duration(seconds: 1), (_) => connect());
+    } on Error catch (error) {
+      _logger.i(error, stackTrace: error.stackTrace);
+      Timer.periodic(RECONNECT_INTERVAL, (_) => connect());
     }
   }
 
   Future<void> disconnect() async {
+    _logger.i('disconnect');
+    connected.value = false;
     _subscription?.cancel();
     _actionCable?.disconnect();
   }
@@ -268,14 +268,14 @@ class RealtimeService extends GetxService {
 
   Future<void> _onTypingOn(TypingData data) async {
     _logger.d('${data.user.name}#${data.conversation.id}');
-    if (typingUsers.contains(data.user.id)) return;
-    typingUsers.add(data.user.id);
+    if (typing.contains(data.user.id)) return;
+    typing.add(data.user.id);
   }
 
   Future<void> _onTypingOff(TypingData data) async {
     _logger.d('${data.user.name}#${data.conversation.id}');
-    if (!typingUsers.contains(data.user.id)) return;
-    typingUsers.remove(data.user.id);
+    if (!typing.contains(data.user.id)) return;
+    typing.remove(data.user.id);
   }
 
   Future<void> _onConversationCreated(ConversationInfo info) async {

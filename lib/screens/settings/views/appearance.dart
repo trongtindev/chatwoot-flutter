@@ -1,82 +1,80 @@
 import '/imports.dart';
 import '../controllers/appearance.dart';
 
-class SettingsAppearanceView extends GetView<SettingsAppearanceController> {
+class SettingsAppearanceView extends StatelessWidget {
   final theme = Get.find<ThemeService>();
+  final controller = Get.put(SettingsAppearanceController());
 
   SettingsAppearanceView({super.key});
 
   @override
   Widget build(context) {
-    return GetBuilder(
-      init: SettingsAppearanceController(),
-      builder: (_) {
-        if (GetPlatform.isDesktop) {
-          return buildBody(context);
-        }
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(t.appearance),
-            centerTitle: true,
-          ),
-          body: buildBody(context),
-        );
-      },
+    // if (GetPlatform.isDesktop) {
+    //   return buildBody(context);
+    // }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(t.appearance),
+        centerTitle: true,
+      ),
+      body: buildMobile(context),
     );
   }
 
-  Widget buildBody(
+  Widget buildMobile(
     BuildContext context,
   ) {
-    return ListView(
-      children: [
-        Obx(() {
-          return ListTile(
-            title: Text(t.appearance_mode),
-            subtitle: Text(theme.mode.value.label),
-            onTap: controller.changeMode,
-          );
-        }),
-        // Obx(() {
-        //   return SwitchListTile(
-        //     value: theme.colours.value,
-        //     title: Text(t.appearance_colours),
-        //     subtitle: Text(t.appearance_colours_subtitle),
-        //     onChanged: (next) => theme.colours.value = next,
-        //   );
-        // }),
-        Obx(() {
-          var activeColor = theme.color.value;
-          return Column(
-            children: [
-              ListTile(
-                title: Text(t.appearance_color),
-                subtitle: Text(activeColor.toHexTriplet()),
-              ),
-              SizedBox(
-                height: 100,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.only(right: 16),
-                  itemCount: colors.length,
-                  itemBuilder: (ctx, i) {
-                    var color = colors[i];
-                    var active = activeColor.compareTo(color);
-                    return Padding(
-                      padding: EdgeInsets.only(left: 16),
-                      child: buildColorItem(
-                        context,
-                        color: color,
-                        active: active,
-                      ),
-                    );
-                  },
+    return Scaffold(
+      body: ListView(
+        children: [
+          Obx(() {
+            return ListTile(
+              title: Text(t.appearance_mode),
+              subtitle: Text(theme.mode.value.label),
+              onTap: controller.changeMode,
+            );
+          }),
+          // Obx(() {
+          //   return SwitchListTile(
+          //     value: theme.colours.value,
+          //     title: Text(t.appearance_colours),
+          //     subtitle: Text(t.appearance_colours_subtitle),
+          //     onChanged: (next) => theme.colours.value = next,
+          //   );
+          // }),
+          Obx(() {
+            var activeColor = theme.color.value;
+            return Column(
+              children: [
+                ListTile(
+                  title: Text(t.appearance_color),
+                  subtitle: Text(activeColor.toHexTriplet()),
                 ),
-              ),
-            ],
-          );
-        }),
-      ],
+                SizedBox(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.only(right: 16),
+                    itemCount: colors.length,
+                    itemBuilder: (ctx, i) {
+                      var color = colors[i];
+                      var active = activeColor.compareTo(color);
+                      return Padding(
+                        padding: EdgeInsets.only(left: 16),
+                        child: buildColorItem(
+                          context,
+                          color: color,
+                          active: active,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
     );
   }
 

@@ -1,5 +1,3 @@
-import 'package:url_launcher/url_launcher.dart';
-
 import '../../conversations/widgets/item.dart';
 import '/screens/contacts/controllers/detail.dart';
 import '/imports.dart';
@@ -7,21 +5,22 @@ import '/imports.dart';
 class ContactDetailView extends StatelessWidget {
   final labels = Get.find<LabelsController>();
   final realtime = Get.find<RealtimeService>();
-  final attributeService = Get.find<CustomAttributesController>();
+  final customAttributes = Get.find<CustomAttributesController>();
 
-  final ContactDetailController c;
-  final int id;
-
+  final ContactDetailController controller;
   ContactDetailView({
     super.key,
-    required this.id,
+    required int id,
     ContactInfo? initial,
-  }) : c = Get.put(ContactDetailController(id, initial: initial), tag: '$id');
+  }) : controller = Get.putOrFind(
+          () => ContactDetailController(id, initial: initial),
+          tag: '$id',
+        );
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final info = c.info.value;
+      final info = controller.info.value;
       if (info == null) {
         return Scaffold(
           appBar: AppBar(),
@@ -89,7 +88,7 @@ class ContactDetailView extends StatelessWidget {
   }
 
   Widget buildActions() {
-    final info = c.info.value;
+    final info = controller.info.value;
 
     return Padding(
       padding: const EdgeInsets.all(4.0),
@@ -132,18 +131,15 @@ class ContactDetailView extends StatelessWidget {
   }) {
     return FilledButton.tonal(
       onPressed: onPressed,
-      child: Column(
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 4),
-            child: Icon(iconData),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
-            child: Text(label),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
+        child: Column(
+          spacing: 4,
+          children: [
+            Icon(iconData),
+            Text(label),
+          ],
+        ),
       ),
     );
   }
@@ -189,7 +185,7 @@ class ContactDetailView extends StatelessWidget {
 
   Widget buildLabels(BuildContext context) {
     return Obx(() {
-      final items = c.labels.value;
+      final items = controller.labels.value;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +225,7 @@ class ContactDetailView extends StatelessWidget {
                 Chip(
                   label: Text(t.modify),
                   deleteIcon: Icon(Icons.edit),
-                  onDeleted: c.modifyLabels,
+                  onDeleted: controller.modifyLabels,
                 )
               ],
             ),
@@ -241,7 +237,7 @@ class ContactDetailView extends StatelessWidget {
 
   Widget buildConversations(BuildContext context) {
     return Obx(() {
-      final items = c.conversations.value;
+      final items = controller.conversations.value;
       if (items.isEmpty) return Container();
 
       return Column(
@@ -310,7 +306,7 @@ class ContactDetailView extends StatelessWidget {
         buildLabel(t.custom_attributes),
         Card(
           child: Obx(() {
-            final attributes = attributeService.items.value;
+            final attributes = customAttributes.items.value;
 
             return ListView.builder(
               padding: EdgeInsets.zero,

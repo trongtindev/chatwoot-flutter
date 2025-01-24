@@ -4,30 +4,27 @@ import '/imports.dart';
 import 'change_url.dart';
 import 'forgot_password.dart';
 
-class LoginView extends GetView<LoginController> {
-  final api = Get.find<ApiService>();
+class LoginView extends StatelessWidget {
+  final ApiService api;
+  final LoginController controller;
 
-  final bool? logout;
-  LoginView({super.key, this.logout});
+  LoginView({super.key, bool? logout})
+      : controller = Get.put(LoginController(logout: logout)),
+        api = Get.find<ApiService>();
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-      init: LoginController(logout: logout),
-      builder: (_) {
-        return Scaffold(
-          body: buildBody(
-            header: Obx(() {
-              var base_url = Uri.parse(api.baseUrl.value).host;
-              return buildHeader(
-                title: t.login_title,
-                description: t.login_description(base_url),
-              );
-            }),
-            child: buildForm(),
-          ),
-        );
-      },
+    return Scaffold(
+      body: buildBody(
+        header: Obx(() {
+          final base_url = Uri.parse(api.baseUrl.value).host;
+          return buildHeader(
+            title: t.login_title,
+            description: t.login_description(base_url),
+          );
+        }),
+        child: buildForm(),
+      ),
     );
   }
 

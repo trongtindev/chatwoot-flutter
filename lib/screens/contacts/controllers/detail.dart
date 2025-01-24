@@ -6,10 +6,10 @@ class ContactDetailController extends GetxController {
   final _api = Get.find<ApiService>();
   final _realtime = Get.find<RealtimeService>();
 
-  final int id;
+  final int contact_id;
 
   ContactDetailController(
-    this.id, {
+    this.contact_id, {
     ContactInfo? initial,
   }) : info = Rxn<ContactInfo>(initial);
 
@@ -41,7 +41,7 @@ class ContactDetailController extends GetxController {
   Future<void> getContact() async {
     try {
       final result = await _api.getContact(
-        contact_id: id,
+        contact_id: contact_id,
         onCacheHit: (data) => info.value = data,
       );
       final data = result.getOrThrow();
@@ -58,7 +58,7 @@ class ContactDetailController extends GetxController {
   Future<void> getLabels() async {
     try {
       final result = await _api.getContactLabels(
-        contact_id: id,
+        contact_id: contact_id,
         onCacheHit: (data) => labels.value = data,
       );
       final data = result.getOrThrow();
@@ -75,7 +75,7 @@ class ContactDetailController extends GetxController {
   Future<void> getConversations() async {
     try {
       final result = await _api.getContactConversations(
-        contact_id: id,
+        contact_id: contact_id,
         onCacheHit: (data) => conversations.value = data,
       );
       final data = result.getOrThrow();
@@ -94,7 +94,7 @@ class ContactDetailController extends GetxController {
     if (items.isEmpty) return;
     labels.value = items.map((e) => e.title).toList();
     await _api.updateContactLabels(
-      contact_id: id,
+      contact_id: contact_id,
       labels: items.map((e) => e.title).toList(),
     );
   }

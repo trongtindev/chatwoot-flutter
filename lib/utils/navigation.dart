@@ -1,4 +1,5 @@
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../screens/conversations/views/chat.dart';
 import '/screens/browser/views/index.dart';
 import '../imports.dart';
 
@@ -18,4 +19,16 @@ Future<void> openInAppBrowser(String path) async {
 Future<void> openInExternalBrowser(String url) async {
   final webUri = WebUri.uri(Uri.parse(url));
   ChromeSafariBrowser().open(url: webUri);
+}
+
+void toConversationChat(
+  int conversation_id, {
+  MessageInfo? last_non_activity_message,
+}) {
+  Get.to(
+    () => ConversationChatView(
+      conversation_id: conversation_id,
+      initial_message: last_non_activity_message,
+    ),
+  );
 }

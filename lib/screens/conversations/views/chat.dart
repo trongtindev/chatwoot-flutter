@@ -14,8 +14,8 @@ class ConversationChatView extends StatelessWidget {
     super.key,
     required this.conversation_id,
     MessageInfo? initial_message,
-  }) : c = Get.put(
-          ConversationChatController(
+  }) : c = Get.putOrFind(
+          () => ConversationChatController(
             conversation_id: conversation_id,
             initial_message: initial_message,
           ),
@@ -30,7 +30,7 @@ class ConversationChatView extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(
           title: Obx(() {
-            final typingUsers = realtimeService.typingUsers.value;
+            final typing = realtimeService.typing.value;
 
             if (info != null) {
               return ListTile(
@@ -42,7 +42,7 @@ class ConversationChatView extends StatelessWidget {
                   fallback: info.meta.sender.name.substring(0, 1),
                   isOnline:
                       realtimeService.online.contains(info.meta.sender.id),
-                  isTyping: typingUsers.contains(info.meta.sender.id),
+                  isTyping: typing.contains(info.meta.sender.id),
                 ),
                 title: Text(
                   info.meta.sender.name,

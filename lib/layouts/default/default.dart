@@ -33,8 +33,9 @@ class DefaultLayoutController extends GetxController
   }
 }
 
-class DefaultLayout extends GetView<DefaultLayoutController> {
+class DefaultLayout extends StatelessWidget {
   final theme = Get.find<ThemeService>();
+  final controller = Get.put(DefaultLayoutController());
   final conversations = Get.find<ConversationsController>();
   final notifications = Get.find<NotificationsController>();
 
@@ -42,15 +43,10 @@ class DefaultLayout extends GetView<DefaultLayoutController> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-      init: DefaultLayoutController(),
-      builder: (_) {
-        if (GetPlatform.isDesktop) {
-          return buildDesktop(context);
-        }
-        return buildMobile(context);
-      },
-    );
+    if (GetPlatform.isDesktop) {
+      return buildDesktop(context);
+    }
+    return buildMobile(context);
   }
 
   Widget buildMobile(BuildContext context) {

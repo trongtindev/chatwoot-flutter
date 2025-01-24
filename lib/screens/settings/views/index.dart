@@ -1,5 +1,6 @@
-import '../widgets/change_language.dart';
 import '/imports.dart';
+import '/screens/settings/views/notification.dart';
+import '../widgets/change_language.dart';
 import '../../agents/views/index.dart';
 import '../../audit_logs/views/index.dart';
 import '../../custom_attributes/views/index.dart';
@@ -31,14 +32,15 @@ class SettingTab {
   });
 }
 
-class SettingsView extends GetView<SettingsController> {
-  final authService = Get.find<AuthService>();
+class SettingsView extends StatelessWidget {
+  final controller = Get.put(SettingsController());
+  final auth = Get.find<AuthService>();
 
   SettingsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = authService.profile.value!.role == UserRole.administrator;
+    final isAdmin = auth.profile.value!.role == UserRole.administrator;
     final items = [
       [
         SettingTab(
@@ -126,7 +128,8 @@ class SettingsView extends GetView<SettingsController> {
         SettingTab(
           iconData: Icons.notifications_outlined,
           title: t.notifications,
-          page: () => SettingsProfileView(),
+          internalUrl: 'profile/settings',
+          // page: () => SettingsNotificationView(),
         ),
         SettingTab(
           iconData: Icons.format_paint_outlined,
@@ -148,116 +151,106 @@ class SettingsView extends GetView<SettingsController> {
       ]
     ];
 
-    return GetBuilder(
-      init: SettingsController(),
-      builder: (_) {
-        if (GetPlatform.isDesktop) {
-          return buildDesktop(items.expand((e) => e).toList());
-        }
-        return buildMobile(context, items);
-      },
-    );
+    if (GetPlatform.isDesktop) {
+      return buildDesktop(items.expand((e) => e).toList());
+    }
+    return buildMobile(context, items);
   }
 
   Widget buildMobile(BuildContext context, List<List<SettingTab>> items) {
-    return GetBuilder(
-      init: SettingsController(),
-      builder: (_) {
-        final profile = authService.profile.value;
-        if (profile == null) return Scaffold();
+    final profile = auth.profile.value;
+    if (profile == null) return Scaffold();
 
-        return Scaffold(
-          body: NestedScrollView(
-            floatHeaderSlivers: true,
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  pinned: true,
-                  floating: true,
-                  expandedHeight: 250.0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    title: Padding(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: Text(
-                        profile.display_name,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    centerTitle: true,
-                    background: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Center(
-                        child: avatar(
-                          context,
-                          url: profile.avatar_url,
-                          size: 96,
-                        ),
-                      ),
+    return Scaffold(
+      body: NestedScrollView(
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              pinned: true,
+              floating: true,
+              expandedHeight: 250.0,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: Text(
+                    profile.display_name,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                centerTitle: true,
+                background: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: avatar(
+                      context,
+                      url: profile.avatar_url,
+                      size: 96,
                     ),
                   ),
                 ),
-              ];
-            },
-            body: ListView(
-              padding: EdgeInsets.all(4),
+              ),
+            ),
+          ];
+        },
+        body: ListView(
+          padding: EdgeInsets.all(4),
+          children: [
+            Column(
               children: [
-                Column(
-                  children: [
-                    warningButton(
-                      label: t.logout,
-                      appendIcon: Icon(Icons.logout_outlined),
-                      onPressed: controller.logout,
-                    ),
-                    ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: items.length,
-                      itemBuilder: (_, i) {
-                        return Card(
-                          child: ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: items[i].length,
-                            itemBuilder: (_, j) {
-                              var item = items[i][j];
-                              var trailingIcon = Icons.chevron_right;
+                warningButton(
+                  label: t.logout,
+                  appendIcon: Icon(Icons.logout_outlined),
+                  onPressed: controller.logout,
+                ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: items.length,
+                  itemBuilder: (_, i) {
+                    return Card(
+                      child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: items[i].length,
+                        itemBuilder: (_, j) {
+                          var item = items[i][j];
+                          var trailingIcon = Icons.chevron_right;
 
-                              if (item.internalUrl != null) {
-                                trailingIcon = Icons.open_in_browser;
+                          if (item.internalUrl != null) {
+                            trailingIcon = Icons.open_in_browser;
+                          } else if (item.externalUrl != null) {
+                            trailingIcon = Icons.open_in_new;
+                          }
+
+                          return CustomListTile(
+                            leading: Icon(item.iconData),
+                            title: Text(item.title),
+                            trailing: Icon(trailingIcon),
+                            onTap: () {
+                              if (item.onTap != null) {
+                                item.onTap!();
+                              } else if (item.page != null) {
+                                Get.to(item.page!);
+                              } else if (item.internalUrl != null) {
+                                openInAppBrowser(item.internalUrl!);
                               } else if (item.externalUrl != null) {
-                                trailingIcon = Icons.open_in_new;
+                                openInAppBrowser(item.externalUrl!);
                               }
-
-                              return CustomListTile(
-                                leading: Icon(item.iconData),
-                                title: Text(item.title),
-                                trailing: Icon(trailingIcon),
-                                onTap: () {
-                                  if (item.onTap != null) {
-                                    item.onTap!();
-                                  } else if (item.page != null) {
-                                    Get.to(item.page!);
-                                  } else if (item.internalUrl != null) {
-                                    openInAppBrowser(item.internalUrl!);
-                                  } else if (item.externalUrl != null) {
-                                    openInAppBrowser(item.externalUrl!);
-                                  }
-                                },
-                              );
                             },
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 

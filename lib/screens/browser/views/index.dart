@@ -4,11 +4,13 @@ import '/imports.dart';
 
 class BrowserView extends StatelessWidget {
   final BrowserController controller;
-
   BrowserView({
     super.key,
     required String url,
-  }) : controller = Get.put(BrowserController(initialUrl: url), tag: url);
+  }) : controller = Get.put(
+          BrowserController(initialUrl: url),
+          tag: url,
+        );
 
   @override
   Widget build(BuildContext context) {

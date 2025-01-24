@@ -5,6 +5,7 @@ class AgentsController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
   final _auth = Get.find<AuthService>();
+
   final items = RxList<UserInfo>();
 
   @override
