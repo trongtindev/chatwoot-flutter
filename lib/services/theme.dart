@@ -14,7 +14,6 @@ class ThemeService extends GetxService {
   final activeMode = ThemeMode.auto.obs;
   final color = PersistentRxColor(Colors.blue, key: 'theme:color');
   final contrast = PersistentRxDouble(0.0, key: 'theme:contrast');
-  final colours = PersistentRxBool(false, key: 'theme:colours');
 
   Timer? _timer;
 

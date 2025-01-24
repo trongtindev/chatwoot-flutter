@@ -10,13 +10,11 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
 
   @override
   Widget build(BuildContext context) {
-    final width = double.infinity; // TODO: responsive
     final baseUrl = Uri.parse(api.baseUrl.value).host;
 
     return Scaffold(
       appBar: AppBar(),
       body: buildBody(
-        width: width,
         header: buildHeader(
           title: t.forgot_password_title,
           description: t.forgot_password_description(baseUrl),

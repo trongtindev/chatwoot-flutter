@@ -1,10 +1,10 @@
 import '/imports.dart';
 
 Widget buildBody({
-  required double width,
   required Widget header,
   required Widget child,
 }) {
+  final width = GetPlatform.isMobile ? double.infinity : 400.0;
   return Center(
     child: SingleChildScrollView(
       child: Padding(

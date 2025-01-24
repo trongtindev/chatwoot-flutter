@@ -12,14 +12,11 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    final width = double.infinity; // TODO: responsive
-
     return GetBuilder(
       init: LoginController(logout: logout),
       builder: (_) {
         return Scaffold(
           body: buildBody(
-            width: width,
             header: Obx(() {
               var base_url = Uri.parse(api.baseUrl.value).host;
               return buildHeader(

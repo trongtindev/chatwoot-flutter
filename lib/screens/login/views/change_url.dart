@@ -8,13 +8,11 @@ class ChangeUrlView extends GetView<ChangeUrlController> {
 
   @override
   Widget build(BuildContext context) {
-    final width = double.infinity; // TODO: responsive
     final url = Uri.parse(env.API_URL).host;
 
     return Scaffold(
       appBar: AppBar(),
       body: buildBody(
-        width: width,
         header: buildHeader(
           title: t.change_url_title,
           description: t.change_url_description(url),

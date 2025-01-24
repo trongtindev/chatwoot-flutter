@@ -86,12 +86,14 @@ class NotificationService extends GetxService {
       saveDeviceDetails();
     });
 
-    _tokenRefreshSubscription = _firebaseMessaging.onTokenRefresh.listen(
-      (next) => token.value = next,
-      onError: (error, stackTrace) {
-        _logger.e(error, stackTrace: stackTrace);
-      },
-    );
+    if (!GetPlatform.isDesktop) {
+      _tokenRefreshSubscription = _firebaseMessaging.onTokenRefresh.listen(
+        (next) => token.value = next,
+        onError: (error, stackTrace) {
+          _logger.e(error, stackTrace: stackTrace);
+        },
+      );
+    }
 
     _onMessageSubscription =
         FirebaseMessaging.onMessageOpenedApp.listen(_onMessage);
@@ -124,9 +126,11 @@ class NotificationService extends GetxService {
       onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
     );
 
-    _initialMessage = await _firebaseMessaging.getInitialMessage();
-    if (_initialMessage != null) {
-      _logger.i('getInitialMessage: ${jsonEncode(_initialMessage!.toMap())}');
+    if (!GetPlatform.isDesktop) {
+      _initialMessage = await _firebaseMessaging.getInitialMessage();
+      if (_initialMessage != null) {
+        _logger.i('getInitialMessage: ${jsonEncode(_initialMessage!.toMap())}');
+      }
     }
 
     return this;
@@ -223,6 +227,10 @@ class NotificationService extends GetxService {
   }
 
   Future<void> _ensurePermission() async {
+    if (GetPlatform.isDesktop) {
+      _logger.d('requestPermission ignored when isDesktop');
+      return;
+    }
     _logger.d('requestPermission');
 
     final notificationSettings =
