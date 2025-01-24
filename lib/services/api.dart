@@ -1,5 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:universal_io/io.dart' show Cookie, SameSite;
 import '/imports.dart';
 
 class ApiService extends GetxService {
@@ -10,6 +11,7 @@ class ApiService extends GetxService {
   late DeviceInfoPlugin _deviceInfoPlugin;
   late AndroidDeviceInfo _androidDeviceInfo;
   late IosDeviceInfo _iosDeviceInfo;
+  final _cookieManager = CookieManager.instance();
 
   final baseUrl = PersistentRxString(env.API_URL, key: 'api:baseUrl');
   final version = PersistentRxString(env.API_VERSION, key: 'api:version');
@@ -107,18 +109,18 @@ class ApiService extends GetxService {
     }
 
     _http = Dio();
+
     _http.options.headers = {
       'content-type': 'application/json',
       'x-app-version': _packageInfo.version,
     };
     _http.options.baseUrl = getBaseUrl;
     _http.options.connectTimeout = Duration(seconds: env.API_TIMEOUT);
+
     _http.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) => _onRequest(options, handler),
-        onResponse: (response, handler) {
-          return handler.next(response);
-        },
+        onResponse: (response, handler) => _onResponse(response, handler),
         onError: (error, handler) {
           _logger.w(
               '[${error.requestOptions.method}] ${error.requestOptions.uri}');
@@ -135,19 +137,71 @@ class ApiService extends GetxService {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    _logger.t('[${options.method}] ${options.uri}');
+    try {
+      _logger.t('[${options.method}] ${options.uri}');
 
-    // inject user-agent
-    options.headers['user-agent'] =
-        '${_packageInfo.appName}/${_packageInfo.version}';
+      // inject cookie
+      final cookies = await _cookieManager.getCookies(
+        url: WebUri.uri(options.uri),
+      );
 
-    // inject authorization
-    final profile = _getAuth.profile.value;
-    if (options.uri.toString().contains('/api/') && profile != null) {
-      options.headers['api_access_token'] = profile.access_token;
+      final flatCookie = cookies.map((e) => '${e.name}=${e.value}').join(';');
+      _logger.t('flatCookie:$flatCookie');
+      options.headers['cookie'] = flatCookie;
+
+      // inject user-agent
+      options.headers['user-agent'] =
+          '${_packageInfo.appName}/${_packageInfo.version}';
+
+      // inject authorization
+      final profile = _getAuth.profile.value;
+      if (options.uri.toString().contains('/api/') && profile != null) {
+        options.headers['api_access_token'] = profile.access_token;
+      }
+    } on Error catch (error) {
+      _logger.e(error, stackTrace: error.stackTrace);
     }
 
     return handler.next(options);
+  }
+
+  Future<void> _onResponse(
+    Response<dynamic> response,
+    ResponseInterceptorHandler handler,
+  ) async {
+    try {
+      final setCookies = response.headers['set-cookie'] ?? [];
+      final cookies = setCookies.map(Cookie.fromSetCookieValue).toList();
+
+      for (final cookie in cookies) {
+        _logger.t('set-cookie ${cookie.name}=${cookie.value}');
+
+        await _cookieManager.setCookie(
+          url: WebUri.uri(response.requestOptions.uri),
+          name: cookie.name,
+          value: cookie.value,
+          sameSite: (() {
+            switch (cookie.sameSite) {
+              case SameSite.lax:
+                return HTTPCookieSameSitePolicy.LAX;
+              case SameSite.strict:
+                return HTTPCookieSameSitePolicy.STRICT;
+              default:
+                return HTTPCookieSameSitePolicy.NONE;
+            }
+          })(),
+          isSecure: cookie.secure,
+          expiresDate: cookie.expires?.millisecondsSinceEpoch,
+          domain: cookie.domain,
+          maxAge: cookie.maxAge,
+          isHttpOnly: cookie.httpOnly,
+        );
+      }
+    } on Error catch (error) {
+      _logger.e(error, stackTrace: error.stackTrace);
+    }
+
+    return handler.next(response);
   }
 
   Future<Result<ApiInfo>> getInfo({String? baseUrl}) async {
@@ -165,14 +219,25 @@ class ApiService extends GetxService {
     required String email,
     required String password,
     String? sso_auth_token,
+    String? ssoAccountId,
+    String? ssoConversationId,
   }) async {
     try {
-      final result = await _http.post('${baseUrl.value}/auth/sign_in', data: {
+      final response = await _http.post('${baseUrl.value}/auth/sign_in', data: {
         'email': email,
         'password': password,
         'sso_auth_token': sso_auth_token,
+        'ssoAccountId': ssoAccountId,
+        'ssoConversationId': ssoConversationId,
       });
-      return ProfileInfo.fromJson(result.data['data']).toSuccess();
+
+      await _cookieManager.setCookie(
+        url: WebUri.uri(response.requestOptions.uri),
+        name: 'cw_d_session_info',
+        value: Uri.encodeComponent(jsonEncode(response.headers.map)),
+      );
+
+      return ProfileInfo.fromJson(response.data['data']).toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {

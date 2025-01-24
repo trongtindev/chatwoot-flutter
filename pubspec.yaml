@@ -1,6 +1,6 @@
 name: chatwoot
-description: 'Cross-Platform app for chatwoot.'
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+description: "Cross-Platform app for chatwoot."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 4.0.0+1
 
 environment:
@@ -16,6 +16,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   path_provider: any
+  universal_io: any
 
   shared_preferences: ^2.3.5
   dio: ^5.7.0 # A powerful HTTP networking package for Dart/Flutter
@@ -74,8 +75,8 @@ flutter:
     - assets/images/empty/
 
 flutter_native_splash:
-  color: '#F8F9FF'
-  color_dark: '#111418'
+  color: "#F8F9FF"
+  color_dark: "#111418"
   image: assets/images/splash.png
   android_12:
     image: assets/images/adaptive-icon.png

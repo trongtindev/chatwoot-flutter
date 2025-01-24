@@ -215,7 +215,7 @@ class Message extends StatelessWidget {
         selectable: true,
         onTapLink: (text, href, title) {
           if (href == null || href.isEmpty) return;
-          openBrowser(href);
+          openInAppBrowser(href);
         },
       ),
     );

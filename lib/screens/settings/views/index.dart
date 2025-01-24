@@ -233,9 +233,9 @@ class SettingsView extends GetView<SettingsController> {
                                   if (item.page != null) {
                                     Get.to(item.page!);
                                   } else if (item.internalUrl != null) {
-                                    openInternalBrowser(item.internalUrl!);
+                                    openInAppBrowser(item.internalUrl!);
                                   } else if (item.externalUrl != null) {
-                                    openBrowser(item.externalUrl!);
+                                    openInAppBrowser(item.externalUrl!);
                                   }
                                 },
                               );

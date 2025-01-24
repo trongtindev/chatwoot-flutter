@@ -32,6 +32,8 @@ export 'package:path_provider/path_provider.dart';
 export 'package:flutter_gen/gen_l10n/app_localizations.dart';
 export 'package:permission_handler/permission_handler.dart' show Permission;
 export 'package:file_picker/file_picker.dart' show PlatformFile;
+export 'package:flutter_inappwebview/flutter_inappwebview.dart'
+    show CookieManager, WebUri, HTTPCookieSameSitePolicy;
 
 export 'dart:io' show File, Platform;
 export 'dart:async';
@@ -77,13 +79,13 @@ export 'services/settings.dart';
 export 'services/theme.dart';
 export 'services/updater.dart';
 
-export 'utils/browser.dart';
 export 'utils/bytes.dart';
 export 'utils/common.dart';
 export 'utils/duration.dart';
 export 'utils/file.dart';
 export 'utils/internationalization.dart';
 export 'utils/logger.dart';
+export 'utils/navigation.dart';
 export 'utils/permision.dart';
 export 'utils/persistent_rx.dart';
 export 'utils/random.dart';
