@@ -125,6 +125,7 @@ class ApiService extends GetxService {
           _logger.w(
               '[${error.requestOptions.method}] ${error.requestOptions.uri}');
           _logger.w(error, stackTrace: error.stackTrace);
+
           return handler.next(error);
         },
       ),
@@ -1346,6 +1347,59 @@ class ApiService extends GetxService {
       );
 
       return true.toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<LabelInfo>> createLabel({
+    int? account_id,
+    required String title,
+    required String description,
+    required String color,
+    required bool show_on_sidebar,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/labels';
+
+      final response = await _http.post(path, data: {
+        'title': title,
+        'description': description,
+        'color': color,
+        'show_on_sidebar': show_on_sidebar,
+      });
+
+      return LabelInfo.fromJson(response.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<LabelInfo>> updateLabel({
+    int? account_id,
+    required int label_id,
+    required String title,
+    required String description,
+    required String color,
+    required bool show_on_sidebar,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/labels/$label_id';
+
+      final response = await _http.post(path, data: {
+        'title': title,
+        'description': description,
+        'color': color,
+        'show_on_sidebar': show_on_sidebar,
+      });
+
+      return LabelInfo.fromJson(response.data).toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {
