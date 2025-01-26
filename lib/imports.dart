@@ -27,6 +27,7 @@ export 'package:url_launcher/url_launcher_string.dart';
 export 'package:extended_image/extended_image.dart'
     show ExtendedImage, LoadState, ExtendedImageMode;
 export 'package:dio/dio.dart';
+export 'package:dio_http2_adapter/dio_http2_adapter.dart';
 export 'package:logger/logger.dart' show Level;
 export 'package:path_provider/path_provider.dart';
 export 'package:flutter_gen/gen_l10n/app_localizations.dart';

@@ -20,6 +20,7 @@ dependencies:
 
   shared_preferences: ^2.3.5
   dio: ^5.7.0 # A powerful HTTP networking package for Dart/Flutter
+  dio_http2_adapter: ^2.5.3
   logger: ^2.5.0
   refreshed: ^2.10.4 # This is a refreshed version of GetX
   events_emitter: ^0.6.0

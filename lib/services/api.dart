@@ -117,6 +117,7 @@ class ApiService extends GetxService {
     _http.options.baseUrl = getBaseUrl;
     _http.options.connectTimeout = Duration(seconds: env.API_TIMEOUT);
 
+    // capture requests and responses
     _http.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) => _onRequest(options, handler),
@@ -126,8 +127,20 @@ class ApiService extends GetxService {
               '[${error.requestOptions.method}] ${error.requestOptions.uri}');
           _logger.w(error, stackTrace: error.stackTrace);
 
+          // TODO: custom error not work
+          // https://github.com/cfug/dio/issues/1950
+          // return handler.reject(ApiError.fromException(error));
+
           return handler.next(error);
         },
+      ),
+    );
+
+    // supports reusing connections, header compression, etc.
+    _http.httpClientAdapter = Http2Adapter(
+      ConnectionManager(
+        idleTimeout: Duration(seconds: env.API_TIMEOUT),
+        onClientCreate: (_, config) => config.onBadCertificate = (_) => true,
       ),
     );
 
