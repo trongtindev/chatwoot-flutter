@@ -1,6 +1,6 @@
 name: chatwoot
-description: "Cross-Platform app for chatwoot."
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+description: 'Cross-Platform app for chatwoot.'
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 4.0.0+1
 
 environment:
@@ -15,38 +15,38 @@ dependencies:
   intl: any # Provides internationalization and localization facilities
   flutter_localizations:
     sdk: flutter
-  path_provider: any
-  universal_io: any
+  path_provider: any # finding commonly used locations on the filesystem
+  universal_io: any # A cross-platform dart:io that works on all platforms, including browsers.
+  video_player: any # A Flutter plugin for iOS, Android and Web for playing back video on a Widget surface.
 
-  shared_preferences: ^2.3.5
-  dio: ^5.7.0 # A powerful HTTP networking package for Dart/Flutter
-  dio_http2_adapter: ^2.5.3
+  shared_preferences: ^2.5.1
+  dio: ^5.8.0+1 # A powerful HTTP networking package for Dart/Flutter
+  dio_http2_adapter: ^2.6.0
   logger: ^2.5.0
   refreshed: ^2.10.4 # This is a refreshed version of GetX
   events_emitter: ^0.6.0
   url_launcher: ^6.3.1 # Launching a URL
   google_fonts: ^6.2.1
-  file_picker: ^8.1.7
-  extended_image: ^9.1.0
-  flutter_inappwebview: ^6.1.5
+  file_picker: ^8.3.1 # native file explorer to pick single or multiple files
+  extended_image: ^9.1.0 # A powerful official extension library of images
+  flutter_inappwebview: ^6.1.5 # inline webview, to use an headless webview, and to open an in-app browser window
   sqflite: ^2.4.1 # Flutter plugin for SQLite
   flutter_dotenv: # Easily configure any flutter application with global variables using a `.env` file.
     git:
       url: https://github.com/trongtindev/flutter_dotenv.git
   result_dart: ^2.0.0 # Overruns are common in design, and modern architectures always designate a place to handle failures.
-  package_info_plus: ^8.1.2
-  device_info_plus: ^11.2.1 # Get current device information
-  timeago: ^3.7.0 # Converts a date into a humanized text
+  package_info_plus: ^8.1.4 # querying information about an application package
+  device_info_plus: ^11.2.2 # Get current device information
   flutter_native_splash: ^2.4.4 # Customize Flutter's default white native splash screen
-  flutter_markdown: ^0.7.5 # A markdown renderer for Flutter.
+  flutter_markdown: ^0.7.6 # A markdown renderer for Flutter.
   action_cable: ^1.3.0 # ActionCable is the default realtime websocket framework and protocol in Rails.
   flutter_local_notifications: ^18.0.1 # A cross platform plugin for displaying local notifications.
   permission_handler: ^11.3.1 # Request permissions and check their status
   app_settings: ^5.1.1 # for opening iOS and Android phone settings from an app.
   chewie: ^1.9.2 # video player for Flutter with a heart of gold.
-  just_audio: ^0.9.43 # feature-rich audio player
+  just_audio: ^0.9.44 # feature-rich audio player
   record: ^5.2.0 # Audio recorder from microphone to a given file path or stream.
-  mime: ^2.0.0 # MIME type definitions and for processing streams of MIME multipart media types.
+  flutter_colorpicker: ^1.1.0
 
   # desktop
   window_manager: ^0.4.3 # This plugin allows Flutter desktop apps to resizing and repositioning the window.
@@ -54,9 +54,13 @@ dependencies:
 
   # tracking
   sentry_flutter: ^8.12.0 # Sentry SDK for Flutter.
-  firebase_core: ^3.10.0
-  firebase_messaging: ^15.2.0
-  firebase_analytics: ^11.4.0
+  firebase_core: ^3.10.1
+  firebase_messaging: ^15.2.1
+  firebase_analytics: ^11.4.1
+
+  # maybe rewrite
+  mime: ^2.0.0 # MIME type definitions and for processing streams of MIME multipart media types.
+  timeago: ^3.7.0 # Converts a date into a humanized text
 
 dev_dependencies:
   flutter_test:
@@ -76,8 +80,8 @@ flutter:
     - assets/images/empty/
 
 flutter_native_splash:
-  color: "#F8F9FF"
-  color_dark: "#111418"
+  color: '#F8F9FF'
+  color_dark: '#111418'
   image: assets/images/splash.png
   android_12:
     image: assets/images/adaptive-icon.png
