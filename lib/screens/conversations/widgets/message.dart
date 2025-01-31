@@ -1,3 +1,4 @@
+import 'package:chatwoot/screens/conversations/controllers/chat.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import '/imports.dart';
 
@@ -5,11 +6,13 @@ class Message extends StatelessWidget {
   final auth = Get.find<AuthService>();
   final realtime = Get.find<RealtimeService>();
 
+  final ConversationChatController controller;
   final MessageInfo info;
   final BorderRadius borderRadius;
 
   Message({
     super.key,
+    required this.controller,
     required this.info,
     required this.borderRadius,
   });
@@ -146,54 +149,58 @@ class Message extends StatelessWidget {
                 }),
               ),
             Flexible(
-              child: Container(
+              child: Ink(
                 decoration: BoxDecoration(
                   color: backgroundColor,
                   border: Border.all(color: backgroundColor),
                   borderRadius: borderRadius,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (info.attachments.isNotEmpty) buildAttachments(context),
-                    if (info.content != null && info.content!.isNotEmpty)
-                      buildContent(context),
-                    // TODO: align right
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: 8,
-                        children: [
-                          if (info.private)
+                child: InkWell(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (info.attachments.isNotEmpty)
+                        buildAttachments(context),
+                      if (info.content != null && info.content!.isNotEmpty)
+                        buildContent(context),
+                      // TODO: align right
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          spacing: 8,
+                          children: [
+                            if (info.private)
+                              Text(
+                                t.private,
+                                style: TextStyle(
+                                  fontSize: Get.textTheme.labelSmall!.fontSize,
+                                ),
+                              ),
+                            if (isOwner == false)
+                              Text(
+                                sender.display_name,
+                                style: TextStyle(
+                                  fontSize: Get.textTheme.labelSmall!.fontSize,
+                                ),
+                              ),
                             Text(
-                              t.private,
+                              created_at,
                               style: TextStyle(
                                 fontSize: Get.textTheme.labelSmall!.fontSize,
                               ),
                             ),
-                          if (isOwner == false)
-                            Text(
-                              sender.display_name,
-                              style: TextStyle(
-                                fontSize: Get.textTheme.labelSmall!.fontSize,
+                            if (statusIcon != null)
+                              Padding(
+                                padding: EdgeInsets.only(right: 4),
+                                child: statusIcon,
                               ),
-                            ),
-                          Text(
-                            created_at,
-                            style: TextStyle(
-                              fontSize: Get.textTheme.labelSmall!.fontSize,
-                            ),
-                          ),
-                          if (statusIcon != null)
-                            Padding(
-                              padding: EdgeInsets.only(right: 4),
-                              child: statusIcon,
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  onLongPress: () => controller.showMessageActions(info),
                 ),
               ),
             ),
@@ -210,14 +217,21 @@ class Message extends StatelessWidget {
         right: 8,
         top: 8,
       ),
-      child: MarkdownBody(
-        data: info.content!.trim(),
-        selectable: true,
-        onTapLink: (text, href, title) {
-          if (href == null || href.isEmpty) return;
-          openInAppBrowser(href);
-        },
-      ),
+      child: Obx(() {
+        final translated = controller.translated.value;
+        final content = translated.containsKey(info.id) &&
+                isNotNullOrEmpty(translated[info.id])
+            ? translated[info.id]!
+            : info.content!.trim();
+
+        return MarkdownBody(
+          data: content,
+          onTapLink: (text, href, title) {
+            if (href == null || href.isEmpty) return;
+            openInAppBrowser(href);
+          },
+        );
+      }),
     );
   }
 

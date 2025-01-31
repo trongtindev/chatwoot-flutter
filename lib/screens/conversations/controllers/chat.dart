@@ -1,3 +1,5 @@
+import 'package:chatwoot/screens/conversations/widgets/message_action.dart';
+
 import '/screens/contacts/views/detail.dart';
 import '/imports.dart';
 
@@ -6,6 +8,7 @@ class ConversationChatController extends GetxController {
   final _api = Get.find<ApiService>();
   final _auth = Get.find<AuthService>();
   final _realtime = Get.find<RealtimeService>();
+  final _translator = Get.find<TranslatorService>();
 
   final scrollController = ScrollController();
   final int conversation_id;
@@ -13,6 +16,7 @@ class ConversationChatController extends GetxController {
   final isNoMore = false.obs;
   final info = Rxn<ConversationInfo>();
   final error = ''.obs;
+  final translated = RxMap<int, String?>({});
   late RxList<MessageInfo> messages;
 
   ConversationChatController({
@@ -193,5 +197,23 @@ class ConversationChatController extends GetxController {
       conversation_id: conversation_id,
       status: status,
     );
+  }
+
+  Future<void> showMessageActions(MessageInfo info) async {
+    await Get.bottomSheet(MessageActions(controller: this, info: info));
+  }
+
+  Future<void> translate(MessageInfo info) async {
+    translated[info.id] = null;
+    final result = await _translator.getProvider.translate(
+      info.content!,
+      to: Get.locale!,
+    );
+    if (result.isError()) {
+      showSnackBar(result.exceptionOrNull()!.toString());
+      translated.remove(info.id);
+      return;
+    }
+    translated[info.id] = result.getOrThrow();
   }
 }

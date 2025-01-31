@@ -13,6 +13,7 @@ class BindingsConfig {
     await Get.putAsync(() => AssistantService().init());
     await Get.putAsync(() => NotificationService().init());
     await Get.putAsync(() => RealtimeService().init());
+    await Get.putAsync(() => TranslatorService().init());
 
     // global controllers
     await Get.putAsync(() => CannedResponsesController().init(),

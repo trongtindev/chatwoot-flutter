@@ -79,6 +79,7 @@ export 'services/notification.dart';
 export 'services/realtime.dart';
 export 'services/settings.dart';
 export 'services/theme.dart';
+export 'services/translator.dart';
 export 'services/updater.dart';
 
 export 'utils/bytes.dart';

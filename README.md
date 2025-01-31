@@ -29,6 +29,7 @@ Cross-Platform app for chatwoot! Built with Flutter.
 - Reply easily with canned responses
 - Receive realtime notifications about system activities
 - Communicate with other team members via private notes
+- Message translation in conversations
 - Assign statuses to your conversations, recorder, execute macro... and more to come!
 
 ```
@@ -49,6 +50,7 @@ Cross-Platform app for chatwoot! Built with Flutter.
 | UI - Customize theme     | ✅ Completed   |
 | Settings (Partially)     | 💪 In-Progress |
 | Conversations            | 💪 In-Progress |
+| Message Translation      | ✅ Completed   |
 | Contacts                 | 💪 In-Progress |
 | Notifications            | 💪 In-Progress |
 | Push Notifications       | ☑️ Not tested  |
