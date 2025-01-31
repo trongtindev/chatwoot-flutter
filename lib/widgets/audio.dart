@@ -103,50 +103,42 @@ class AudioPlayer extends StatelessWidget {
           final positionInMilliseconds =
               min(durationInMilliseconds, position.inMilliseconds.toDouble());
 
-          return Container(
-            decoration: BoxDecoration(
-              color: context.theme.colorScheme.tertiaryContainer,
+          Widget icon;
+          if (isEnded) {
+            icon = IconButton(
+              onPressed: controller.restart,
+              icon: Icon(Icons.restart_alt_outlined),
+            );
+          } else if (isPlaying) {
+            icon = IconButton(
+              onPressed: controller.pause,
+              icon: Icon(Icons.pause_circle_filled_outlined),
+            );
+          } else {
+            icon = IconButton(
+              onPressed: controller.play,
+              icon: Icon(Icons.play_circle_fill_outlined),
+            );
+          }
+
+          return CustomListTile(
+            leading: CircleAvatar(child: icon),
+            title: Slider(
+              value: positionInMilliseconds,
+              max: durationInMilliseconds,
+              onChanged: (next) {},
             ),
-            child: Row(
+            subtitle: Row(
               children: [
-                if (isEnded)
-                  IconButton(
-                    onPressed: controller.restart,
-                    icon: Icon(Icons.restart_alt_outlined),
-                  )
-                else if (isPlaying)
-                  IconButton(
-                    onPressed: controller.pause,
-                    icon: Icon(Icons.pause_circle_filled_outlined),
-                  )
-                else
-                  IconButton(
-                    onPressed: controller.play,
-                    icon: Icon(Icons.play_circle_fill_outlined),
-                  ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Slider(
-                        value: positionInMilliseconds,
-                        max: durationInMilliseconds,
-                        onChanged: (next) {},
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: Row(
-                          children: [
-                            Text(formatDuration(position)),
-                            Spacer(),
-                            Text(formatDuration(duration)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                Text(formatDuration(position)),
+                Spacer(),
+                Text(formatDuration(duration)),
               ],
             ),
+            // trailing: IconButton(
+            //   icon: Icon(Icons.transcribe),
+            //   onPressed: () {},
+            // ),
           );
         });
       },

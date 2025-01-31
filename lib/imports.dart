@@ -101,6 +101,7 @@ export 'widgets/bottom_sheet.dart';
 export 'widgets/button.dart';
 export 'widgets/common.dart';
 export 'widgets/image.dart';
+export 'widgets/video.dart';
 
 export 'screens/custom_attributes/controllers/index.dart';
 export 'screens/labels/controllers/index.dart';

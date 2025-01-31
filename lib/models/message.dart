@@ -6,10 +6,10 @@ class MessageAttachmentInfo {
   final AttachmentType file_type;
   final int account_id;
   final dynamic extension; // TODO: unk type
-  final String? data_url;
+  final String data_url;
   final String? thumbnail;
   final String? thumb_url;
-  final int? file_size;
+  final int file_size;
   final int? width;
   final int? height;
 
@@ -37,7 +37,7 @@ class MessageAttachmentInfo {
       data_url: json['data_url'],
       thumbnail: json['thumbnail'],
       thumb_url: json['thumb_url'],
-      file_size: json['file_size'],
+      file_size: json['file_size'] ?? 0,
       width: json['width'],
       height: json['height'],
     );

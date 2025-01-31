@@ -225,24 +225,58 @@ class Message extends StatelessWidget {
     final length = info.attachments.length;
 
     final first = info.attachments.first;
-    if (length == 1 && first.data_url != null) {
+    if (length == 1) {
       switch (first.file_type) {
+        case AttachmentType.video:
+          return buildAttachmentVideo(context, info: info.attachments.first);
         case AttachmentType.audio:
-          return AudioPlayer(
-            id: first.id,
-            url: first.data_url!,
-          );
+          return buildAttachmentAudio(context, info: info.attachments.first);
         case AttachmentType.image:
-          return buildImageAttachment(context, info: info.attachments.first);
+          return buildAttachmentImage(context, info: info.attachments.first);
         default:
-          return Text('failed to parse attachment type: ${first.file_type}');
+          return buildAttachmentFile(context, info: info.attachments.first);
       }
     }
 
-    return Text('failed to parse $length attachments');
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: info.attachments.length,
+      itemBuilder: (_, i) {
+        final item = info.attachments[i];
+        return buildAttachmentFile(context, info: item);
+      },
+    );
   }
 
-  Widget buildImageAttachment(
+  Widget buildAttachmentVideo(
+    BuildContext context, {
+    required MessageAttachmentInfo info,
+  }) {
+    return Card(
+      child: VideoPlayer(
+        id: info.id,
+        url: info.data_url,
+        aspectRatio: info.width != null && info.height != null
+            ? info.width! / info.height!
+            : null,
+      ),
+    );
+  }
+
+  Widget buildAttachmentAudio(
+    BuildContext context, {
+    required MessageAttachmentInfo info,
+  }) {
+    return Card(
+      child: AudioPlayer(
+        id: info.id,
+        url: info.data_url,
+      ),
+    );
+  }
+
+  Widget buildAttachmentImage(
     BuildContext context, {
     required MessageAttachmentInfo info,
   }) {
@@ -252,7 +286,7 @@ class Message extends StatelessWidget {
     return InkWell(
       onTap: () => Get.to(
         () => imageViewer(
-          url: info.data_url!,
+          url: info.data_url,
           title: '#${info.id} (${formatBytes(info.file_size!)})',
         ),
       ),
@@ -273,7 +307,7 @@ class Message extends StatelessWidget {
               bottomRight: Radius.circular(0),
             ),
             child: ExtendedImage.network(
-              info.data_url!,
+              info.data_url,
               loadStateChanged: (state) {
                 switch (state.extendedImageLoadState) {
                   case LoadState.failed:
@@ -289,6 +323,27 @@ class Message extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildAttachmentFile(
+    BuildContext context, {
+    required MessageAttachmentInfo info,
+  }) {
+    final name = info.data_url.split('/').last;
+    return Card(
+      child: CustomListTile(
+        leading: CircleAvatar(
+          child: Icon(Icons.download_outlined),
+        ),
+        title: Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(formatBytes(info.file_size)),
+        onTap: () => openInExternalBrowser(info.data_url),
       ),
     );
   }
