@@ -1,3 +1,5 @@
+import 'package:chatwoot/utils/common.dart';
+
 bool isEmail(String email) {
   const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
       r'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-'
@@ -22,4 +24,8 @@ bool isPassword(String value) {
 
 bool isFullName(String value) {
   return value.isNotEmpty && value.length >= 6;
+}
+
+bool isHexColor(String value) {
+  return !isNotNullOrEmpty(value) && value.startsWith('#') && value.length == 7;
 }

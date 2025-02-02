@@ -6,7 +6,7 @@ Widget bottomSheet(
 }) {
   return Container(
     decoration: BoxDecoration(
-      color: context.theme.colorScheme.surfaceContainer,
+      color: context.theme.colorScheme.surface,
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(16),
         topRight: Radius.circular(16),

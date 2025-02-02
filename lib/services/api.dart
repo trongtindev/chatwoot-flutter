@@ -694,6 +694,24 @@ class ApiService extends GetxService {
     }
   }
 
+  Future<Result<MessageInfo>> deleteConversationMessage({
+    int? account_id,
+    required int conversation_id,
+    required int message_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path =
+          '/accounts/$account_id/conversations/$conversation_id/messages/$message_id';
+      final result = await _http.delete(path);
+      return MessageInfo.fromJson(result.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
   Future<Result<bool>> saveDeviceDetails({
     required String push_token,
   }) async {
@@ -1386,6 +1404,24 @@ class ApiService extends GetxService {
       });
 
       return LabelInfo.fromJson(response.data).toSuccess();
+    } on DioException catch (error) {
+      return ApiError.fromException(error).toFailure();
+    } on Exception catch (error) {
+      return error.toFailure();
+    }
+  }
+
+  Future<Result<bool>> deleteLabel({
+    int? account_id,
+    required int label_id,
+  }) async {
+    try {
+      account_id ??= _getAuth.profile.value!.account_id;
+      final path = '/accounts/$account_id/labels/$label_id';
+
+      await _http.delete(path);
+
+      return true.toSuccess();
     } on DioException catch (error) {
       return ApiError.fromException(error).toFailure();
     } on Exception catch (error) {

@@ -42,7 +42,7 @@ class LabelsView extends GetView<LabelsController> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: controller.addLabel,
+        onPressed: kDebugMode ? controller.add : null,
         label: Text(t.labels_add),
         icon: Icon(Icons.add_outlined),
       ),

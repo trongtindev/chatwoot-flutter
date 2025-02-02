@@ -1,3 +1,4 @@
+import '/screens/labels/widgets/editor.dart';
 import '../widgets/picker.dart';
 import '/imports.dart';
 
@@ -40,7 +41,20 @@ class LabelsController extends GetxController {
     }
   }
 
-  Future<void> addLabel() async {}
+  Future<void> add() async {
+    Get.bottomSheet(LabelEditor());
+  }
+
+  Future<void> edit(LabelInfo info) async {
+    Get.bottomSheet(LabelEditor(edit: info));
+  }
+
+  Future<void> delete(LabelInfo info) async {
+    if (!await confirm(t.confirm_delete_message(info.title))) return;
+    _api.deleteLabel(label_id: info.id).then((_) {
+      items.remove(info);
+    });
+  }
 
   Future<List<LabelInfo>> showPicker({List<String>? selected}) async {
     final result = await Get.bottomSheet<List<LabelInfo>?>(
@@ -50,6 +64,4 @@ class LabelsController extends GetxController {
     );
     return result ?? [];
   }
-
-  Future<void> delete(LabelInfo info) async {}
 }
