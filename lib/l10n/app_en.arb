@@ -175,6 +175,15 @@
   "labels": "Labels",
   "labels_description": "Labels help you categorize and prioritize conversations and leads. You can assign a label to a conversation or contact using the side panel.",
   "labels_add": "Add label",
+  "labels_editor_title": "Label title",
+  "labels_editor_title_hint": "Enter label title",
+  "labels_editor_title_invalid": "Invalid label title",
+  "labels_editor_description": "Label description",
+  "labels_editor_description_hint": "Enter label description",
+  "labels_editor_color": "Color",
+  "labels_editor_color_hint": "Enter color code (e.g., #000000)",
+  "labels_editor_color_invalid": "Invalid color code",
+  "labels_editor_show_on_sidebar": "Show label on sidebar",
   "labels_search": "Search labels",
   "labels_search_hint": "Type something...",
   "attributes": "Attributes",
@@ -323,5 +332,6 @@
   "phone": "Phone",
   "call": "Call",
   "message": "Message",
-  "mark_auto_offline": "Mark offline automatically"
+  "mark_auto_offline": "Mark offline automatically",
+  "translate": "Translate"
 }
