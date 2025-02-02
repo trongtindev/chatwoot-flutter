@@ -23,7 +23,7 @@ dependencies:
   dio: ^5.8.0+1 # A powerful HTTP networking package for Dart/Flutter
   dio_http2_adapter: ^2.6.0
   logger: ^2.5.0
-  refreshed: ^2.10.4 # This is a refreshed version of GetX
+  refreshed: ^3.0.0 # This is a refreshed version of GetX
   events_emitter: ^0.6.0
   url_launcher: ^6.3.1 # Launching a URL
   google_fonts: ^6.2.1
