@@ -22,21 +22,31 @@ Cross-Platform app for chatwoot! Built with Flutter.
     <img src=".github/screenshots/Screenshot_1737610936.png" style="width:13%" />
 </p>
 
+## ⚠️ Important Notice
+
+This is an unofficial Chatwoot client. Push notifications require additional configuration:
+
+- You need to set up your own Firebase project
+- Configure server-side credentials
+- Add your own google-services.json file
+
+See the [documentation](docs/push-notifications.md) for setup instructions.
+
+## Download
+
+Get the latest version from the [Releases page](https://github.com/trongtindev/chatwoot-flutter/releases).
+
 ## Features
 
-- Do not miss out on the new customers
-- Follow up on customer conversations on go
-- Reply easily with canned responses
-- Receive realtime notifications about system activities
-- Communicate with other team members via private notes
-- Message translation in conversations
-- Assign statuses to your conversations, recorder, execute macro... and more to come!
+- Real-time customer engagement
+- Mobile-first conversation management
+- Quick replies with canned responses
+- Real-time activity notifications
+- Team collaboration via private notes
+- Multi-language message translation
+- Conversation statuses, recording, macros and more!
 
-```
-⚠️ This repo is unofficial, so you will not receive push notifications as I do not have client credentials. You need to configure yourself to work!
-```
-
-## Support
+## Platform Support
 
 | Platform | Status         |
 | -------- | -------------- |
@@ -45,30 +55,30 @@ Cross-Platform app for chatwoot! Built with Flutter.
 
 ## Roadmap
 
-| Feature                  | Status         |
-| ------------------------ | -------------- |
-| UI - Customize theme     | ✅ Completed   |
-| Settings (Partially)     | 💪 In-Progress |
-| Conversations            | 💪 In-Progress |
-| Message Translation      | ✅ Completed   |
-| Contacts                 | 💪 In-Progress |
-| Notifications            | 💪 In-Progress |
-| Push Notifications       | ☑️ Not tested  |
-| Reports                  | 🕛 Planned     |
-| Teams (Partially)        | 💪 In-Progress |
-| Accounts (Partially)     | 🕛 Planned     |
-| Inboxes (Partially)      | 💪 In-Progress |
-| Labels                   | 💪 In-Progress |
-| Automation (Partially)   | 🕛 Planned     |
-| Macros (Partially)       | 💪 In-Progress |
-| Agents                   | 💪 In-Progress |
-| Canned Response          | 💪 In-Progress |
-| Integrations (Partially) | 🕛 Planned     |
-| Audit Logs               | 🕛 Planned     |
-| Custom Attributes        | 💪 In-Progress |
-| Campaigns                | 🕛 Planned     |
-| Realtime                 | ✅ Completed   |
+| Feature              | Status         |
+| -------------------- | -------------- |
+| UI - Customize theme | ✅ Completed   |
+| Settings             | 💪 In-Progress |
+| Conversations        | 💪 In-Progress |
+| Message Translation  | ✅ Completed   |
+| Contacts             | 💪 In-Progress |
+| Notifications        | 💪 In-Progress |
+| Push Notifications   | ☑️ Not tested  |
+| Reports              | 🕛 Planned     |
+| Teams                | 💪 In-Progress |
+| Accounts             | 🕛 Planned     |
+| Inboxes              | 💪 In-Progress |
+| Labels               | 💪 In-Progress |
+| Automation           | 🕛 Planned     |
+| Macros               | 💪 In-Progress |
+| Agents               | 💪 In-Progress |
+| Canned Response      | 💪 In-Progress |
+| Integrations         | 🕛 Planned     |
+| Audit Logs           | 🕛 Planned     |
+| Custom Attributes    | 💪 In-Progress |
+| Campaigns            | 🕛 Planned     |
+| Realtime             | ✅ Completed   |
 
-## Feedback & Contributing
+## Contributing
 
-Feel free to send us feedback on [file an issue](https://github.com/trongtindev/chatwoot-flutter/issues).
+Feel free to send us feedback by [filing an issue](https://github.com/trongtindev/chatwoot-flutter/issues).
