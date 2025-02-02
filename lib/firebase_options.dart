@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCQ88572NiwkqbvzBwnVwHS8LIg9Iq53T0',
-    appId: '1:848661314767:android:e8ba992deec581242a0bba',
+    appId: '1:848661314767:android:f392e2749f98b49c2a0bba',
     messagingSenderId: '848661314767',
     projectId: 'chatwoot-bf44e',
     storageBucket: 'chatwoot-bf44e.firebasestorage.app',

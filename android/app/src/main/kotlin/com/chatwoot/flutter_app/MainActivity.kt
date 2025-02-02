@@ -1,4 +1,4 @@
-package com.chatwoot.app
+package com.chatwoot.flutter_app
 
 import io.flutter.embedding.android.FlutterActivity
 
