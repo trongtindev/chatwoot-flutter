@@ -7,14 +7,14 @@ import '/imports.dart';
 class ConversationChatView extends StatelessWidget {
   final realtimeService = Get.find<RealtimeService>();
 
-  final ConversationChatController c;
+  final ConversationChatController controller;
   final int conversation_id;
 
   ConversationChatView({
     super.key,
     required this.conversation_id,
     MessageInfo? initial_message,
-  }) : c = Get.putOrFind(
+  }) : controller = Get.putOrFind(
           () => ConversationChatController(
             conversation_id: conversation_id,
             initial_message: initial_message,
@@ -25,7 +25,7 @@ class ConversationChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final info = c.info.value;
+      final info = controller.info.value;
 
       return Scaffold(
         appBar: AppBar(
@@ -50,7 +50,7 @@ class ConversationChatView extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(t.view_details),
-                onTap: c.showContactDetail,
+                onTap: controller.showContactDetail,
               );
             }
             return Container();
@@ -62,12 +62,12 @@ class ConversationChatView extends StatelessWidget {
                 onPressed: () {
                   switch (info.status) {
                     case ConversationStatus.open:
-                      c.changeStatus(ConversationStatus.resolved);
+                      controller.changeStatus(ConversationStatus.resolved);
                       break;
 
                     case ConversationStatus.resolved:
                     case ConversationStatus.snoozed:
-                      c.changeStatus(ConversationStatus.open);
+                      controller.changeStatus(ConversationStatus.open);
                       break;
 
                     default:
@@ -94,17 +94,17 @@ class ConversationChatView extends StatelessWidget {
               children: [
                 Expanded(
                   child: Obx(() {
-                    if (c.error.value.isNotEmpty) {
+                    if (controller.error.value.isNotEmpty) {
                       return buildError(context);
                     }
                     return buildMessages();
                   }),
                 ),
-                ConversationInput(id: c.conversation_id),
+                ConversationInput(id: controller.conversation_id),
               ],
             ),
             Obx(() {
-              final loading = c.loading.value;
+              final loading = controller.loading.value;
               if (loading) {
                 return Positioned.fill(
                   child: Align(
@@ -124,20 +124,20 @@ class ConversationChatView extends StatelessWidget {
   Widget buildError(BuildContext context) {
     return error(
       context,
-      message: c.error.value,
+      message: controller.error.value,
       onRetry: () {
-        c.getConversation();
-        c.getMessages();
+        controller.getConversation();
+        controller.getMessages();
       },
     );
   }
 
   Widget buildMessages() {
     return Obx(() {
-      final messages = c.messages.value;
+      final messages = controller.messages.value;
 
       return ListView.builder(
-        controller: c.scrollController,
+        controller: controller.scrollController,
         reverse: true,
         padding: EdgeInsets.only(left: 8, right: 8, top: 8),
         itemCount: messages.length,
@@ -153,6 +153,7 @@ class ConversationChatView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Message(
+              controller: controller,
               info: item,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(topLeft),
