@@ -23,13 +23,15 @@ class MessageActions extends StatelessWidget {
         //     Get.close();
         //   },
         // ),
-        // CustomListTile(
-        //   leading: Icon(Icons.delete_outline),
-        //   title: Text(t.delete),
-        //   onTap: () {
-        //     Get.close();
-        //   },
-        // ),
+        if (!info.content_attributes.deleted)
+          CustomListTile(
+            leading: Icon(Icons.delete_outline),
+            title: Text(t.delete),
+            onTap: () {
+              Get.close();
+              controller.deleteMessage(info);
+            },
+          ),
         Obx(() {
           final translated = controller.translated.value;
           final isTranslating = translated.containsKey(info.id);

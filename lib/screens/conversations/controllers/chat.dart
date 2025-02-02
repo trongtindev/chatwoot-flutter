@@ -216,4 +216,15 @@ class ConversationChatController extends GetxController {
     }
     translated[info.id] = result.getOrThrow();
   }
+
+  Future<void> deleteMessage(MessageInfo info) async {
+    if (!await confirm(t.confirm_delete_message('${info.id}'),
+        title: t.delete)) {
+      return;
+    }
+    _api.deleteConversationMessage(
+      conversation_id: conversation_id,
+      message_id: info.id,
+    );
+  }
 }
