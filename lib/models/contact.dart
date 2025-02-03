@@ -1,16 +1,24 @@
 import '/imports.dart';
 
-class ListContactMeta extends ApiListMeta {
-  const ListContactMeta({
-    required super.count,
-    required super.current_page,
+class ContactNoteInfo {
+  final int id;
+  final String content;
+  final DateTime created_at;
+  final DateTime updated_at;
+
+  ContactNoteInfo({
+    required this.id,
+    required this.content,
+    required this.created_at,
+    required this.updated_at,
   });
 
-  factory ListContactMeta.fromJson(dynamic json) {
-    var base = ApiListMeta.fromJson(json);
-    return ListContactMeta(
-      count: base.count,
-      current_page: base.current_page,
+  factory ContactNoteInfo.fromJson(dynamic json) {
+    return ContactNoteInfo(
+      id: json['id'],
+      content: json['content'],
+      created_at: toDateTime(json['created_at'])!,
+      updated_at: toDateTime(json['updated_at'])!,
     );
   }
 }
@@ -70,13 +78,6 @@ class ContactInfo {
   });
 
   factory ContactInfo.fromJson(dynamic json) {
-    var created_at = json['created_at'] != null
-        ? DateTime.fromMillisecondsSinceEpoch(json['created_at'] * 1000)
-        : null;
-    var last_activity_at = json['last_activity_at'] != null
-        ? DateTime.fromMillisecondsSinceEpoch(json['last_activity_at'] * 1000)
-        : null;
-
     return ContactInfo(
       id: json['id'],
       email: json['email'],
@@ -87,8 +88,23 @@ class ContactInfo {
       additional_attributes:
           ContactAdditionalAttributes.fromJson(json['additional_attributes']),
       custom_attributes: json['custom_attributes'] ?? {},
-      created_at: created_at,
-      last_activity_at: last_activity_at,
+      created_at: toDateTime(json['created_at']),
+      last_activity_at: toDateTime(json['last_activity_at']),
+    );
+  }
+}
+
+class ListContactMeta extends ApiListMeta {
+  const ListContactMeta({
+    required super.count,
+    required super.current_page,
+  });
+
+  factory ListContactMeta.fromJson(dynamic json) {
+    var base = ApiListMeta.fromJson(json);
+    return ListContactMeta(
+      count: base.count,
+      current_page: base.current_page,
     );
   }
 }
