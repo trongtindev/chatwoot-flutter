@@ -31,7 +31,7 @@ class CustomAttributesController extends GetxController
 
   Future<void> getAttributes() async {
     try {
-      final result = await _api.listCustomAttributes();
+      final result = await _api.customAttributes.list();
       items.value = result.getOrThrow();
       _logger.d('found ${items.length} items');
     } catch (error) {

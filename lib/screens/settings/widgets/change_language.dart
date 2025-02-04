@@ -1,7 +1,4 @@
-import 'package:chatwoot/app.dart';
-import 'package:provider/provider.dart';
-
-import '../../../imports.dart';
+import '/imports.dart';
 
 class ChangeLanguageSheet extends GetView<SettingsService> {
   const ChangeLanguageSheet({super.key});

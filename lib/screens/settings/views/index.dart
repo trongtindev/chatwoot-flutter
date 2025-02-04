@@ -1,5 +1,4 @@
 import '/imports.dart';
-import '/screens/settings/views/notification.dart';
 import '../widgets/change_language.dart';
 import '../../agents/views/index.dart';
 import '../../audit_logs/views/index.dart';

@@ -53,8 +53,8 @@ class AuthService extends GetxService {
     _logger.i('logout');
 
     if (!isNullOrEmpty(_getNotification.token.value)) {
-      _logger.d('deleteNotificationSubscription');
-      _getApi.deleteNotificationSubscription(
+      _logger.d('deleteSubscription');
+      _getApi.notifications.deleteSubscription(
         push_token: _getNotification.token.value!,
       );
     }

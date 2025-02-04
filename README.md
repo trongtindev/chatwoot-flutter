@@ -59,9 +59,9 @@ Get the latest version from the [Releases page](https://github.com/trongtindev/c
 | -------------------- | -------------- |
 | UI - Customize theme | ✅ Completed   |
 | Settings             | 💪 In-Progress |
-| Conversations        | 💪 In-Progress |
+| Conversations        | ✅ Completed   |
 | Message Translation  | ✅ Completed   |
-| Contacts             | 💪 In-Progress |
+| Contacts             | ✅ Completed   |
 | Notifications        | 💪 In-Progress |
 | Push Notifications   | ☑️ Not tested  |
 | Reports              | 🕛 Planned     |

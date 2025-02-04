@@ -40,7 +40,7 @@ class ContactDetailController extends GetxController {
 
   Future<void> getContact() async {
     try {
-      final result = await _api.getContact(
+      final result = await _api.contacts.get(
         contact_id: contact_id,
         onCacheHit: (data) => info.value = data,
       );
@@ -57,7 +57,7 @@ class ContactDetailController extends GetxController {
 
   Future<void> getLabels() async {
     try {
-      final result = await _api.getContactLabels(
+      final result = await _api.contacts.getLabels(
         contact_id: contact_id,
         onCacheHit: (data) => labels.value = data,
       );
@@ -74,7 +74,7 @@ class ContactDetailController extends GetxController {
 
   Future<void> getConversations() async {
     try {
-      final result = await _api.getContactConversations(
+      final result = await _api.contacts.getConversations(
         contact_id: contact_id,
         onCacheHit: (data) => conversations.value = data,
       );
@@ -93,7 +93,7 @@ class ContactDetailController extends GetxController {
     final items = await _labels.showPicker(selected: labels.value);
     if (items.isEmpty) return;
     labels.value = items.map((e) => e.title).toList();
-    await _api.updateContactLabels(
+    await _api.contacts.updateLabels(
       contact_id: contact_id,
       labels: items.map((e) => e.title).toList(),
     );

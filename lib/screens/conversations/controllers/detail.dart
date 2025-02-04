@@ -39,7 +39,7 @@ class ConversationDetailController extends GetxController {
     final token = CancelToken();
     _cancelTokens.add(token);
 
-    final result = await _api.getConversationParticipants(
+    final result = await _api.conversations.listParticipants(
       id: conversation_id,
       cancelToken: token,
     );
@@ -54,7 +54,7 @@ class ConversationDetailController extends GetxController {
   Future<void> showLabelPicker() async {
     final items = await _labels.showPicker(selected: c.info.value!.labels);
     if (items.isEmpty) return;
-    _api.updateConversationLabels(
+    _api.conversations.updateLabels(
       conversation_id: c.conversation_id,
       labels: items.map((e) => e.title).toList(),
     );
@@ -68,7 +68,7 @@ class ConversationDetailController extends GetxController {
     );
     if (kDebugMode) print(item);
     if (item == null) return;
-    _api.updateConversationAssignments(
+    _api.conversations.updateAssignments(
       conversation_id: c.conversation_id,
       assignee_id: item.id,
     );
@@ -90,7 +90,7 @@ class ConversationDetailController extends GetxController {
     _cancelTokens.add(token);
     executingMacroId.value = info.id;
 
-    final result = await _api.executeMacro(
+    final result = await _api.macros.execute(
       conversation_ids: [conversation_id],
       macro_id: info.id,
       cancelToken: token,

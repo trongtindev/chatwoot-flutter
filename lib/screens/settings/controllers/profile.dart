@@ -32,7 +32,7 @@ class SettingsProfileController extends GetxController {
     _logger.d('submit()');
 
     try {
-      final result = await _api.updateProfile(
+      final result = await _api.profile.update(
         name: full_name.text,
         display_name: display_name.text,
         email: email.text,

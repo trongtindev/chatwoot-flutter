@@ -50,7 +50,7 @@ class ConversationChatView extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 subtitle: Text(t.view_details),
-                onTap: controller.showContactDetail,
+                onTap: () => toContactDetail(info.meta.sender.id),
               );
             }
             return Container();

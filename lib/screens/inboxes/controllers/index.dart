@@ -25,8 +25,8 @@ class InboxesController extends GetxController {
 
   Future<void> getInboxes() async {
     try {
-      final result = await _api.listInboxes();
-      inboxes.value = result.getOrThrow();
+      final result = await _api.inboxes.list();
+      inboxes.value = result.getOrThrow().payload;
       _logger.d('found ${inboxes.length} items');
     } catch (error) {
       errorHandler(error);

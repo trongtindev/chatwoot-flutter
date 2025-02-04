@@ -1,4 +1,7 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'imports.dart';
 export 'package:refreshed/refreshed.dart'
     show
         Get,
@@ -75,6 +78,7 @@ export 'services/assistant.dart';
 export 'services/auth.dart';
 export 'services/db.dart';
 export 'services/deeplink.dart';
+export 'services/device.dart';
 export 'services/notification.dart';
 export 'services/realtime.dart';
 export 'services/settings.dart';
@@ -113,3 +117,5 @@ export 'screens/teams/controllers/index.dart';
 export 'screens/agents/controllers/index.dart';
 
 late SharedPreferences prefs;
+late PackageInfo packageInfo;
+final cookieManager = CookieManager.instance();

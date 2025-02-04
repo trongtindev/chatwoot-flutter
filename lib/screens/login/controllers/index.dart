@@ -47,7 +47,7 @@ class LoginController extends GetxController {
     _logger.i('submit()');
 
     try {
-      final response = await _api.signIn(
+      final response = await _api.auth.signIn(
         email: email.text,
         password: password.text,
       );

@@ -25,7 +25,7 @@ class CannedResponsesController extends GetxController {
 
   Future<void> getCannedResponses() async {
     try {
-      final result = await _api.listCannedResponses();
+      final result = await _api.cannedResponses.list();
       items.value = result.getOrThrow();
       _logger.d('found ${items.length} items');
     } catch (error) {

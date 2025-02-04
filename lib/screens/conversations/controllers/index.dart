@@ -116,7 +116,7 @@ class ConversationsController extends GetxController {
         is_no_more.value = false;
       }
 
-      final result = await _api.listConversations(
+      final result = await _api.conversations.list(
         page: page.value,
         status: filter_by_status.value,
         labels: filter_by_labels.map((e) => e.title).toList(),

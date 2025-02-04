@@ -70,7 +70,7 @@ class NotificationsController extends GetxController {
         isNoMore.value = false;
       }
 
-      final result = await _api.listNotifications(
+      final result = await _api.notifications.list(
         includes: includes,
         page: page.value,
         onCacheHit: append || reset
@@ -114,7 +114,7 @@ class NotificationsController extends GetxController {
 
   Future<void> onTap(NotificationInfo info) async {
     if (info.read_at == null) {
-      _api.markNotificationsRead(
+      _api.notifications.readAll(
         primary_actor_id: info.primary_actor_id,
         primary_actor_type: info.primary_actor_type,
       );

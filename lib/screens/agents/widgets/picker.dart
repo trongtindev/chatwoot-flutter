@@ -21,7 +21,7 @@ class AgentsPickerController extends GetxController {
   }
 
   Future<void> getAgents() async {
-    final result = await _api.listAssignableAgents(
+    final result = await _api.agents.listAssignable(
       inbox_ids: inbox_ids,
     );
     items.value = result.getOrThrow();

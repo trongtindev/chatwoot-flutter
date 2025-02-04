@@ -1,6 +1,7 @@
 import '../../conversations/widgets/item.dart';
 import '/screens/contacts/controllers/detail.dart';
 import '/imports.dart';
+import 'editor.dart';
 
 class ContactDetailView extends StatelessWidget {
   final labels = Get.find<LabelsController>();
@@ -8,13 +9,15 @@ class ContactDetailView extends StatelessWidget {
   final customAttributes = Get.find<CustomAttributesController>();
 
   final ContactDetailController controller;
+  final int contact_id;
+
   ContactDetailView({
     super.key,
-    required int id,
+    required this.contact_id,
     ContactInfo? initial,
   }) : controller = Get.putOrFind(
-          () => ContactDetailController(id, initial: initial),
-          tag: '$id',
+          () => ContactDetailController(contact_id, initial: initial),
+          tag: '$contact_id',
         );
 
   @override
@@ -64,7 +67,11 @@ class ContactDetailView extends StatelessWidget {
                 actions: [
                   IconButton(
                     icon: Icon(Icons.edit_outlined),
-                    onPressed: () {},
+                    onPressed: () => Get.to(
+                      () => ContactEditorView(
+                        contact_id: contact_id,
+                      ),
+                    ),
                   ),
                   Padding(padding: EdgeInsets.only(right: 8)),
                 ],

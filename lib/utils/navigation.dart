@@ -1,4 +1,5 @@
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../screens/contacts/views/detail.dart';
 import '../screens/conversations/views/chat.dart';
 import '/screens/browser/views/index.dart';
 import '../imports.dart';
@@ -30,5 +31,11 @@ void toConversationChat(
       conversation_id: conversation_id,
       initial_message: last_non_activity_message,
     ),
+  );
+}
+
+void toContactDetail(int contact_id) {
+  Get.to(
+    () => ContactDetailView(contact_id: contact_id),
   );
 }

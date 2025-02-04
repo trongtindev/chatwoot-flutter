@@ -142,9 +142,9 @@ class ListNotificationResult
   });
 
   factory ListNotificationResult.fromJson(dynamic json) {
-    List<dynamic> payload = json['payload'];
+    List<dynamic> payload = json['data']['payload'];
     return ListNotificationResult(
-      meta: ListNotificationMeta.fromJson(json['meta']),
+      meta: ListNotificationMeta.fromJson(json['data']['meta']),
       payload: payload.map(NotificationInfo.fromJson).toList(),
     );
   }

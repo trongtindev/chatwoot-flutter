@@ -4,5 +4,6 @@
     ".env.production": ".env.development, .env",
     "pubspec.yaml": ".flutter-plugins, .flutter-plugins-dependencies, pubspec.lock, .metadata"
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "arb-editor.suppressedWarnings": ["missing_metadata_for_key"]
 }

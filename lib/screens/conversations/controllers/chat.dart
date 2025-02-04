@@ -1,12 +1,9 @@
-import 'package:chatwoot/screens/conversations/widgets/message_action.dart';
-
-import '/screens/contacts/views/detail.dart';
+import '/screens/conversations/widgets/message_action.dart';
 import '/imports.dart';
 
 class ConversationChatController extends GetxController {
   final _logger = Logger();
   final _api = Get.find<ApiService>();
-  final _auth = Get.find<AuthService>();
   final _realtime = Get.find<RealtimeService>();
   final _translator = Get.find<TranslatorService>();
 
@@ -57,7 +54,7 @@ class ConversationChatController extends GetxController {
     super.onReady();
 
     getConversation().then((_) {
-      _api.markMessageRead(conversation_id: conversation_id);
+      _api.conversations.markMessageRead(conversation_id: conversation_id);
     });
     getMessages();
   }
@@ -74,8 +71,7 @@ class ConversationChatController extends GetxController {
 
   Future<void> getConversation() async {
     try {
-      final result = await _api.getConversation(
-        account_id: _auth.profile.value!.account_id,
+      final result = await _api.conversations.get(
         conversation_id: conversation_id,
         onCacheHit: (data) => info.value = data,
       );
@@ -94,8 +90,7 @@ class ConversationChatController extends GetxController {
     try {
       loading.value = true;
 
-      final result = await _api.listMessages(
-        account_id: _auth.profile.value!.account_id,
+      final result = await _api.conversations.listMessages(
         conversation_id: conversation_id,
         before: before,
         onCacheHit: (data) {
@@ -124,14 +119,6 @@ class ConversationChatController extends GetxController {
     } finally {
       loading.value = false;
     }
-  }
-
-  void showContactDetail() {
-    Get.to(
-      () => ContactDetailView(
-        id: info.value!.meta.sender.id,
-      ),
-    );
   }
 
   void _onMessageCreated(MessageInfo info) {
@@ -193,7 +180,7 @@ class ConversationChatController extends GetxController {
     info.value!.status = status;
     info.refresh();
 
-    _api.changeConversationStatus(
+    _api.conversations.changeStatus(
       conversation_id: conversation_id,
       status: status,
     );
@@ -222,7 +209,7 @@ class ConversationChatController extends GetxController {
         title: t.delete)) {
       return;
     }
-    _api.deleteConversationMessage(
+    _api.conversations.deleteConversationMessage(
       conversation_id: conversation_id,
       message_id: info.id,
     );

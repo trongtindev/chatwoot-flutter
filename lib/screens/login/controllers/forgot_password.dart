@@ -14,7 +14,7 @@ class ForgotPasswordController extends GetxController {
     _logger.i('submit()');
 
     try {
-      final result = await _api.resetPassword(
+      final result = await _api.auth.resetPassword(
         email: email.text,
       );
       final message = result.getOrThrow();

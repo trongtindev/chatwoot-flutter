@@ -122,3 +122,16 @@ class InboxInfo {
     );
   }
 }
+
+class ListInboxesResult {
+  final List<InboxInfo> payload;
+  ListInboxesResult({required this.payload});
+
+  factory ListInboxesResult.fromJson(dynamic json) {
+    List<dynamic> payload = json['payload'];
+
+    return ListInboxesResult(
+      payload: payload.map(InboxInfo.fromJson).toList(),
+    );
+  }
+}

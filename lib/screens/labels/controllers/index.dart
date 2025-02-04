@@ -29,12 +29,12 @@ class LabelsController extends GetxController {
 
   Future<void> getLabels() async {
     try {
-      final result = await _api.listLabels(
+      final result = await _api.labels.list(
         onCacheHit: (data) {
-          items.value = data;
+          items.value = data.payload;
         },
       );
-      items.value = result.getOrThrow();
+      items.value = result.getOrThrow().payload;
       _logger.d('found ${items.length} items');
     } catch (error) {
       errorHandler(error);
@@ -51,7 +51,7 @@ class LabelsController extends GetxController {
 
   Future<void> delete(LabelInfo info) async {
     if (!await confirm(t.confirm_delete_message(info.title))) return;
-    _api.deleteLabel(label_id: info.id).then((_) {
+    _api.labels.delete(label_id: info.id).then((_) {
       items.remove(info);
     });
   }

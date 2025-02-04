@@ -1,3 +1,5 @@
+import 'package:package_info_plus/package_info_plus.dart';
+
 import 'app.dart';
 import 'imports.dart';
 import 'package:path/path.dart' as p;
@@ -83,8 +85,9 @@ void main() async {
       await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
     }
 
-    // preferences
+    // preload
     prefs = await SharedPreferences.getInstance();
+    packageInfo = await PackageInfo.fromPlatform();
 
     // app
     runApp(SentryWidget(child: App()));

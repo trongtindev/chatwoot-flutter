@@ -1,5 +1,4 @@
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-
 import '/imports.dart';
 
 class LabelEditorController extends GetxController {
@@ -42,7 +41,7 @@ class LabelEditorController extends GetxController {
     try {
       loading.value = true;
 
-      final result = await _api.createLabel(
+      final result = await _api.labels.create(
         title: title.text,
         description: description.text,
         color: color.value.toHexString(),

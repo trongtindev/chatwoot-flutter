@@ -146,7 +146,7 @@ class ConversationInputController extends GetxController {
 
       // TODO: make pending message
       // final echo_id = getUuid();
-      final result = await _api.sendMessage(
+      final result = await _api.conversations.sendMessage(
         conversation_id: id,
         content: message.text,
         attachments: attachments ?? files,

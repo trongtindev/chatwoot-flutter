@@ -16,7 +16,7 @@ class SettingsChangePasswordController extends GetxController {
     _logger.d('submit()');
 
     try {
-      final result = await _api.updatePassword(
+      final result = await _api.profile.updatePassword(
         current_password: current_password.text,
         password: password.text,
         password_confirmation: password_confirmation.text,

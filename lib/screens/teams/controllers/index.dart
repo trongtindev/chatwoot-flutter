@@ -25,7 +25,7 @@ class TeamsController extends GetxController {
 
   Future<void> getTeams() async {
     try {
-      final result = await _api.listTeams();
+      final result = await _api.teams.list();
       items.value = result.getOrThrow();
       _logger.d('found ${items.length} items');
     } catch (error) {

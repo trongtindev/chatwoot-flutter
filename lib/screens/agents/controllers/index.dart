@@ -26,7 +26,7 @@ class AgentsController extends GetxController {
 
   Future<void> getAgents() async {
     try {
-      final result = await _api.listAgents();
+      final result = await _api.agents.list();
       items.value = result.getOrThrow();
       _logger.d('found ${items.length} items');
     } catch (error) {

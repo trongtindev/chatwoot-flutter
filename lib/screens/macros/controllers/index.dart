@@ -21,8 +21,8 @@ class MacrosController extends GetxController {
 
   Future<void> getMacros() async {
     try {
-      final result = await _api.listMacros();
-      items.value = result.getOrThrow();
+      final result = await _api.macros.list();
+      items.value = result.getOrThrow().payload;
       _logger.d('found ${items.length} items');
     } catch (error) {
       errorHandler(error);
@@ -36,6 +36,6 @@ class MacrosController extends GetxController {
   Future<void> delete(MacroInfo info) async {
     if (!await confirmDelete(name: info.name)) return;
     items.remove(info);
-    _api.deleteMacro(macro_id: info.id);
+    _api.macros.delete(macro_id: info.id);
   }
 }

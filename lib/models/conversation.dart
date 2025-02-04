@@ -133,11 +133,9 @@ class ConversationInfo {
     var contact_last_seen_at = toDateTime(json['contact_last_seen_at']);
     List<dynamic> labels = json['labels'];
 
-    var first_reply_created_at = toDateTime(json['first_reply_created_at']);
     var last_non_activity_message = json['last_non_activity_message'] != null
         ? MessageInfo.fromJson(json['last_non_activity_message'])
         : null;
-    var last_activity_at = toDateTime(json['last_activity_at']);
     var priority = json['priority'] != null
         ? ConversationPriority.values.byName(json['priority'])
         : ConversationPriority.none;
@@ -162,10 +160,10 @@ class ConversationInfo {
       status: ConversationStatus.values.byName(json['status']),
       created_at: created_at,
       timestamp: toDateTime(json['timestamp'])!,
-      first_reply_created_at: first_reply_created_at,
+      first_reply_created_at: toDateTime(json['first_reply_created_at']),
       unread_count: json['unread_count'],
       last_non_activity_message: last_non_activity_message,
-      last_activity_at: last_activity_at ?? created_at,
+      last_activity_at: toDateTime(json['last_activity_at']) ?? created_at,
       priority: priority,
       waiting_since: json['waiting_since'],
       sla_policy_id: json['sla_policy_id'],
@@ -204,9 +202,9 @@ class ListConversationResult
   });
 
   factory ListConversationResult.fromJson(dynamic json) {
-    List<dynamic> payload = json['payload'];
+    List<dynamic> payload = json['data']['payload'];
     return ListConversationResult(
-      meta: ListConversationMeta.fromJson(json['meta']),
+      meta: ListConversationMeta.fromJson(json['data']['meta']),
       payload: payload.map(ConversationInfo.fromJson).toList(),
     );
   }

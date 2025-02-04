@@ -6,6 +6,7 @@ import '/imports.dart';
 class BindingsConfig {
   Future<void> dependencies() async {
     // global services
+    await Get.putAsync(() => DeviceService().init());
     await Get.putAsync(() => DbService().init());
     await Get.putAsync(() => ApiService().init());
     await Get.putAsync(() => AuthService().init());

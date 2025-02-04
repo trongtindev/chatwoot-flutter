@@ -72,7 +72,7 @@ class ContactsController extends GetxController {
         isNoMore.value = false;
       }
 
-      final result = await _api.listContacts(
+      final result = await _api.contacts.list(
         sortBy: sortBy.value,
         orderBy: orderBy.value,
         page: page.value,
@@ -104,7 +104,7 @@ class ContactsController extends GetxController {
 
   void showDetail(ContactInfo info) {
     Get.to(
-      () => ContactDetailView(id: info.id, initial: info),
+      () => ContactDetailView(contact_id: info.id, initial: info),
     );
   }
 

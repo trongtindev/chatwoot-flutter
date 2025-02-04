@@ -255,7 +255,7 @@ class NotificationService extends GetxService {
       return;
     }
     _logger.d('saveDeviceDetails()');
-    await _getApi.saveDeviceDetails(push_token: token.value!);
+    await _getApi.notifications.saveDeviceDetails(push_token: token.value!);
     _logger.d('saveDeviceDetails() => successful');
   }
 }

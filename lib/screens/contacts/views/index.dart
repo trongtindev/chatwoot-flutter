@@ -1,3 +1,4 @@
+import '/screens/contacts/views/editor.dart';
 import '../controllers/index.dart';
 import '/imports.dart';
 
@@ -79,7 +80,7 @@ class ContactsView extends GetView<ContactsController> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () => Get.to(() => ContactEditorView()),
         label: Text(t.contacts_add),
         icon: Icon(Icons.add_outlined),
       ),

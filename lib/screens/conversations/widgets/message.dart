@@ -301,7 +301,7 @@ class Message extends StatelessWidget {
       onTap: () => Get.to(
         () => imageViewer(
           url: info.data_url,
-          title: '#${info.id} (${formatBytes(info.file_size!)})',
+          title: '#${info.id} (${formatBytes(info.file_size)})',
         ),
       ),
       child: AspectRatio(

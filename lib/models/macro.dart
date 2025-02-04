@@ -46,3 +46,16 @@ class MacroInfo {
     );
   }
 }
+
+class ListMacrosResult {
+  final List<MacroInfo> payload;
+  ListMacrosResult({required this.payload});
+
+  factory ListMacrosResult.fromJson(dynamic json) {
+    List<dynamic> payload = json['payload'];
+
+    return ListMacrosResult(
+      payload: payload.map(MacroInfo.fromJson).toList(),
+    );
+  }
+}

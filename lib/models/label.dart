@@ -25,3 +25,16 @@ class LabelInfo {
     );
   }
 }
+
+class ListLabelsResult {
+  final List<LabelInfo> payload;
+  ListLabelsResult({required this.payload});
+
+  factory ListLabelsResult.fromJson(dynamic json) {
+    List<dynamic> payload = json['payload'];
+
+    return ListLabelsResult(
+      payload: payload.map(LabelInfo.fromJson).toList(),
+    );
+  }
+}
