@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'config/bindings.dart';
 import 'imports.dart';
-import 'screens/login/views/index.dart';
+import 'screens/auth/views/login.dart';
 
 class App extends StatefulWidget {
   const App({super.key});

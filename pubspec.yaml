@@ -79,6 +79,7 @@ flutter:
     - assets/images/
     - assets/images/icons/
     - assets/images/empty/
+    - assets/countryCodes.json
 
 flutter_native_splash:
   color: '#F8F9FF'

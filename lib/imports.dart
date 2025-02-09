@@ -59,6 +59,7 @@ export 'models/assistant.dart';
 export 'models/attribute.dart';
 export 'models/cache.dart';
 export 'models/canned_response.dart';
+export 'models/common.dart';
 export 'models/contact.dart';
 export 'models/conversation.dart';
 export 'models/file.dart';
@@ -118,4 +119,5 @@ export 'screens/agents/controllers/index.dart';
 
 late SharedPreferences prefs;
 late PackageInfo packageInfo;
+late List<CountryCode> countryCodes;
 final cookieManager = CookieManager.instance();

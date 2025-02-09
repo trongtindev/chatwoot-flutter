@@ -232,7 +232,8 @@ class ApiService extends GetxService {
         final cached = await _getCache(url: path);
         if (cached != null) {
           try {
-            onCacheHit(jsonDecode(cached.data));
+            final decoded = jsonDecode(cached.data);
+            if (decoded != null) onCacheHit(decoded);
           } on Error catch (error) {
             logger.e(error, stackTrace: error.stackTrace);
           }

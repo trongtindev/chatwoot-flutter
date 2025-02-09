@@ -67,10 +67,10 @@ Get the latest version from the [Releases page](https://github.com/trongtindev/c
 | Reports              | 🕛 Planned     |
 | Teams                | 💪 In-Progress |
 | Accounts             | 🕛 Planned     |
-| Inboxes              | 💪 In-Progress |
+| Inboxes (Webview)    | ✅ Completed   |
 | Labels               | 💪 In-Progress |
-| Automation           | 🕛 Planned     |
-| Macros               | 💪 In-Progress |
+| Automation (Webview) | 💪 In-Progress |
+| Macros (Webview)     | 💪 In-Progress |
 | Agents               | 💪 In-Progress |
 | Canned Response      | 💪 In-Progress |
 | Integrations         | 🕛 Planned     |

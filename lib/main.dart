@@ -32,6 +32,13 @@ void main() async {
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+    // preload
+    prefs = await SharedPreferences.getInstance();
+    packageInfo = await PackageInfo.fromPlatform();
+    final List<dynamic> countryCodesJson =
+        jsonDecode(await rootBundle.loadString('assets/countryCodes.json'));
+    countryCodes = countryCodesJson.map(CountryCode.fromJson).toList();
+
     // firebase
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -84,10 +91,6 @@ void main() async {
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
     }
-
-    // preload
-    prefs = await SharedPreferences.getInstance();
-    packageInfo = await PackageInfo.fromPlatform();
 
     // app
     runApp(SentryWidget(child: App()));

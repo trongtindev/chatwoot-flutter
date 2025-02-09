@@ -1,4 +1,4 @@
-import '../../login/views/index.dart';
+import '../../auth/views/login.dart';
 import '/imports.dart';
 
 class SettingsController extends GetxController {

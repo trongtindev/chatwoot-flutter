@@ -3,22 +3,22 @@ import '/imports.dart';
 
 class ConversationInput extends StatelessWidget {
   final int id;
-  late final ConversationInputController c;
+  late final ConversationInputController controller;
   late final CannedResponsesController cannedResponses;
 
   ConversationInput({
     super.key,
     required this.id,
-  })  : c = Get.put(ConversationInputController(id: id), tag: '$id'),
+  })  : controller = Get.put(ConversationInputController(id: id), tag: '$id'),
         cannedResponses = Get.find<CannedResponsesController>();
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: c.onPopInvokedWithResult,
+      onPopInvokedWithResult: controller.onPopInvokedWithResult,
       child: Obx(() {
-        final isPrivate = c.isPrivate.value;
+        final isPrivate = controller.isPrivate.value;
         return Container(
           decoration: BoxDecoration(
             color: isPrivate
@@ -29,8 +29,9 @@ class ConversationInput extends StatelessWidget {
             children: [
               buildBody(context),
               Obx(() {
-                final isSending = c.isSending.value;
-                final sendMessageProgress = c.sendMessageProgress.value;
+                final isSending = controller.isSending.value;
+                final sendMessageProgress =
+                    controller.sendMessageProgress.value;
 
                 if (!isSending) return Container();
                 return Positioned(
@@ -61,11 +62,11 @@ class ConversationInput extends StatelessWidget {
           buildCannedResponses(context),
           buildAttachments(),
           Obx(() {
-            final isEmpty = c.isEmpty.value;
-            final isPrivate = c.isPrivate.value;
-            final showMore = c.showMore.value;
-            final showRecorder = c.showRecorder.value;
-            final isSending = c.isSending.value;
+            final isEmpty = controller.isEmpty.value;
+            final isPrivate = controller.isPrivate.value;
+            final showMore = controller.showMore.value;
+            final showRecorder = controller.showRecorder.value;
+            final isSending = controller.isSending.value;
 
             return Column(
               children: [
@@ -75,13 +76,13 @@ class ConversationInput extends StatelessWidget {
                       icon: Icon(isPrivate
                           ? Icons.remove_red_eye
                           : Icons.remove_red_eye_outlined),
-                      onPressed: () => c.isPrivate.value = !isPrivate,
+                      onPressed: () => controller.isPrivate.value = !isPrivate,
                     ),
                     Expanded(
                       child: TextField(
                         keyboardType: TextInputType.multiline,
-                        focusNode: c.focusNode,
-                        controller: c.message,
+                        focusNode: controller.focusNode,
+                        controller: controller.message,
                         decoration: InputDecoration(
                           hintText: isPrivate
                               ? t.message_private_hint
@@ -89,7 +90,7 @@ class ConversationInput extends StatelessWidget {
                           border: InputBorder.none,
                         ),
                         minLines: 1,
-                        maxLines: 3,
+                        maxLines: 10,
                       ),
                     ),
                     if (isEmpty && !isPrivate)
@@ -99,19 +100,19 @@ class ConversationInput extends StatelessWidget {
                               ? Icons.more_horiz
                               : Icons.more_horiz_outlined,
                         ),
-                        onPressed: c.toggleMore,
+                        onPressed: controller.toggleMore,
                       ),
                     if (isEmpty)
                       IconButton(
                         icon: Icon(
                           showRecorder ? Icons.mic : Icons.mic_outlined,
                         ),
-                        onPressed: c.toggleRecorder,
+                        onPressed: controller.toggleRecorder,
                       ),
                     if (isEmpty)
                       IconButton(
                         icon: Icon(Icons.image_outlined),
-                        onPressed: c.showFilePicker,
+                        onPressed: controller.showFilePicker,
                       ),
                     if (!isEmpty)
                       IconButton(
@@ -121,7 +122,7 @@ class ConversationInput extends StatelessWidget {
                               ? null
                               : context.theme.colorScheme.primary,
                         ),
-                        onPressed: isSending ? null : c.sendMessage,
+                        onPressed: isSending ? null : controller.sendMessage,
                       ),
                   ],
                 ),
@@ -176,7 +177,7 @@ class ConversationInput extends StatelessWidget {
     return buildBottom(
       context: context,
       child: Obx(() {
-        final isRecording = c.isRecording.value;
+        final isRecording = controller.isRecording.value;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -205,7 +206,8 @@ class ConversationInput extends StatelessWidget {
                               width: 32,
                             ),
                           ),
-                          Text(formatDuration(c.recorderDuration.value)),
+                          Text(formatDuration(
+                              controller.recorderDuration.value)),
                         ],
                       ),
                     ),
@@ -216,14 +218,14 @@ class ConversationInput extends StatelessWidget {
                     spacing: 16,
                     children: [
                       IconButton.filledTonal(
-                        onPressed: () => c.stopRecord(cancel: true),
+                        onPressed: () => controller.stopRecord(cancel: true),
                         icon: Icon(
                           Icons.delete_outline,
                           size: 48,
                         ),
                       ),
                       IconButton.filled(
-                        onPressed: c.stopRecord,
+                        onPressed: controller.stopRecord,
                         icon: Icon(
                           Icons.send_outlined,
                           size: 48,
@@ -238,7 +240,7 @@ class ConversationInput extends StatelessWidget {
                     child: Text(t.tap_to_record),
                   ),
                   IconButton.filled(
-                    onPressed: c.startRecord,
+                    onPressed: controller.startRecord,
                     icon: Icon(
                       Icons.mic_outlined,
                       size: 48,
@@ -252,7 +254,7 @@ class ConversationInput extends StatelessWidget {
 
   Widget buildAttachments() {
     return Obx(() {
-      final files = c.files.value;
+      final files = controller.files.value;
       if (files.isEmpty) return Container();
 
       return SizedBox(
@@ -314,7 +316,7 @@ class ConversationInput extends StatelessWidget {
 
   Widget buildCannedResponses(BuildContext context) {
     return Obx(() {
-      final items = c.cannedResponses.value;
+      final items = controller.cannedResponses.value;
       if (items.isEmpty) return Container();
 
       return ConstrainedBox(
@@ -332,25 +334,28 @@ class ConversationInput extends StatelessWidget {
 
   Widget buildCannedResponse(CannedResponseInfo info) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          spacing: 4,
-          children: [
-            Expanded(
-              child: Text(
-                info.content.replaceAll('\n', ' '),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+      child: InkWell(
+        onTap: () => controller.message.text = info.content,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            spacing: 4,
+            children: [
+              Expanded(
+                child: Text(
+                  info.content.replaceAll('\n', ' '),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            Text(
-              info.short_code,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+              Text(
+                info.short_code,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

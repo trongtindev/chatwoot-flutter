@@ -71,6 +71,18 @@ class ContactEditorView extends StatelessWidget {
               // email
               TextFormField(
                 enabled: !loading,
+                controller: controller.phone_number,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  label: Text(t.email),
+                  hintText: t.email_hint,
+                  prefixIcon: Icon(Icons.phone_outlined),
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(top: 8)),
+              // email
+              TextFormField(
+                enabled: !loading,
                 controller: controller.city,
                 keyboardType: TextInputType.streetAddress,
                 decoration: InputDecoration(
@@ -84,6 +96,19 @@ class ContactEditorView extends StatelessWidget {
                   }
                   return null;
                 },
+              ),
+              Padding(padding: EdgeInsets.only(top: 8)),
+              // country
+              TextFormField(
+                enabled: !loading,
+                readOnly: true,
+                controller: controller.country,
+                decoration: InputDecoration(
+                  label: Text(t.country),
+                  prefixIcon: Icon(Icons.work_outline),
+                  suffixIcon: Icon(Icons.arrow_drop_down_outlined),
+                ),
+                onTap: controller.showCountryPicker,
               ),
               Padding(padding: EdgeInsets.only(top: 8)),
               // company

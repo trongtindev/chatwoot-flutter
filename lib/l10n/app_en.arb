@@ -132,9 +132,6 @@
   "appearance_colours": "Colours",
   "appearance_colours_subtitle": "appearance_colours_subtitle",
   "appearance_color": "Color",
-  "full_name": "Full name",
-  "full_name_hint": "full_name_hint",
-  "full_name_invalid": "full_name_invalid",
   "display_name": "Display name",
   "display_name_hint": "display_name_hint",
   "display_name_invalid": "display_name_invalid",
@@ -338,6 +335,9 @@
   "message": "Message",
   "mark_auto_offline": "Mark offline automatically",
   "translate": "Translate",
+  "full_name": "Full name",
+  "full_name_hint": "Enter the full name",
+  "full_name_invalid": "full_name_invalid",
   "first_name": "First name",
   "first_name_hint": "Enter the first name",
   "first_name_invalid": "first_name_invalid",
@@ -346,5 +346,7 @@
   "last_name_invalid": "last_name_invalid",
   "bio": "Enter the bio",
   "bio_hint": "bio_hint",
-  "bio_invalid": "bio_hint_invalid"
+  "bio_invalid": "bio_hint_invalid",
+  "search": "Search",
+  "search_hint": "Type something..."
 }

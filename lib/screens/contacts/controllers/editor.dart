@@ -1,3 +1,4 @@
+import '../../../widgets/country_picker.dart';
 import '/imports.dart';
 
 class ContactEditorController extends GetxController {
@@ -102,5 +103,12 @@ class ContactEditorController extends GetxController {
     } finally {
       loading.value = false;
     }
+  }
+
+  Future<void> showCountryPicker() async {
+    final result = await Get.bottomSheet<CountryCode>(CountryPicker());
+    if (result == null) return;
+    country.text = result.name;
+    country_code.value = result.code;
   }
 }
