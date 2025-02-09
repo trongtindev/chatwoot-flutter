@@ -26,40 +26,25 @@ class ContactEditorView extends StatelessWidget {
               Wrap(
                 alignment: WrapAlignment.center,
                 children: [
-                  avatar(context, size: 96),
+                  Obx(() {
+                    final thumbnail = controller.thumbnail.value;
+                    return avatar(context, size: 96, url: thumbnail);
+                  }),
                 ],
               ),
-              // first_name
+              // name
               TextFormField(
                 enabled: !loading,
-                controller: controller.first_name,
+                controller: controller.name,
                 keyboardType: TextInputType.url,
                 decoration: InputDecoration(
-                  label: Text(t.first_name),
-                  hintText: t.first_name_hint,
-                  prefixIcon: Icon(Icons.edit),
+                  label: Text(t.full_name),
+                  hintText: t.full_name_hint,
+                  prefixIcon: Icon(Icons.person_outline),
                 ),
                 validator: (value) {
                   if (value != null) {
-                    return t.first_name_invalid;
-                  }
-                  return null;
-                },
-              ),
-              Padding(padding: EdgeInsets.only(top: 8)),
-              // last_name
-              TextFormField(
-                enabled: !loading,
-                controller: controller.last_name,
-                keyboardType: TextInputType.url,
-                decoration: InputDecoration(
-                  label: Text(t.last_name),
-                  hintText: t.last_name_hint,
-                  prefixIcon: Icon(Icons.edit),
-                ),
-                validator: (value) {
-                  if (value != null) {
-                    return t.last_name_invalid;
+                    return t.full_name_invalid;
                   }
                   return null;
                 },
@@ -101,26 +86,6 @@ class ContactEditorView extends StatelessWidget {
                 },
               ),
               Padding(padding: EdgeInsets.only(top: 8)),
-              // description
-              TextFormField(
-                enabled: !loading,
-                controller: controller.description,
-                keyboardType: TextInputType.multiline,
-                decoration: InputDecoration(
-                  label: Text(t.bio),
-                  hintText: t.bio_hint,
-                  prefixIcon: Icon(Icons.edit),
-                ),
-                validator: (value) {
-                  if (value != null) {
-                    return t.bio_invalid;
-                  }
-                  return null;
-                },
-                minLines: 1,
-                maxLines: 5,
-              ),
-              Padding(padding: EdgeInsets.only(top: 8)),
               // company
               TextFormField(
                 enabled: !loading,
@@ -129,11 +94,31 @@ class ContactEditorView extends StatelessWidget {
                 decoration: InputDecoration(
                   label: Text(t.company),
                   hintText: t.company_hint,
-                  prefixIcon: Icon(Icons.edit),
+                  prefixIcon: Icon(Icons.work_outline),
                 ),
                 validator: (value) {
                   if (value != null) {
                     return t.company_invalid;
+                  }
+                  return null;
+                },
+                minLines: 1,
+                maxLines: 5,
+              ),
+              Padding(padding: EdgeInsets.only(top: 8)),
+              // description
+              TextFormField(
+                enabled: !loading,
+                controller: controller.description,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  label: Text(t.bio),
+                  hintText: t.bio_hint,
+                  prefixIcon: Icon(Icons.description_outlined),
+                ),
+                validator: (value) {
+                  if (value != null) {
+                    return t.bio_invalid;
                   }
                   return null;
                 },

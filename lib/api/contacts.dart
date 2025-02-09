@@ -43,7 +43,7 @@ class ContactsApi {
       path,
       onCacheHit: (data) {
         if (onCacheHit == null) return;
-        final transformedData = ContactInfo.fromJson(data);
+        final transformedData = ContactInfo.fromJson(data['payload']);
         onCacheHit(transformedData);
       },
     );
@@ -174,5 +174,92 @@ class ContactsApi {
     final data = result.getOrThrow().data;
     List<dynamic> items = data['payload'];
     return items.map(ConversationInfo.fromJson).toList().toSuccess();
+  }
+
+  Future<Result<ContactInfo>> create({
+    String? city,
+    String? company_name,
+    String? country,
+    String? country_code,
+    String? description,
+    AvailabilityStatus? availability_status,
+    String? email,
+    String? identifier,
+    required String name,
+    String? phone_number,
+    String? thumbnail,
+  }) async {
+    final path = '/accounts/{account_id}/contacts';
+    final result = await service.post(
+      path,
+      queryParameters: {
+        'include_contact_inboxes': false,
+      },
+      data: {
+        'additional_attributes': {
+          'city': city,
+          'company_name': company_name,
+          'country': country,
+          'country_code': country_code,
+          'description': description,
+        },
+        'availability_status': availability_status?.name,
+        'email': email,
+        'identifier': identifier,
+        'name': name,
+        'phone_number': phone_number,
+        'thumbnail': thumbnail,
+      },
+    );
+    if (result.isError()) {
+      return result.exceptionOrNull()!.toFailure();
+    }
+
+    final data = result.getOrThrow().data['payload'];
+    return ContactInfo.fromJson(data).toSuccess();
+  }
+
+  Future<Result<ContactInfo>> update({
+    required int contact_id,
+    String? city,
+    String? company_name,
+    String? country,
+    String? country_code,
+    String? description,
+    AvailabilityStatus? availability_status,
+    String? email,
+    String? identifier,
+    required String name,
+    String? phone_number,
+    String? thumbnail,
+  }) async {
+    final path = '/accounts/{account_id}/contacts/$contact_id';
+    final result = await service.patch(
+      path,
+      queryParameters: {
+        'include_contact_inboxes': false,
+      },
+      data: {
+        'additional_attributes': {
+          'city': city,
+          'company_name': company_name,
+          'country': country,
+          'country_code': country_code,
+          'description': description,
+        },
+        'availability_status': availability_status?.name,
+        'email': email,
+        'identifier': identifier,
+        'name': name,
+        'phone_number': phone_number,
+        'thumbnail': thumbnail,
+      },
+    );
+    if (result.isError()) {
+      return result.exceptionOrNull()!.toFailure();
+    }
+
+    final data = result.getOrThrow().data['payload'];
+    return ContactInfo.fromJson(data).toSuccess();
   }
 }
