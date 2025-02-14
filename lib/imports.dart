@@ -33,7 +33,7 @@ export 'package:dio/dio.dart';
 export 'package:dio_http2_adapter/dio_http2_adapter.dart';
 export 'package:logger/logger.dart' show Level;
 export 'package:path_provider/path_provider.dart';
-export 'package:flutter_gen/gen_l10n/app_localizations.dart';
+export '/l10n/generated/app_localizations.dart';
 export 'package:permission_handler/permission_handler.dart' show Permission;
 export 'package:file_picker/file_picker.dart' show PlatformFile;
 export 'package:flutter_inappwebview/flutter_inappwebview.dart'
