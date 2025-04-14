@@ -28,24 +28,22 @@ class AuthApi {
     }
 
     final data = result.getOrThrow().data;
+    final finalData = data['data'] ?? data;
+    // NOTE: Legacy API responses may not include 'data' wrapper, handle both formats
+
     await cookieManager.setCookie(
       url: WebUri.uri(result.getOrThrow().requestOptions.uri),
       name: 'cw_d_session_info',
       value: Uri.encodeComponent(jsonEncode(result.getOrThrow().headers.map)),
     );
 
-    return ProfileInfo.fromJson(data).toSuccess();
+    return ProfileInfo.fromJson(finalData).toSuccess();
   }
 
-  Future<Result<String>> resetPassword({
-    required String email,
-  }) async {
+  Future<Result<String>> resetPassword({required String email}) async {
     final path = '${service.baseUrl.value}/auth/password';
 
-    final result = await service.post<String>(
-      path,
-      data: {'email': email},
-    );
+    final result = await service.post<String>(path, data: {'email': email});
     if (result.isError()) {
       return result.exceptionOrNull()!.toFailure();
     }
