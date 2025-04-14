@@ -1,7 +1,7 @@
 name: chatwoot
 description: 'Cross-Platform app for chatwoot.'
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 4.0.0+2
+version: 4.0.0+3
 
 environment:
   sdk: ^3.7.0
