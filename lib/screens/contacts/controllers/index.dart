@@ -56,10 +56,7 @@ class ContactsController extends GetxController {
     return this;
   }
 
-  Future<void> getContacts({
-    bool? append,
-    bool? reset,
-  }) async {
+  Future<void> getContacts({bool? append, bool? reset}) async {
     try {
       append ??= false;
       reset ??= false;
@@ -76,11 +73,12 @@ class ContactsController extends GetxController {
         sortBy: sortBy.value,
         orderBy: orderBy.value,
         page: page.value,
-        onCacheHit: append || reset
-            ? null
-            : (data) {
-                items.value = data.payload;
-              },
+        onCacheHit:
+            append || reset
+                ? null
+                : (data) {
+                  items.value = data.payload;
+                },
       );
       final data = result.getOrThrow();
 
@@ -103,16 +101,11 @@ class ContactsController extends GetxController {
   }
 
   void showDetail(ContactInfo info) {
-    Get.to(
-      () => ContactDetailView(contact_id: info.id, initial: info),
-    );
+    Get.to(() => ContactDetailView(contact_id: info.id, initial: info));
   }
 
   Future<void> showFilter() async {
-    final result = await Get.bottomSheet<bool>(
-      ContactFilterView(),
-      showDragHandle: false,
-    );
+    final result = await Get.bottomSheet<bool>(ContactFilterView());
     if (result == null || !result) return;
   }
 

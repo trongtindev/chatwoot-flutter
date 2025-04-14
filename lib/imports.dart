@@ -2,7 +2,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'imports.dart';
-export 'package:refreshed/refreshed.dart'
+export 'package:get/get.dart'
     show
         Get,
         GetxController,
@@ -15,11 +15,11 @@ export 'package:refreshed/refreshed.dart'
         GetWidget,
         Binding,
         Bind;
-export 'package:refreshed/get_state_manager/src/rx_flutter/rx_ticker_provider_mixin.dart';
-export 'package:refreshed/get_instance/get_instance.dart';
-export 'package:refreshed/route_manager.dart' hide Translations;
-export 'package:refreshed/get_utils/get_utils.dart';
-export 'package:refreshed/get_rx/get_rx.dart';
+export 'package:get/get_state_manager/src/rx_flutter/rx_ticket_provider_mixin.dart';
+export 'package:get/get_instance/get_instance.dart';
+export 'package:get/route_manager.dart' hide Translations;
+export 'package:get/get_utils/get_utils.dart';
+export 'package:get/get_rx/get_rx.dart';
 export 'package:flutter/material.dart' hide Page, Table, TableRow, ThemeMode;
 export 'package:flutter/services.dart' show rootBundle;
 export 'package:events_emitter/events_emitter.dart';

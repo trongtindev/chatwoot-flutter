@@ -67,8 +67,8 @@ class DefaultLayout extends StatelessWidget {
 
         return NavigationBar(
           selectedIndex: tabIndex,
-          onDestinationSelected: (next) =>
-              controller.tabController.index = next,
+          onDestinationSelected:
+              (next) => controller.tabController.index = next,
           destinations: [
             NavigationDestination(
               icon: Badge(
@@ -93,7 +93,7 @@ class DefaultLayout extends StatelessWidget {
             NavigationDestination(
               icon: Icon(Icons.settings_outlined),
               label: t.settings,
-            )
+            ),
           ],
         );
       }),
@@ -106,12 +106,7 @@ class DefaultLayout extends StatelessWidget {
       body: Row(
         children: [
           buildDesktopNavigationRail(context),
-          Expanded(
-            child: GetRouterOutlet(
-              initialRoute: '/',
-              anchorRoute: '/',
-            ),
-          ),
+          Expanded(child: GetRouterOutlet(initialRoute: '/', anchorRoute: '/')),
         ],
       ),
     );
@@ -120,9 +115,7 @@ class DefaultLayout extends StatelessWidget {
   Widget buildDesktopNavigationRail(BuildContext context) {
     return Column(
       children: [
-        Expanded(
-          child: buildDesktopNavigationRailDestination(context),
-        ),
+        Expanded(child: buildDesktopNavigationRailDestination(context)),
         Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: CircleAvatar(),

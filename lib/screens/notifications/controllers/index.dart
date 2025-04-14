@@ -32,14 +32,8 @@ class NotificationsController extends GetxController {
 
     includes.listen((_) => getNotifications());
 
-    _realtime.events.on(
-      RealtimeEventId.notificationCreated.name,
-      _onCreated,
-    );
-    _realtime.events.on(
-      RealtimeEventId.notificationDeleted.name,
-      _onDeleted,
-    );
+    _realtime.events.on(RealtimeEventId.notificationCreated.name, _onCreated);
+    _realtime.events.on(RealtimeEventId.notificationDeleted.name, _onDeleted);
   }
 
   @override
@@ -54,10 +48,7 @@ class NotificationsController extends GetxController {
     return this;
   }
 
-  Future<void> getNotifications({
-    bool? append,
-    bool? reset,
-  }) async {
+  Future<void> getNotifications({bool? append, bool? reset}) async {
     try {
       append ??= false;
       reset ??= false;
@@ -73,12 +64,13 @@ class NotificationsController extends GetxController {
       final result = await _api.notifications.list(
         includes: includes,
         page: page.value,
-        onCacheHit: append || reset
-            ? null
-            : (data) {
-                items.value = data.payload;
-                unread_count.value = data.meta.unread_count;
-              },
+        onCacheHit:
+            append || reset
+                ? null
+                : (data) {
+                  items.value = data.payload;
+                  unread_count.value = data.meta.unread_count;
+                },
       );
       final data = result.getOrThrow();
 
@@ -103,10 +95,7 @@ class NotificationsController extends GetxController {
   }
 
   Future<void> showFilter() async {
-    final result = await Get.bottomSheet<bool>(
-      NotificationsFilterView(),
-      showDragHandle: false,
-    );
+    final result = await Get.bottomSheet<bool>(NotificationsFilterView());
     if (result == null || !result) return;
   }
 

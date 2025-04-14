@@ -6,28 +6,26 @@ import '/imports.dart';
 class BindingsConfig {
   Future<void> dependencies() async {
     // global services
-    await Get.putAsync(() => DeviceService().init());
-    await Get.putAsync(() => DbService().init());
-    await Get.putAsync(() => ApiService().init());
-    await Get.putAsync(() => AuthService().init());
-    await Get.putAsync(() => AnalyticsService().init());
-    await Get.putAsync(() => AssistantService().init());
-    await Get.putAsync(() => NotificationService().init());
-    await Get.putAsync(() => RealtimeService().init());
-    await Get.putAsync(() => TranslatorService().init());
+    await Get.put(DeviceService()).init();
+    await Get.put(DbService()).init();
+    await Get.put(ApiService()).init();
+    await Get.put(AuthService()).init();
+    await Get.put(AnalyticsService()).init();
+    await Get.put(AssistantService()).init();
+    await Get.put(RealtimeService()).init();
+    await Get.put(NotificationService()).init();
+    await Get.put(TranslatorService()).init();
 
     // global controllers
-    await Get.putAsync(() => CannedResponsesController().init(),
-        permanent: true);
-    await Get.putAsync(() => ContactsController().init(), permanent: true);
-    await Get.putAsync(() => CustomAttributesController().init(),
-        permanent: true);
-    await Get.putAsync(() => InboxesController().init(), permanent: true);
-    await Get.putAsync(() => ConversationsController().init(), permanent: true);
-    await Get.putAsync(() => LabelsController().init(), permanent: true);
-    await Get.putAsync(() => MacrosController().init(), permanent: true);
-    await Get.putAsync(() => NotificationsController().init(), permanent: true);
-    await Get.putAsync(() => TeamsController().init(), permanent: true);
-    await Get.putAsync(() => AgentsController().init(), permanent: true);
+    await Get.put(CannedResponsesController(), permanent: true).init();
+    await Get.put(ContactsController(), permanent: true).init();
+    await Get.put(CustomAttributesController(), permanent: true).init();
+    await Get.put(InboxesController(), permanent: true).init();
+    await Get.put(ConversationsController(), permanent: true).init();
+    await Get.put(LabelsController(), permanent: true).init();
+    await Get.put(MacrosController(), permanent: true).init();
+    await Get.put(NotificationsController(), permanent: true).init();
+    await Get.put(TeamsController(), permanent: true).init();
+    await Get.put(AgentsController(), permanent: true).init();
   }
 }

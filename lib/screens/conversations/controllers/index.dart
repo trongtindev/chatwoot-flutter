@@ -101,10 +101,7 @@ class ConversationsController extends GetxController {
     return this;
   }
 
-  Future<void> getConversations({
-    bool? append,
-    bool? reset,
-  }) async {
+  Future<void> getConversations({bool? append, bool? reset}) async {
     try {
       append ??= false;
       reset ??= false;
@@ -123,13 +120,14 @@ class ConversationsController extends GetxController {
         inbox_id: filter_by_inbox.value,
         assignee_type: assignee_type.value,
         sort_order: sort_order.value,
-        onCacheHit: append || reset
-            ? null
-            : (data) {
-                items.value = data.payload;
-                all_count.value = data.meta.all_count;
-                mine_count.value = data.meta.mine_count;
-              },
+        onCacheHit:
+            append || reset
+                ? null
+                : (data) {
+                  items.value = data.payload;
+                  all_count.value = data.meta.all_count;
+                  mine_count.value = data.meta.mine_count;
+                },
       );
       final data = result.getOrThrow();
 
@@ -156,10 +154,7 @@ class ConversationsController extends GetxController {
 
   Future<void> showFilter() async {
     _inboxes.getInboxes();
-    var result = await Get.bottomSheet<bool>(
-      ConversationsFilterView(),
-      showDragHandle: false,
-    );
+    var result = await Get.bottomSheet<bool>(ConversationsFilterView());
     if (result == null || !result) return;
   }
 

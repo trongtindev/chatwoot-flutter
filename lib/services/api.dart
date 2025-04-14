@@ -61,7 +61,7 @@ class ApiService extends GetxService {
     return '${baseUrl.value}/api/${version.value}';
   }
 
-  int get account_id => _getAuth.profile.value!.account_id;
+  int? get account_id => _getAuth.profile.value?.account_id;
 
   Future<ApiService> init() async {
     http = Dio();
@@ -113,7 +113,9 @@ class ApiService extends GetxService {
       _logger.t('[${options.method}] ${options.uri}');
 
       // inject account_id
-      options.path = options.path.replaceAll('{account_id}', '$account_id');
+      if (account_id != null) {
+        options.path = options.path.replaceAll('{account_id}', '$account_id');
+      }
 
       // inject cookie
       final cookies = await cookieManager.getCookies(
@@ -155,16 +157,17 @@ class ApiService extends GetxService {
           url: WebUri.uri(response.requestOptions.uri),
           name: cookie.name,
           value: cookie.value,
-          sameSite: (() {
-            switch (cookie.sameSite) {
-              case SameSite.lax:
-                return HTTPCookieSameSitePolicy.LAX;
-              case SameSite.strict:
-                return HTTPCookieSameSitePolicy.STRICT;
-              default:
-                return HTTPCookieSameSitePolicy.NONE;
-            }
-          })(),
+          sameSite:
+              (() {
+                switch (cookie.sameSite) {
+                  case SameSite.lax:
+                    return HTTPCookieSameSitePolicy.LAX;
+                  case SameSite.strict:
+                    return HTTPCookieSameSitePolicy.STRICT;
+                  default:
+                    return HTTPCookieSameSitePolicy.NONE;
+                }
+              })(),
           isSecure: cookie.secure,
           expiresDate: cookie.expires?.millisecondsSinceEpoch,
           domain: cookie.domain,
@@ -190,9 +193,7 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<CachedRequest?> _getCache({
-    required String url,
-  }) async {
+  Future<CachedRequest?> _getCache({required String url}) async {
     var query = await _getDb.database.query(
       'cached_requests',
       where: 'url = ?',
@@ -202,10 +203,7 @@ class ApiService extends GetxService {
     return CachedRequest.fromJson(query.first);
   }
 
-  Future<void> _saveCache({
-    required String url,
-    required dynamic data,
-  }) async {
+  Future<void> _saveCache({required String url, required dynamic data}) async {
     await _getDb.database.insert('cached_requests', {
       'url': url,
       'data': jsonEncode(data),
@@ -265,14 +263,13 @@ class ApiService extends GetxService {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) =>
-      send<T>(
-        'head',
-        path,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-      );
+  }) => send<T>(
+    'head',
+    path,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+  );
 
   Future<Result<Response<T>>> get<T>(
     String path, {
@@ -281,16 +278,15 @@ class ApiService extends GetxService {
     CancelToken? cancelToken,
     void Function(int, int)? onReceiveProgress,
     void Function(T data)? onCacheHit,
-  }) =>
-      send<T>(
-        'get',
-        path,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress,
-        onCacheHit: onCacheHit,
-      );
+  }) => send<T>(
+    'get',
+    path,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onReceiveProgress: onReceiveProgress,
+    onCacheHit: onCacheHit,
+  );
 
   Future<Result<Response<T>>> put<T>(
     String path, {
@@ -300,17 +296,16 @@ class ApiService extends GetxService {
     CancelToken? cancelToken,
     void Function(int, int)? onSendProgress,
     void Function(int, int)? onReceiveProgress,
-  }) =>
-      send<T>(
-        'put',
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      );
+  }) => send<T>(
+    'put',
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onSendProgress: onSendProgress,
+    onReceiveProgress: onReceiveProgress,
+  );
 
   Future<Result<Response<T>>> post<T>(
     String path, {
@@ -320,17 +315,16 @@ class ApiService extends GetxService {
     CancelToken? cancelToken,
     void Function(int, int)? onSendProgress,
     void Function(int, int)? onReceiveProgress,
-  }) =>
-      send<T>(
-        'post',
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      );
+  }) => send<T>(
+    'post',
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onSendProgress: onSendProgress,
+    onReceiveProgress: onReceiveProgress,
+  );
 
   Future<Result<Response<T>>> patch<T>(
     String path, {
@@ -340,17 +334,16 @@ class ApiService extends GetxService {
     CancelToken? cancelToken,
     void Function(int, int)? onSendProgress,
     void Function(int, int)? onReceiveProgress,
-  }) =>
-      send<T>(
-        'patch',
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      );
+  }) => send<T>(
+    'patch',
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onSendProgress: onSendProgress,
+    onReceiveProgress: onReceiveProgress,
+  );
 
   Future<Result<Response<T>>> delete<T>(
     String path, {
@@ -358,13 +351,12 @@ class ApiService extends GetxService {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) =>
-      send<T>(
-        'delete',
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-      );
+  }) => send<T>(
+    'delete',
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+  );
 }
