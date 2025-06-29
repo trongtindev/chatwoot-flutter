@@ -107,13 +107,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get error_fetching => 'There was an error fetching the information, please try again.';
+  String get error_fetching =>
+      'There was an error fetching the information, please try again.';
 
   @override
-  String get error_no_connection => 'You must connect to Wi-fi or a cellular network to get online again.';
+  String get error_no_connection =>
+      'You must connect to Wi-fi or a cellular network to get online again.';
 
   @override
-  String get error_no_accounts => 'You don\'t have access to any chatwoot accounts';
+  String get error_no_accounts =>
+      'You don\'t have access to any chatwoot accounts';
 
   @override
   String error_message(String reason) {
@@ -141,7 +144,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conversation_empty_title => 'No conversations yet!';
 
   @override
-  String get conversation_empty_description => 'Once you start receiving conversations, they\'ll appear here.';
+  String get conversation_empty_description =>
+      'Once you start receiving conversations, they\'ll appear here.';
 
   @override
   String get conversation_unassign => 'Unassign conversation';
@@ -167,7 +171,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contacts_empty_title => 'No contacts found in this account';
 
   @override
-  String get contacts_empty_description => 'Start adding new contacts by clicking on the button below';
+  String get contacts_empty_description =>
+      'Start adding new contacts by clicking on the button below';
 
   @override
   String get contacts_add => 'Add contact';
@@ -281,7 +286,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get canned_responses => 'Canned Responses';
 
   @override
-  String get canned_responses_description => 'Canned Responses are pre-written reply templates that help you quickly respond to a conversation. Agents can type the \'/\' character followed by the shortcode to insert a canned response during a conversation.';
+  String get canned_responses_description =>
+      'Canned Responses are pre-written reply templates that help you quickly respond to a conversation. Agents can type the \'/\' character followed by the shortcode to insert a canned response during a conversation.';
 
   @override
   String get canned_response_add => 'Add canned response';
@@ -307,7 +313,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inboxes_title => 'Inboxes';
 
   @override
-  String get inboxes_description => 'A channel is the mode of communication your customer chooses to interact with you. An inbox is where you manage interactions for a specific channel. It can include communications from various sources such as email, live chat, and social media.';
+  String get inboxes_description =>
+      'A channel is the mode of communication your customer chooses to interact with you. An inbox is where you manage interactions for a specific channel. It can include communications from various sources such as email, live chat, and social media.';
 
   @override
   String get inboxes_add => 'Add inbox';
@@ -322,7 +329,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agents_title => 'Agents';
 
   @override
-  String get agents_description => 'An agent is a member of your customer support team who can view and respond to user messages. The list below shows all the agents in your account.';
+  String get agents_description =>
+      'An agent is a member of your customer support team who can view and respond to user messages. The list below shows all the agents in your account.';
 
   @override
   String get agents_add => 'Add agent';
@@ -340,13 +348,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get change_password => 'Change password';
 
   @override
-  String get change_password_invalid => 'Please enter a password of length 6 or more';
+  String get change_password_invalid =>
+      'Please enter a password of length 6 or more';
 
   @override
   String get change_password_current => 'Current password';
 
   @override
-  String get change_password_current_hint => 'Please enter the current password';
+  String get change_password_current_hint =>
+      'Please enter the current password';
 
   @override
   String get change_password_new => 'New password';
@@ -358,10 +368,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get change_password_confirm => 'Confirm new password';
 
   @override
-  String get change_password_confirm_hint => 'Please re-enter your new password';
+  String get change_password_confirm_hint =>
+      'Please re-enter your new password';
 
   @override
-  String get change_password_mismatch => 'Confirm password should match the password';
+  String get change_password_mismatch =>
+      'Confirm password should match the password';
 
   @override
   String get change_password_successful => 'change_password_successful';
@@ -370,7 +382,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labels => 'Labels';
 
   @override
-  String get labels_description => 'Labels help you categorize and prioritize conversations and leads. You can assign a label to a conversation or contact using the side panel.';
+  String get labels_description =>
+      'Labels help you categorize and prioritize conversations and leads. You can assign a label to a conversation or contact using the side panel.';
 
   @override
   String get labels_add => 'Add label';
@@ -418,7 +431,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get custom_attributes_title => 'Custom Attributes';
 
   @override
-  String get custom_attributes_description => 'A custom attribute tracks additional details about your contacts or conversations—such as the subscription plan or the date of their first purchase. You can add different types of custom attributes, such as text, lists, or numbers, to capture the specific information you need.';
+  String get custom_attributes_description =>
+      'A custom attribute tracks additional details about your contacts or conversations—such as the subscription plan or the date of their first purchase. You can add different types of custom attributes, such as text, lists, or numbers, to capture the specific information you need.';
 
   @override
   String get custom_attributes_add => 'Add Custom Attributes';
@@ -430,7 +444,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audit_logs_title => 'Audit Logs';
 
   @override
-  String get audit_logs_description => 'Audit Logs maintain a record of activities in your account, allowing you to track and audit your account, team, or services.';
+  String get audit_logs_description =>
+      'Audit Logs maintain a record of activities in your account, allowing you to track and audit your account, team, or services.';
 
   @override
   String get set_availability => 'Set availability';
@@ -451,7 +466,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get teams_title => 'Teams';
 
   @override
-  String get teams_description => 'Teams allow you to organize agents into groups based on their responsibilities. An agent can belong to multiple teams. When working collaboratively, you can assign conversations to specific teams.';
+  String get teams_description =>
+      'Teams allow you to organize agents into groups based on their responsibilities. An agent can belong to multiple teams. When working collaboratively, you can assign conversations to specific teams.';
 
   @override
   String get teams_add => 'Add team';
@@ -497,7 +513,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attachment_fallback_content => 'has shared a url';
 
   @override
-  String get attachment_exceeds_limit => 'File exceeds the 5MB attachment limit';
+  String get attachment_exceeds_limit =>
+      'File exceeds the 5MB attachment limit';
 
   @override
   String get status => 'Status';
@@ -533,7 +550,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notification_empty_title => 'No notifications yet.';
 
   @override
-  String get notification_empty_description => 'Once you start receiving notifications, they\'ll appear here.';
+  String get notification_empty_description =>
+      'Once you start receiving notifications, they\'ll appear here.';
 
   @override
   String get notification_no_more => 'All notifications loaded';
@@ -554,28 +572,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notification_assignee_push => 'A conversation is assigned to you';
 
   @override
-  String get notification_new_message_push => 'You are mentioned in a conversation';
+  String get notification_new_message_push =>
+      'You are mentioned in a conversation';
 
   @override
-  String get notification_mention_push => 'A new message is created in an assigned conversation';
+  String get notification_mention_push =>
+      'A new message is created in an assigned conversation';
 
   @override
-  String get notification_participating_new_message_push => 'A new message is created in a participating conversation';
+  String get notification_participating_new_message_push =>
+      'A new message is created in a participating conversation';
 
   @override
-  String get notification_content_conversation_creation => 'New conversation created';
+  String get notification_content_conversation_creation =>
+      'New conversation created';
 
   @override
-  String get notification_content_conversation_assignment => 'A conversation has been assigned to you';
+  String get notification_content_conversation_assignment =>
+      'A conversation has been assigned to you';
 
   @override
-  String get notification_content_assigned_conversation_new_message => 'New message in an assigned conversation';
+  String get notification_content_assigned_conversation_new_message =>
+      'New message in an assigned conversation';
 
   @override
-  String get notification_content_conversation_mention => 'You have been mentioned in a conversation';
+  String get notification_content_conversation_mention =>
+      'You have been mentioned in a conversation';
 
   @override
-  String get notification_content_participating_conversation_new_message => 'New message in a conversation you are participating in';
+  String get notification_content_participating_conversation_new_message =>
+      'New message in a conversation you are participating in';
 
   @override
   String get cancel => 'Cancel';
@@ -656,22 +682,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get waiting_since_desc => 'Pending Response: Shortest first';
 
   @override
-  String get campaigns_live_chat_empty_title => 'No live chat campaigns are available';
+  String get campaigns_live_chat_empty_title =>
+      'No live chat campaigns are available';
 
   @override
-  String get campaigns_live_chat_empty_description => 'Connect with your customers using proactive messages. Click \'Create campaign\' to get started.';
+  String get campaigns_live_chat_empty_description =>
+      'Connect with your customers using proactive messages. Click \'Create campaign\' to get started.';
 
   @override
   String get campaigns_sms_empty_title => 'No SMS campaigns are available';
 
   @override
-  String get campaigns_sms_empty_description => 'Launch an SMS campaign to reach your customers directly. Send offers or make announcements with ease. Click \'Create campaign\' to get started.';
+  String get campaigns_sms_empty_description =>
+      'Launch an SMS campaign to reach your customers directly. Send offers or make announcements with ease. Click \'Create campaign\' to get started.';
 
   @override
   String get macros_title => 'Macros';
 
   @override
-  String get macros_description => 'A macro is a set of saved actions that help customer service agents easily complete tasks. The agents can define a set of actions like tagging a conversation with a label, sending an email transcript, updating a custom attribute, etc., and they can run these actions in a single click.';
+  String get macros_description =>
+      'A macro is a set of saved actions that help customer service agents easily complete tasks. The agents can define a set of actions like tagging a conversation with a label, sending an email transcript, updating a custom attribute, etc., and they can run these actions in a single click.';
 
   @override
   String get macro_visibility_global => 'Public';
@@ -680,10 +710,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get macro_visibility_global_description => 'Public';
 
   @override
-  String get macro_visibility_personal => 'This macro is available publicly for all agents in this account.';
+  String get macro_visibility_personal =>
+      'This macro is available publicly for all agents in this account.';
 
   @override
-  String get macro_visibility_personal_description => 'This macro will be private to you and not be available to others.';
+  String get macro_visibility_personal_description =>
+      'This macro will be private to you and not be available to others.';
 
   @override
   String get understand => 'Understand';
@@ -709,7 +741,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get server_upgrade_required => 'Server upgrade required';
 
   @override
-  String get server_upgrade_required_agent_message => 'It seems like you are using unsupported Chatwoot server for your mobile app. Please contact your admin to upgrade your Chatwoot server.';
+  String get server_upgrade_required_agent_message =>
+      'It seems like you are using unsupported Chatwoot server for your mobile app. Please contact your admin to upgrade your Chatwoot server.';
 
   @override
   String server_upgrade_required_admin_message(String minimum_version) {

@@ -1,11 +1,10 @@
 name: chatwoot
-description: 'Cross-Platform app for chatwoot.'
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+description: "Cross-Platform app for chatwoot."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 4.0.0+3
 
 environment:
   sdk: ^3.7.0
-  flutter: 3.29.0
 
 dependencies:
   flutter:
@@ -27,37 +26,37 @@ dependencies:
   events_emitter: ^0.6.0
   url_launcher: ^6.3.1 # Launching a URL
   google_fonts: ^6.2.1
-  file_picker: ^10.1.2 # native file explorer to pick single or multiple files
-  extended_image: ^10.0.0 # A powerful official extension library of images
+  file_picker: ^10.2.0 # native file explorer to pick single or multiple files
+  extended_image: ^10.0.1 # A powerful official extension library of images
   flutter_inappwebview: ^6.1.5 # inline webview, to use an headless webview, and to open an in-app browser window
   sqflite: ^2.4.2 # Flutter plugin for SQLite
   flutter_dotenv: # Easily configure any flutter application with global variables using a `.env` file.
     git:
       url: https://github.com/trongtindev/flutter_dotenv.git
-  result_dart: ^2.1.0 # Overruns are common in design, and modern architectures always designate a place to handle failures.
+  result_dart: ^2.1.1 # Overruns are common in design, and modern architectures always designate a place to handle failures.
   package_info_plus: ^8.3.0 # querying information about an application package
-  device_info_plus: ^11.3.3 # Get current device information
+  device_info_plus: ^11.5.0 # Get current device information
   flutter_native_splash: ^2.4.6 # Customize Flutter's default white native splash screen
-  flutter_markdown: ^0.7.7 # A markdown renderer for Flutter.
+  flutter_markdown: ^0.7.7+1 # A markdown renderer for Flutter.
   action_cable: ^1.3.0 # ActionCable is the default realtime websocket framework and protocol in Rails.
-  flutter_local_notifications: ^19.1.0 # A cross platform plugin for displaying local notifications.
+  flutter_local_notifications: ^19.3.0 # A cross platform plugin for displaying local notifications.
   permission_handler: ^12.0.0+1 # Request permissions and check their status
   app_settings: ^6.1.1 # for opening iOS and Android phone settings from an app.
   chewie: ^1.11.1 # video player for Flutter with a heart of gold.
-  just_audio: ^0.9.46 # feature-rich audio player
+  just_audio: ^0.10.4 # feature-rich audio player
   record: ^6.0.0 # Audio recorder from microphone to a given file path or stream.
   flutter_colorpicker: ^1.1.0
   translator: ^1.0.3+1 # Free Google Translate API for Dart
 
   # desktop
-  window_manager: ^0.4.3 # This plugin allows Flutter desktop apps to resizing and repositioning the window.
-  sqflite_common_ffi: ^2.3.5 # Linux/Windows/DartVM support
+  window_manager: ^0.5.0 # This plugin allows Flutter desktop apps to resizing and repositioning the window.
+  sqflite_common_ffi: ^2.3.6 # Linux/Windows/DartVM support
 
   # tracking
-  sentry_flutter: ^8.14.1 # Sentry SDK for Flutter.
-  firebase_core: ^3.13.0
-  firebase_messaging: ^15.2.5
-  firebase_analytics: ^11.4.5
+  sentry_flutter: ^9.1.0 # Sentry SDK for Flutter.
+  firebase_core: ^3.14.0
+  firebase_messaging: ^15.2.7
+  firebase_analytics: ^11.5.0
 
   # maybe rewrite
   mime: ^2.0.0 # MIME type definitions and for processing streams of MIME multipart media types.
@@ -66,7 +65,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
@@ -82,8 +81,8 @@ flutter:
     - assets/countryCodes.json
 
 flutter_native_splash:
-  color: '#F8F9FF'
-  color_dark: '#111418'
+  color: "#F8F9FF"
+  color_dark: "#111418"
   image: assets/images/splash.png
   android_12:
     image: assets/images/adaptive-icon.png
