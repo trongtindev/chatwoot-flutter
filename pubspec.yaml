@@ -20,7 +20,7 @@ dependencies:
 
   shared_preferences: ^2.5.3
   dio: ^5.8.0+1 # A powerful HTTP networking package for Dart/Flutter
-  dio_http2_adapter: ^2.6.0
+  dio_http2_adapter: ^2.8.0
   logger: ^2.5.0
   get: ^5.0.0-release-candidate-9.3.2
   events_emitter: ^0.6.0
